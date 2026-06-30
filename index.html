@@ -1,0 +1,2743 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>QA Mobile Testing AI - Dashboard Completo</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/fontsource/fonts/inter@latest/latin-400-normal.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/fontsource/fonts/inter@latest/latin-600-normal.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/fontsource/fonts/inter@latest/latin-700-normal.css">
+<style>
+*{font-family:'Inter',sans-serif}
+::-webkit-scrollbar{width:6px}
+::-webkit-scrollbar-track{background:#0f0f1a}
+::-webkit-scrollbar-thumb{background:#6366f1;border-radius:3px}
+body{background:linear-gradient(135deg,#07070f 0%,#0e0e24 50%,#091420 100%);color:#e5e7eb;min-height:100vh}
+.glass{background:rgba(255,255,255,.02);backdrop-filter:blur(10px);border:1px solid rgba(255,255,255,.05)}
+.neon{border:1px solid rgba(99,102,241,.2)}
+.card-glow{box-shadow:0 0 20px rgba(99,102,241,.08);transition:all .3s}
+.card-glow:hover{box-shadow:0 0 30px rgba(99,102,241,.18);transform:translateY(-2px)}
+.sidebar-item{transition:all .2s;border-left:3px solid transparent;cursor:pointer}
+.sidebar-item:hover,.sidebar-item.active{background:linear-gradient(90deg,rgba(99,102,241,.15),transparent);border-left:3px solid #6366f1}
+.pulse-dot{animation:pulse 2s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
+.fade-in{animation:fadeIn .4s ease-in}
+@keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+.status-running{animation:statusPulse 1.5s infinite}
+@keyframes statusPulse{0%,100%{box-shadow:0 0 0 0 rgba(34,197,94,.4)}50%{box-shadow:0 0 0 8px rgba(34,197,94,0)}}
+.log-entry{font-family:'Courier New',monospace;font-size:.72rem;line-height:1.5}
+.progress-bar{transition:width .5s ease-in-out}
+.modal-overlay{background:rgba(0,0,0,.7);backdrop-filter:blur(4px)}
+.history-badge{display:inline-flex;align-items:center;gap:4px;padding:2px 8px;border-radius:12px;font-size:10px;font-weight:600;background:rgba(99,102,241,.15);color:#a5b4fc;border:1px solid rgba(99,102,241,.3)}
+.clean-option{transition:all .2s;cursor:pointer;border:1px solid transparent}
+.clean-option:hover{background:rgba(99,102,241,.05);border-color:rgba(99,102,241,.3)}
+.clean-option.selected{background:rgba(239,68,68,.08);border-color:rgba(239,68,68,.4)}
+.story-id-badge{display:inline-flex;align-items:center;gap:3px;padding:1px 6px;border-radius:6px;font-size:9px;font-weight:700;font-family:'JetBrains Mono',monospace;background:rgba(139,92,246,.2);color:#c4b5fd;border:1px solid rgba(139,92,246,.3)}
+</style>
+</head>
+<body>
+<div class="flex min-h-screen">
+<!-- SIDEBAR -->
+<aside class="w-64 bg-gray-900/80 border-r border-gray-800 flex flex-col fixed h-full z-50">
+<div class="p-5 border-b border-gray-800">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-xl bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center"><i class="fas fa-mobile-alt text-white text-lg"></i></div>
+<div><h1 class="text-lg font-bold text-white">QA Mobile AI</h1><p class="text-xs text-gray-400">Testing Automation Suite</p></div>
+</div>
+</div>
+<nav class="flex-1 py-3 overflow-y-auto">
+<div class="px-4 mb-2"><span class="text-[10px] font-semibold text-gray-500 uppercase tracking-wider">Principal</span></div>
+<div class="sidebar-item active flex items-center gap-3 px-5 py-2.5 text-sm text-gray-300" data-section="dashboard" onclick="showSection('dashboard')"><i class="fas fa-chart-line w-5 text-center text-indigo-400"></i><span>Dashboard</span></div>
+<div class="sidebar-item flex items-center gap-3 px-5 py-2.5 text-sm text-gray-300" data-section="ai-generator" onclick="showSection('ai-generator')"><i class="fas fa-robot w-5 text-center text-purple-400"></i><span>Generador IA</span></div>
+<div class="sidebar-item flex items-center gap-3 px-5 py-2.5 text-sm text-gray-300" data-section="test-executor" onclick="showSection('test-executor')"><i class="fas fa-play-circle w-5 text-center text-green-400"></i><span>Ejecutor</span></div>
+<div class="sidebar-item flex items-center gap-3 px-5 py-2.5 text-sm text-gray-300" data-section="test-cases" onclick="showSection('test-cases')"><i class="fas fa-clipboard-check w-5 text-center text-yellow-400"></i><span>Casos de Prueba</span></div>
+<div class="px-4 mt-4 mb-2"><span class="text-[10px] font-semibold text-gray-500 uppercase tracking-wider">Análisis</span></div>
+<div class="sidebar-item flex items-center gap-3 px-5 py-2.5 text-sm text-gray-300" data-section="reports" onclick="showSection('reports')"><i class="fas fa-chart-bar w-5 text-center text-cyan-400"></i><span>Reportes</span></div>
+<div class="sidebar-item flex items-center gap-3 px-5 py-2.5 text-sm text-gray-300" data-section="coverage" onclick="showSection('coverage')"><i class="fas fa-layer-group w-5 text-center text-pink-400"></i><span>Cobertura</span></div>
+<div class="sidebar-item flex items-center gap-3 px-5 py-2.5 text-sm text-gray-300" data-section="security" onclick="showSection('security')"><i class="fas fa-shield-alt w-5 text-center text-red-400"></i><span>Seguridad</span></div>
+<div class="px-4 mt-4 mb-2"><span class="text-[10px] font-semibold text-gray-500 uppercase tracking-wider">Integraciones</span></div>
+<div class="sidebar-item flex items-center gap-3 px-5 py-2.5 text-sm text-gray-300" data-section="jira" onclick="showSection('jira')"><i class="fab fa-jira w-5 text-center text-blue-400"></i><span>Jira</span></div>
+<div class="sidebar-item flex items-center gap-3 px-5 py-2.5 text-sm text-gray-300" data-section="devices" onclick="showSection('devices')"><i class="fas fa-tablet-alt w-5 text-center text-orange-400"></i><span>Dispositivos</span></div>
+<div class="sidebar-item flex items-center gap-3 px-5 py-2.5 text-sm text-gray-300" data-section="pipeline" onclick="showSection('pipeline')"><i class="fas fa-code-branch w-5 text-center text-blue-400"></i><span>Pipeline CI/CD</span></div>
+<div class="sidebar-item flex items-center gap-3 px-5 py-2.5 text-sm text-gray-300" data-section="settings" onclick="showSection('settings')"><i class="fas fa-cog w-5 text-center text-gray-400"></i><span>Configuración</span></div>
+</nav>
+<div class="p-4 border-t border-gray-800">
+<div class="flex items-center gap-3">
+<div class="w-8 h-8 rounded-full bg-gradient-to-br from-green-400 to-emerald-600 flex items-center justify-center text-xs font-bold text-white">QA</div>
+<div><p class="text-sm font-medium text-gray-200">QA Engineer</p><p class="text-xs text-green-400"><span class="pulse-dot inline-block w-2 h-2 bg-green-400 rounded-full mr-1"></span>En línea</p></div>
+</div>
+</div>
+</aside>
+
+<!-- MAIN CONTENT -->
+<main class="flex-1 ml-64">
+<header class="sticky top-0 z-40 bg-gray-900/60 backdrop-blur-lg border-b border-gray-800 px-6 py-3">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-4">
+<h2 class="text-xl font-bold text-white" id="section-title">Dashboard</h2>
+<span id="system-status" class="px-3 py-1 rounded-full text-xs font-medium bg-green-500/20 text-green-400 border border-green-500/30"><i class="fas fa-circle text-[8px] mr-1 pulse-dot"></i>Sistema Activo</span>
+<span id="backend-status" class="px-3 py-1 rounded-full text-xs font-medium bg-gray-500/20 text-gray-400 border border-gray-500/30"><i class="fas fa-circle text-[8px] mr-1"></i>Verificando backend...</span>
+<span id="current-story-badge" class="hidden history-badge"><i class="fas fa-bookmark text-[9px]"></i><span id="current-story-name">-</span></span>
+</div>
+<div class="flex items-center gap-3">
+<button onclick="openCleanModal()" class="px-3 py-1.5 rounded-lg bg-orange-500/20 hover:bg-orange-500/30 border border-orange-500/30 text-orange-400 text-xs transition" title="Limpiar datos selectivamente">
+<i class="fas fa-broom mr-1"></i>Limpiar Datos
+</button>
+<button onclick="refreshAllData()" class="px-3 py-1.5 rounded-lg bg-indigo-500/20 hover:bg-indigo-500/30 border border-indigo-500/30 text-indigo-400 text-xs transition">
+<i class="fas fa-sync-alt mr-1"></i>Actualizar
+</button>
+<div class="h-8 w-px bg-gray-700"></div>
+<span class="text-sm text-gray-400" id="current-time"></span>
+</div>
+</div>
+</header>
+
+<div class="p-6">
+
+<!-- ============ DASHBOARD ============ -->
+<section id="section-dashboard" class="fade-in">
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5 mb-6">
+<div class="card-glow glass rounded-2xl p-5 neon">
+<div class="flex items-center justify-between mb-3"><div class="w-12 h-12 rounded-xl bg-indigo-500/20 flex items-center justify-center"><i class="fas fa-clipboard-list text-indigo-400 text-xl"></i></div><span class="text-xs text-green-400 font-medium"><i class="fas fa-database mr-1"></i>Live</span></div>
+<h3 class="text-3xl font-bold text-white" id="stat-total">0</h3>
+<p class="text-sm text-gray-400 mt-1">Casos de Prueba</p>
+<div class="mt-3 h-1 bg-gray-800 rounded-full overflow-hidden"><div id="bar-total" class="h-full bg-gradient-to-r from-indigo-500 to-purple-500 rounded-full progress-bar" style="width:0%"></div></div>
+</div>
+<div class="card-glow glass rounded-2xl p-5 neon">
+<div class="flex items-center justify-between mb-3"><div class="w-12 h-12 rounded-xl bg-green-500/20 flex items-center justify-center"><i class="fas fa-check-circle text-green-400 text-xl"></i></div><span class="text-xs text-green-400 font-medium"><i class="fas fa-database mr-1"></i>Live</span></div>
+<h3 class="text-3xl font-bold text-white" id="stat-pass-rate">0%</h3>
+<p class="text-sm text-gray-400 mt-1">Tasa de Éxito</p>
+<div class="mt-3 h-1 bg-gray-800 rounded-full overflow-hidden"><div id="bar-pass" class="h-full bg-gradient-to-r from-green-500 to-emerald-500 rounded-full progress-bar" style="width:0%"></div></div>
+</div>
+<div class="card-glow glass rounded-2xl p-5 neon">
+<div class="flex items-center justify-between mb-3"><div class="w-12 h-12 rounded-xl bg-yellow-500/20 flex items-center justify-center"><i class="fas fa-robot text-yellow-400 text-xl"></i></div><span class="text-xs text-green-400 font-medium"><i class="fas fa-database mr-1"></i>Live</span></div>
+<h3 class="text-3xl font-bold text-white" id="stat-ai-generated">0</h3>
+<p class="text-sm text-gray-400 mt-1">Generados por IA</p>
+<div class="mt-3 h-1 bg-gray-800 rounded-full overflow-hidden"><div id="bar-ai" class="h-full bg-gradient-to-r from-yellow-500 to-orange-500 rounded-full progress-bar" style="width:0%"></div></div>
+</div>
+<div class="card-glow glass rounded-2xl p-5 neon">
+<div class="flex items-center justify-between mb-3"><div class="w-12 h-12 rounded-xl bg-red-500/20 flex items-center justify-center"><i class="fas fa-bug text-red-400 text-xl"></i></div><span class="text-xs text-red-400 font-medium"><i class="fas fa-database mr-1"></i>Live</span></div>
+<h3 class="text-3xl font-bold text-white" id="stat-bugs">0</h3>
+<p class="text-sm text-gray-400 mt-1">Bugs Detectados</p>
+<div class="mt-3 h-1 bg-gray-800 rounded-full overflow-hidden"><div id="bar-bugs" class="h-full bg-gradient-to-r from-red-500 to-pink-500 rounded-full progress-bar" style="width:0%"></div></div>
+</div>
+</div>
+
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-5 mb-6">
+<div class="lg:col-span-2 card-glow glass rounded-2xl p-5 neon">
+<div class="flex items-center justify-between mb-4"><h3 class="text-lg font-semibold text-white">Resultados - Últimos 7 días</h3></div>
+<canvas id="testsChart" height="200"></canvas>
+</div>
+<div class="card-glow glass rounded-2xl p-5 neon">
+<h3 class="text-lg font-semibold text-white mb-4">Distribución por Tipo</h3>
+<canvas id="distributionChart" height="200"></canvas>
+<div class="mt-4 space-y-2">
+<div class="flex items-center justify-between text-sm"><span class="flex items-center gap-2"><span class="w-3 h-3 rounded-full bg-indigo-500"></span>Funcional</span><span class="text-gray-400" id="dist-functional">0%</span></div>
+<div class="flex items-center justify-between text-sm"><span class="flex items-center gap-2"><span class="w-3 h-3 rounded-full bg-purple-500"></span>UI/UX</span><span class="text-gray-400" id="dist-ui">0%</span></div>
+<div class="flex items-center justify-between text-sm"><span class="flex items-center gap-2"><span class="w-3 h-3 rounded-full bg-cyan-500"></span>API</span><span class="text-gray-400" id="dist-api">0%</span></div>
+<div class="flex items-center justify-between text-sm"><span class="flex items-center gap-2"><span class="w-3 h-3 rounded-full bg-pink-500"></span>Rendimiento</span><span class="text-gray-400" id="dist-perf">0%</span></div>
+</div>
+</div>
+</div>
+
+<div class="grid grid-cols-1 lg:grid-cols-2 gap-5">
+<div class="card-glow glass rounded-2xl p-5 neon">
+<h3 class="text-lg font-semibold text-white mb-4"><i class="fas fa-history text-indigo-400 mr-2"></i>Actividad Reciente</h3>
+<div class="space-y-3" id="activity-feed">
+<div class="text-center py-8 text-gray-500"><i class="fas fa-inbox text-3xl mb-3 text-gray-600"></i><p class="text-sm">Cargando actividad...</p></div>
+</div>
+</div>
+<div class="card-glow glass rounded-2xl p-5 neon">
+<h3 class="text-lg font-semibold text-white mb-4"><i class="fas fa-running text-green-400 mr-2"></i>Últimas Ejecuciones</h3>
+<div class="space-y-3" id="recent-executions">
+<div class="text-center py-8 text-gray-500"><i class="fas fa-hourglass-start text-3xl mb-3 text-gray-600"></i><p class="text-sm">Cargando ejecuciones...</p></div>
+</div>
+</div>
+</div>
+</section>
+
+<!-- ============ AI GENERATOR ============ -->
+<section id="section-ai-generator" class="hidden fade-in">
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-5">
+<div class="lg:col-span-2 space-y-5">
+<div class="card-glow glass rounded-2xl p-6 neon">
+<div class="flex items-center justify-between mb-4">
+<h3 class="text-lg font-semibold text-white"><i class="fas fa-robot text-purple-400 mr-2"></i>Generador IA de Casos de Prueba</h3>
+<span id="current-story-tag" class="hidden history-badge"><i class="fas fa-bookmark text-[9px]"></i><span id="current-story-tag-name">-</span></span>
+</div>
+<div class="space-y-4">
+<div><label class="block text-sm text-gray-400 mb-2">User Story / Requerimiento</label>
+<textarea id="user-story-input" class="w-full bg-gray-800/80 border border-gray-700 rounded-xl p-4 text-sm text-gray-200 focus:border-indigo-500 outline-none resize-none" rows="3" placeholder="Ej: Como usuario quiero iniciar sesión con mi correo y contraseña..."></textarea></div>
+<div class="grid grid-cols-2 gap-4">
+<div><label class="block text-sm text-gray-400 mb-2">Plataforma</label>
+<select id="platform-select" class="w-full bg-gray-800/80 border border-gray-700 rounded-xl p-3 text-sm text-gray-200 outline-none">
+<option value="mobile"> Mobile</option>
+<option value="web">🌐 Web</option>
+<option value="api">🔌 API</option></select></div>
+<div><label class="block text-sm text-gray-400 mb-2">Tipo de Prueba</label>
+<select id="test-type-select" class="w-full bg-gray-800/80 border border-gray-700 rounded-xl p-3 text-sm text-gray-200 outline-none">
+<option value="functional">✅ Funcional</option>
+<option value="api">🔌 API</option>
+<option value="security">🔒 Seguridad</option>
+<option value="ui">🎨 UI/UX</option>
+<option value="performance">⚡ Performance</option></select></div>
+</div>
+<div class="flex gap-3">
+<button onclick="generateTestCases()" id="generate-btn" class="flex-1 bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-500 hover:to-purple-500 text-white font-medium py-3 rounded-xl transition flex items-center justify-center gap-2"><i class="fas fa-magic"></i>Generar Casos con IA</button>
+<button onclick="saveCurrentStory()" class="px-5 py-3 bg-green-600 hover:bg-green-500 text-white rounded-xl transition flex items-center gap-2" title="Guardar historia actual y crear una nueva"><i class="fas fa-plus-circle"></i>Nueva Historia</button>
+</div>
+<p class="text-xs text-gray-500"><i class="fas fa-info-circle mr-1"></i>La IA analiza tu User Story y genera casos específicos según el contexto.</p>
+</div>
+</div>
+<div id="generation-progress" class="hidden card-glow glass rounded-2xl p-6 neon">
+<div class="flex items-center gap-3 mb-4">
+<div class="w-10 h-10 rounded-xl bg-purple-500/20 flex items-center justify-center"><i class="fas fa-brain text-purple-400 animate-pulse"></i></div>
+<div><h4 class="text-white font-medium">IA Procesando...</h4><p class="text-xs text-gray-400" id="generation-status">Analizando...</p></div>
+</div>
+<div class="mt-3 h-2 bg-gray-800 rounded-full overflow-hidden"><div id="generation-bar" class="h-full bg-gradient-to-r from-purple-500 to-indigo-500 rounded-full progress-bar" style="width:0%"></div></div>
+</div>
+<!-- Historial de historias -->
+<div class="card-glow glass rounded-2xl p-5 neon">
+<div class="flex items-center justify-between mb-3">
+<h3 class="text-md font-semibold text-white"><i class="fas fa-history text-indigo-400 mr-2"></i>Historias Trabajadas</h3>
+<button onclick="clearStoriesHistory()" class="text-xs text-gray-400 hover:text-red-400 transition"><i class="fas fa-trash mr-1"></i>Limpiar historial</button>
+</div>
+<div id="stories-history" class="space-y-2 max-h-64 overflow-y-auto">
+<div class="text-center py-6 text-gray-500 text-xs"><i class="fas fa-book-open text-2xl mb-2 text-gray-600"></i><p>Sin historias guardadas aún</p></div>
+</div>
+</div>
+</div>
+<!-- Casos de prueba -->
+<div class="card-glow glass rounded-2xl p-5 neon">
+<div class="flex items-center justify-between mb-4">
+<h3 class="text-lg font-semibold text-white"><i class="fas fa-list-check text-green-400 mr-2"></i>Casos generados</h3>
+<span class="text-sm text-gray-400" id="cases-count">0 casos</span>
+</div>
+<div id="generated-results" class="space-y-3 max-h-[600px] overflow-y-auto pr-2">
+<div class="text-center py-12 text-gray-500"><i class="fas fa-flask text-4xl mb-3 text-gray-600"></i><p class="text-sm">Genera casos con IA</p></div>
+</div>
+<!-- Botón "Agregar a Suite" -->
+<div id="add-to-suite-section" class="hidden mt-4 pt-4 border-t border-gray-700">
+<button onclick="addToTestSuite()" id="btn-add-suite" class="w-full bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-500 hover:to-emerald-500 text-white font-medium py-3 rounded-xl transition flex items-center justify-center gap-2">
+<i class="fas fa-plus-circle"></i>Agregar Casos a la Suite de Pruebas (Guardar en BD)
+</button>
+<p class="text-xs text-gray-500 text-center mt-2"><i class="fas fa-info-circle mr-1"></i>Los casos generados se guardarán en PostgreSQL</p>
+</div>
+</div>
+</div>
+</section>
+
+<!-- ============ TEST EXECUTOR ============ -->
+<section id="section-test-executor" class="hidden fade-in">
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-5">
+<div class="lg:col-span-2 space-y-5">
+<div class="card-glow glass rounded-2xl p-6 neon">
+<div class="flex items-center justify-between mb-4">
+<h3 class="text-lg font-semibold text-white"><i class="fas fa-play-circle text-green-400 mr-2"></i>Ejecutor de Pruebas</h3>
+<span class="px-3 py-1 rounded-full text-xs bg-indigo-500/20 text-indigo-400 border border-indigo-500/30"><i class="fas fa-database mr-1"></i><span id="available-tests-count">0</span> casos en BD</span>
+</div>
+<div class="space-y-4">
+<div><label class="block text-sm text-gray-400 mb-2">Suite de Pruebas</label>
+<select id="test-suite-select" class="w-full bg-gray-800/80 border border-gray-700 rounded-xl p-3 text-sm text-gray-200 outline-none">
+<option value="all">📋 Todos los casos</option>
+<option value="high">🔴 Solo prioridad Alta/Crítica</option>
+<option value="manual">✋ Solo casos manuales</option>
+<option value="ai">🤖 Solo generados por IA</option>
+</select></div>
+<div class="grid grid-cols-2 gap-4">
+<div><label class="block text-sm text-gray-400 mb-2">Dispositivo</label>
+<select class="w-full bg-gray-800/80 border border-gray-700 rounded-xl p-3 text-sm text-gray-200 outline-none"><option>📱 Todos</option><option>🤖 Galaxy S24</option><option>🍎 iPhone 15 Pro</option></select></div>
+<div><label class="block text-sm text-gray-400 mb-2">Entorno</label>
+<select id="environment-select" class="w-full bg-gray-800/80 border border-gray-700 rounded-xl p-3 text-sm text-gray-200 outline-none"><option value="staging">🟡 Staging</option><option value="development">🔵 Development</option><option value="production">🟢 Production</option></select></div>
+</div>
+<button onclick="executeTests()" id="execute-btn" class="w-full bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-500 hover:to-emerald-500 text-white font-medium py-3 rounded-xl transition flex items-center justify-center gap-2"><i class="fas fa-play"></i>Ejecutar Pruebas</button>
+</div>
+</div>
+<div id="execution-console" class="hidden card-glow glass rounded-2xl p-5 neon">
+<div class="flex items-center justify-between mb-3">
+<h4 class="text-white font-medium flex items-center gap-2"><i class="fas fa-terminal text-green-400"></i>Consola en Vivo</h4>
+<span class="text-xs text-green-400" id="exec-status"><span class="w-2 h-2 rounded-full bg-green-400 pulse-dot inline-block mr-1"></span>Ejecutando...</span>
+</div>
+<div id="console-output" class="bg-gray-900 rounded-xl p-4 h-64 overflow-y-auto space-y-1"></div>
+<div class="mt-3 flex items-center gap-4">
+<div class="flex-1 h-2 bg-gray-800 rounded-full overflow-hidden"><div id="exec-bar" class="h-full bg-gradient-to-r from-green-500 to-emerald-400 rounded-full progress-bar" style="width:0%"></div></div>
+<span class="text-sm text-gray-400" id="exec-progress">0%</span>
+</div>
+</div>
+</div>
+<div class="card-glow glass rounded-2xl p-5 neon">
+<h3 class="text-lg font-semibold text-white mb-4"><i class="fas fa-chart-pie text-cyan-400 mr-2"></i>Resultados en Vivo</h3>
+<div id="live-results"><div class="text-center py-8 text-gray-500"><i class="fas fa-hourglass-start text-3xl mb-3 text-gray-600"></i><p class="text-sm">Inicia una ejecución</p></div></div>
+</div>
+</div>
+</section>
+
+<!-- ============ TEST CASES ============ -->
+<section id="section-test-cases" class="hidden fade-in">
+<div class="card-glow glass rounded-2xl p-6 neon">
+<div class="flex items-center justify-between mb-5 flex-wrap gap-3">
+<h3 class="text-lg font-semibold text-white"><i class="fas fa-clipboard-check text-yellow-400 mr-2"></i>Casos de Prueba</h3>
+<div class="flex gap-3">
+<button onclick="openCreateManualModal()" class="px-3 py-1.5 rounded-lg bg-green-500/20 hover:bg-green-500/30 border border-green-500/30 text-green-400 text-xs transition"><i class="fas fa-plus mr-1"></i>Nuevo Manual</button>
+<div class="relative"><input type="text" id="search-cases" class="bg-gray-800/80 border border-gray-700 rounded-xl pl-10 pr-4 py-2 text-sm text-gray-200 outline-none w-56" placeholder="Buscar..." oninput="filterTestCases()"><i class="fas fa-search absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 text-sm"></i></div>
+<select id="filter-status" class="bg-gray-800/80 border border-gray-700 rounded-xl px-3 py-2 text-sm text-gray-200 outline-none" onchange="filterTestCases()"><option value="all">Todos</option><option value="manual">✋ Manuales</option><option value="ai">🤖 IA</option></select>
+<button onclick="refreshAllData()" class="px-4 py-2 bg-gray-800 hover:bg-gray-700 text-gray-300 rounded-xl transition text-sm flex items-center gap-2"><i class="fas fa-sync-alt"></i>Refrescar</button>
+</div>
+</div>
+<div id="test-cases-list" class="space-y-3"></div>
+</div>
+</section>
+
+<!-- ============ REPORTS ============ -->
+<section id="section-reports" class="hidden fade-in">
+<div class="grid grid-cols-1 lg:grid-cols-2 gap-5 mb-5">
+<div class="card-glow glass rounded-2xl p-5 neon"><h3 class="text-lg font-semibold text-white mb-4"><i class="fas fa-chart-area text-cyan-400 mr-2"></i>Tendencia de Cobertura</h3><canvas id="coverageTrendChart" height="200"></canvas></div>
+<div class="card-glow glass rounded-2xl p-5 neon"><h3 class="text-lg font-semibold text-white mb-4"><i class="fas fa-bug text-red-400 mr-2"></i>Bugs por Severidad</h3><canvas id="bugsChart" height="200"></canvas></div>
+</div>
+<div class="card-glow glass rounded-2xl p-5 neon">
+<div class="flex items-center justify-between mb-4">
+<h3 class="text-lg font-semibold text-white"><i class="fas fa-file-alt text-indigo-400 mr-2"></i>Reportes Generados</h3>
+<button onclick="cleanReportsData()" class="px-3 py-1.5 rounded-lg bg-orange-500/20 hover:bg-orange-500/30 border border-orange-500/30 text-orange-400 text-xs transition"><i class="fas fa-broom mr-1"></i>Limpiar Reportes</button>
+</div>
+<div class="overflow-x-auto">
+<table class="w-full text-sm">
+<thead><tr class="border-b border-gray-800"><th class="text-left py-3 px-4 text-gray-400 font-medium">Reporte</th><th class="text-left py-3 px-4 text-gray-400 font-medium">Tipo</th><th class="text-left py-3 px-4 text-gray-400 font-medium">Fecha</th><th class="text-left py-3 px-4 text-gray-400 font-medium">Tests</th><th class="text-left py-3 px-4 text-gray-400 font-medium">Pass Rate</th></tr></thead>
+<tbody id="reports-table"></tbody>
+</table>
+</div>
+</div>
+</section>
+
+<!-- ============ COVERAGE ============ -->
+<section id="section-coverage" class="hidden fade-in">
+<div class="grid grid-cols-1 md:grid-cols-3 gap-5 mb-5">
+<div class="card-glow glass rounded-2xl p-5 neon text-center"><div class="relative inline-block"><canvas id="gauge1" width="150" height="150"></canvas><div class="absolute inset-0 flex items-center justify-center"><span class="text-2xl font-bold text-white" id="gauge1-value">0%</span></div></div><h4 class="text-white font-medium mt-3">Casos Manuales</h4><p class="text-xs text-gray-400 mt-1" id="gauge1-detail">0 casos</p></div>
+<div class="card-glow glass rounded-2xl p-5 neon text-center"><div class="relative inline-block"><canvas id="gauge2" width="150" height="150"></canvas><div class="absolute inset-0 flex items-center justify-center"><span class="text-2xl font-bold text-white" id="gauge2-value">0%</span></div></div><h4 class="text-white font-medium mt-3">Casos IA</h4><p class="text-xs text-gray-400 mt-1" id="gauge2-detail">0 casos</p></div>
+<div class="card-glow glass rounded-2xl p-5 neon text-center"><div class="relative inline-block"><canvas id="gauge3" width="150" height="150"></canvas><div class="absolute inset-0 flex items-center justify-center"><span class="text-2xl font-bold text-white" id="gauge3-value">0%</span></div></div><h4 class="text-white font-medium mt-3">Tasa de Éxito</h4><p class="text-xs text-gray-400 mt-1" id="gauge3-detail">0 ejecuciones</p></div>
+</div>
+<div class="card-glow glass rounded-2xl p-5 neon">
+<div class="flex items-center justify-between mb-4">
+<h3 class="text-lg font-semibold text-white"><i class="fas fa-layer-group text-pink-400 mr-2"></i>Cobertura por Módulo</h3>
+<button onclick="cleanCoverageData()" class="px-3 py-1.5 rounded-lg bg-orange-500/20 hover:bg-orange-500/30 border border-orange-500/30 text-orange-400 text-xs transition"><i class="fas fa-broom mr-1"></i>Limpiar Cobertura</button>
+</div>
+<div class="space-y-4" id="module-coverage"></div>
+</div>
+</section>
+
+<!-- ============ SECURITY ============ -->
+<section id="section-security" class="hidden fade-in">
+<div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-5">
+<div class="card-glow glass rounded-xl p-4 neon text-center"><p class="text-2xl font-bold text-green-400">✓</p><p class="text-xs text-gray-400 mt-1">Backend Seguro</p></div>
+<div class="card-glow glass rounded-xl p-4 neon text-center"><p class="text-2xl font-bold text-cyan-400">PostgreSQL</p><p class="text-xs text-gray-400 mt-1">Base de Datos</p></div>
+<div class="card-glow glass rounded-xl p-4 neon text-center"><p class="text-2xl font-bold text-purple-400">Docker</p><p class="text-xs text-gray-400 mt-1">Contenedores</p></div>
+<div class="card-glow glass rounded-xl p-4 neon text-center"><p class="text-2xl font-bold text-indigo-400">FastAPI</p><p class="text-xs text-gray-400 mt-1">API Framework</p></div>
+</div>
+<div class="card-glow glass rounded-2xl p-5 neon">
+<div class="flex items-center justify-between mb-4">
+<h3 class="text-lg font-semibold text-white"><i class="fas fa-mask text-cyan-400 mr-2"></i>Motor de Enmascaramiento</h3>
+<span class="px-3 py-1 rounded-full text-xs bg-yellow-500/20 text-yellow-400 border border-yellow-500/30"><i class="fas fa-flask mr-1"></i>Demo</span>
+</div>
+<div class="space-y-4">
+<div><div class="flex justify-between text-sm mb-1"><span class="text-gray-400">Email</span><span class="text-green-400">format_preserve</span></div><div class="bg-gray-800 rounded-lg p-3 mono text-xs"><span class="text-gray-500">Original:</span> <span class="text-red-400 line-through">juan.perez@gmail.com</span><br><span class="text-gray-500">Masked:</span> <span class="text-green-400">ju****ez@a***l.com</span></div></div>
+<div><div class="flex justify-between text-sm mb-1"><span class="text-gray-400">Tarjeta</span><span class="text-green-400">partial_mask</span></div><div class="bg-gray-800 rounded-lg p-3 mono text-xs"><span class="text-gray-500">Original:</span> <span class="text-red-400 line-through">4532-1234-5678-9012</span><br><span class="text-gray-500">Masked:</span> <span class="text-green-400">45**********9012</span></div></div>
+</div>
+</div>
+</section>
+
+<!-- ============ JIRA ============ -->
+<section id="section-jira" class="hidden fade-in">
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-5">
+<div class="lg:col-span-2 card-glow glass rounded-2xl p-6 neon">
+<div class="flex items-center justify-between mb-4">
+<h3 class="text-lg font-semibold text-white"><i class="fab fa-jira text-blue-400 mr-2"></i>Integración Jira</h3>
+<span class="px-3 py-1 rounded-full text-xs bg-yellow-500/20 text-yellow-400 border border-yellow-500/30"><i class="fas fa-flask mr-1"></i>Demo Mode</span>
+</div>
+<div class="grid grid-cols-3 gap-4 mb-5">
+<div class="bg-gray-800/50 rounded-xl p-4 text-center"><p class="text-2xl font-bold text-blue-400">48</p><p class="text-xs text-gray-400">Tickets Sync</p></div>
+<div class="bg-gray-800/50 rounded-xl p-4 text-center"><p class="text-2xl font-bold text-green-400">12</p><p class="text-xs text-gray-400">Bugs Creados</p></div>
+<div class="bg-gray-800/50 rounded-xl p-4 text-center"><p class="text-2xl font-bold text-purple-400">8</p><p class="text-xs text-gray-400">Stories Linked</p></div>
+</div>
+<div class="space-y-3" id="jira-tickets"></div>
+</div>
+<div class="card-glow glass rounded-2xl p-5 neon">
+<h3 class="text-lg font-semibold text-white mb-4"><i class="fas fa-sync text-green-400 mr-2"></i>Automatización</h3>
+<div class="space-y-4">
+<div class="flex items-center justify-between p-3 bg-gray-800/50 rounded-xl"><div><p class="text-sm text-gray-200">Auto-sync</p><p class="text-xs text-gray-400">Cada 5 min</p></div><label class="relative inline-flex items-center cursor-pointer"><input type="checkbox" checked class="sr-only peer"><div class="w-11 h-6 bg-gray-700 rounded-full peer peer-checked:after:translate-x-full after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-indigo-600"></div></label></div>
+<div class="flex items-center justify-between p-3 bg-gray-800/50 rounded-xl"><div><p class="text-sm text-gray-200">Crear bugs auto</p><p class="text-xs text-gray-400">Al detectar fallos</p></div><label class="relative inline-flex items-center cursor-pointer"><input type="checkbox" checked class="sr-only peer"><div class="w-11 h-6 bg-gray-700 rounded-full peer peer-checked:after:translate-x-full after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-indigo-600"></div></label></div>
+<button onclick="syncJira()" class="w-full bg-blue-600 hover:bg-blue-500 text-white py-2.5 rounded-xl transition text-sm flex items-center justify-center gap-2"><i class="fas fa-sync-alt"></i>Sincronizar Ahora</button>
+</div>
+</div>
+</div>
+</section>
+
+<!-- ============ DEVICES ============ -->
+<section id="section-devices" class="hidden fade-in">
+<div class="flex items-center justify-between mb-5">
+<h3 class="text-lg font-semibold text-white"><i class="fas fa-tablet-alt text-orange-400 mr-2"></i>Dispositivos Conectados</h3>
+<span class="px-3 py-1 rounded-full text-xs bg-yellow-500/20 text-yellow-400 border border-yellow-500/30"><i class="fas fa-flask mr-1"></i>Demo Mode</span>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5" id="devices-grid"></div>
+</section>
+
+<!-- ============ PIPELINE ============ -->
+<section id="section-pipeline" class="hidden fade-in">
+<div class="card-glow glass rounded-2xl p-6 neon">
+<div class="flex items-center justify-between mb-5">
+<h3 class="text-lg font-semibold text-white"><i class="fas fa-code-branch text-blue-400 mr-2"></i>Pipeline DevSecOps CI/CD</h3>
+<span class="px-3 py-1 rounded-full text-xs bg-yellow-500/20 text-yellow-400 border border-yellow-500/30"><i class="fas fa-flask mr-1"></i>Demo</span>
+</div>
+<div class="flex items-center justify-between overflow-x-auto pb-4 gap-2">
+<div class="flex-shrink-0 bg-green-500/10 border border-green-500/30 rounded-xl p-3 text-center min-w-[110px]"><i class="fas fa-code-commit text-green-400 text-xl mb-2"></i><p class="text-xs text-gray-200 font-medium">Commit</p><p class="text-[10px] text-green-400 mt-1">✓ OK</p></div>
+<div class="flex-shrink-0 bg-green-500/10 border border-green-500/30 rounded-xl p-3 text-center min-w-[110px]"><i class="fas fa-search text-green-400 text-xl mb-2"></i><p class="text-xs text-gray-200 font-medium">SAST</p><p class="text-[10px] text-green-400 mt-1">✓ 0 issues</p></div>
+<div class="flex-shrink-0 bg-green-500/10 border border-green-500/30 rounded-xl p-3 text-center min-w-[110px]"><i class="fas fa-shield-alt text-green-400 text-xl mb-2"></i><p class="text-xs text-gray-200 font-medium">Security</p><p class="text-[10px] text-green-400 mt-1">✓ OK</p></div>
+<div class="flex-shrink-0 bg-green-500/10 border border-green-500/30 rounded-xl p-3 text-center min-w-[110px]"><i class="fas fa-vial text-green-400 text-xl mb-2"></i><p class="text-xs text-gray-200 font-medium">Unit Tests</p><p class="text-[10px] text-green-400 mt-1">✓ 342/342</p></div>
+<div class="flex-shrink-0 bg-purple-500/10 border border-purple-500/30 rounded-xl p-3 text-center min-w-[110px]"><i class="fas fa-robot text-purple-400 text-xl mb-2 animate-pulse"></i><p class="text-xs text-gray-200 font-medium">AI Gen</p><p class="text-[10px] text-purple-400 mt-1">⟳ Running</p></div>
+<div class="flex-shrink-0 bg-gray-800/50 border border-gray-700 rounded-xl p-3 text-center min-w-[110px]"><i class="fas fa-tasks text-gray-500 text-xl mb-2"></i><p class="text-xs text-gray-400 font-medium">Integration</p><p class="text-[10px] text-gray-500 mt-1">Pending</p></div>
+<div class="flex-shrink-0 bg-gray-800/50 border border-gray-700 rounded-xl p-3 text-center min-w-[110px]"><i class="fas fa-desktop text-gray-500 text-xl mb-2"></i><p class="text-xs text-gray-400 font-medium">E2E Tests</p><p class="text-[10px] text-gray-500 mt-1">Pending</p></div>
+<div class="flex-shrink-0 bg-gray-800/50 border border-gray-700 rounded-xl p-3 text-center min-w-[110px]"><i class="fas fa-rocket text-gray-500 text-xl mb-2"></i><p class="text-xs text-gray-400 font-medium">Deploy</p><p class="text-[10px] text-gray-500 mt-1">Pending</p></div>
+</div>
+</div>
+</section>
+
+<!-- ============ SETTINGS ============ -->
+<section id="section-settings" class="hidden fade-in">
+<div class="grid grid-cols-1 lg:grid-cols-2 gap-5">
+<div class="card-glow glass rounded-2xl p-6 neon">
+<h3 class="text-lg font-semibold text-white mb-4"><i class="fas fa-key text-yellow-400 mr-2"></i>API Keys</h3>
+<div class="space-y-4">
+<div><label class="block text-sm text-gray-400 mb-2">OpenAI API Key</label><input type="password" class="w-full bg-gray-800/80 border border-gray-700 rounded-xl p-3 text-sm text-gray-200 outline-none" placeholder="sk-..."></div>
+<div><label class="block text-sm text-gray-400 mb-2">Jira API Token</label><input type="password" class="w-full bg-gray-800/80 border border-gray-700 rounded-xl p-3 text-sm text-gray-200 outline-none" placeholder="jira-..."></div>
+<button onclick="saveSettings()" class="w-full bg-gradient-to-r from-indigo-600 to-purple-600 text-white font-medium py-3 rounded-xl transition"><i class="fas fa-save mr-2"></i>Guardar</button>
+</div>
+</div>
+<div class="card-glow glass rounded-2xl p-6 neon">
+<h3 class="text-lg font-semibold text-white mb-4"><i class="fas fa-sliders-h text-cyan-400 mr-2"></i>Configuración de Pruebas</h3>
+<div class="space-y-4">
+<div><label class="block text-sm text-gray-400 mb-2">Timeout (seg)</label><input type="number" class="w-full bg-gray-800/80 border border-gray-700 rounded-xl p-3 text-sm text-gray-200 outline-none" value="30"></div>
+<div><label class="block text-sm text-gray-400 mb-2">Reintentos</label><input type="number" class="w-full bg-gray-800/80 border border-gray-700 rounded-xl p-3 text-sm text-gray-200 outline-none" value="2"></div>
+<div><label class="block text-sm text-gray-400 mb-2">Parallel Threads</label><input type="number" class="w-full bg-gray-800/80 border border-gray-700 rounded-xl p-3 text-sm text-gray-200 outline-none" value="4"></div>
+<div>
+<label class="block text-sm text-gray-400 mb-2">Framework de Testing</label>
+<select id="framework-select" class="w-full bg-gray-800/80 border border-gray-700 rounded-xl p-3 text-sm text-gray-200 outline-none">
+<option value="appium">🤖 Appium</option>
+<option value="detox"> Detox</option>
+<option value="maestro">🎯 Maestro</option>
+<option value="playwright">🎭 Playwright Mobile</option>
+<option value="xcuitest">🍎 XCUITest (iOS)</option>
+<option value="espresso">☕ Espresso (Android)</option>
+</select>
+</div>
+</div>
+</div>
+</div>
+</section>
+
+</div>
+</main>
+</div>
+
+<!-- ============ MODAL: LIMPIEZA SELECTIVA ============ -->
+<div id="modal-clean" class="hidden fixed inset-0 z-[100] flex items-center justify-center modal-overlay">
+<div class="glass rounded-2xl p-6 neon w-full max-w-2xl mx-4 max-h-[90vh] overflow-y-auto">
+<div class="flex items-center justify-between mb-4">
+<h3 class="text-lg font-semibold text-white"><i class="fas fa-broom text-orange-400 mr-2"></i>Limpiar Datos Selectivamente</h3>
+<button onclick="closeModal('modal-clean')" class="text-gray-400 hover:text-white"><i class="fas fa-times text-xl"></i></button>
+</div>
+<p class="text-sm text-gray-400 mb-4">Selecciona qué datos quieres borrar.</p>
+<div class="space-y-2 mb-5">
+<div class="clean-option flex items-center gap-3 p-4 rounded-xl bg-gray-800/50" onclick="toggleCleanOption(this, 'cases')">
+<input type="checkbox" id="chk-clean-cases" class="w-5 h-5 rounded bg-gray-700 border-gray-600 text-red-500 focus:ring-red-500">
+<div class="flex-1"><p class="text-sm text-gray-200 font-medium">📋 Casos de Prueba (Backend)</p><p class="text-xs text-gray-500">Borra todos los casos de PostgreSQL</p></div>
+<span class="text-xs text-indigo-400" id="count-cases">0 casos</span>
+</div>
+<div class="clean-option flex items-center gap-3 p-4 rounded-xl bg-gray-800/50" onclick="toggleCleanOption(this, 'executions')">
+<input type="checkbox" id="chk-clean-executions" class="w-5 h-5 rounded bg-gray-700 border-gray-600 text-red-500 focus:ring-red-500">
+<div class="flex-1"><p class="text-sm text-gray-200 font-medium">▶️ Ejecuciones (Backend)</p><p class="text-xs text-gray-500">Borra historial de ejecuciones</p></div>
+<span class="text-xs text-indigo-400" id="count-executions">0 ejecuciones</span>
+</div>
+<div class="clean-option flex items-center gap-3 p-4 rounded-xl bg-gray-800/50" onclick="toggleCleanOption(this, 'stories')">
+<input type="checkbox" id="chk-clean-stories" class="w-5 h-5 rounded bg-gray-700 border-gray-600 text-red-500 focus:ring-red-500">
+<div class="flex-1"><p class="text-sm text-gray-200 font-medium">📖 Historias de Usuario</p><p class="text-xs text-gray-500">Borra el historial de historias (frontend)</p></div>
+<span class="text-xs text-indigo-400" id="count-stories">0 historias</span>
+</div>
+<div class="clean-option flex items-center gap-3 p-4 rounded-xl bg-gray-800/50" onclick="toggleCleanOption(this, 'reports')">
+<input type="checkbox" id="chk-clean-reports" class="w-5 h-5 rounded bg-gray-700 border-gray-600 text-red-500 focus:ring-red-500">
+<div class="flex-1"><p class="text-sm text-gray-200 font-medium">📊 Reportes Demo</p><p class="text-xs text-gray-500">Borra reportes de demostración</p></div>
+</div>
+</div>
+<div class="flex items-center gap-3 p-3 rounded-xl bg-red-500/10 border border-red-500/30 mb-4">
+<i class="fas fa-exclamation-triangle text-red-400"></i>
+<p class="text-xs text-red-300">Esta acción no se puede deshacer.</p>
+</div>
+<div class="flex gap-3">
+<button onclick="executeSelectiveClean()" class="flex-1 bg-gradient-to-r from-red-600 to-orange-600 hover:from-red-500 hover:to-orange-500 text-white font-medium py-3 rounded-xl transition"><i class="fas fa-trash-alt mr-2"></i>Borrar Seleccionados</button>
+<button onclick="closeModal('modal-clean')" class="px-6 py-3 bg-gray-800 hover:bg-gray-700 text-gray-300 rounded-xl transition">Cancelar</button>
+</div>
+</div>
+</div>
+
+<!-- ============ MODAL: CREAR CASO MANUAL ============ -->
+<div id="modal-create-manual" class="hidden fixed inset-0 z-[100] flex items-center justify-center modal-overlay">
+<div class="glass rounded-2xl p-6 neon w-full max-w-2xl mx-4 max-h-[90vh] overflow-y-auto">
+<div class="flex items-center justify-between mb-4">
+<h3 class="text-lg font-semibold text-white"><i class="fas fa-plus-circle text-green-400 mr-2"></i>Crear Caso de Prueba Manual</h3>
+<button onclick="closeModal('modal-create-manual')" class="text-gray-400 hover:text-white"><i class="fas fa-times text-xl"></i></button>
+</div>
+<div class="space-y-4">
+<div class="grid grid-cols-2 gap-4">
+<div><label class="block text-sm text-gray-400 mb-2">Título del caso *</label><input type="text" id="manual-title" class="w-full bg-gray-800/80 border border-gray-700 rounded-xl p-3 text-sm text-gray-200 outline-none" placeholder="Ej: Verificar login con credenciales válidas"></div>
+<div><label class="block text-sm text-gray-400 mb-2">Descripción *</label><input type="text" id="manual-description" class="w-full bg-gray-800/80 border border-gray-700 rounded-xl p-3 text-sm text-gray-200 outline-none" placeholder="Ej: Validar que el usuario pueda iniciar sesión"></div>
+</div>
+<div><label class="block text-sm text-gray-400 mb-2">Pasos (uno por línea) *</label><textarea id="manual-steps" rows="4" class="w-full bg-gray-800/80 border border-gray-700 rounded-xl p-3 text-sm text-gray-200 outline-none resize-none" placeholder="Paso 1: Abrir la aplicación&#10;Paso 2: Navegar al login&#10;Paso 3: Ingresar credenciales"></textarea></div>
+<div><label class="block text-sm text-gray-400 mb-2">Resultado esperado *</label><input type="text" id="manual-expected" class="w-full bg-gray-800/80 border border-gray-700 rounded-xl p-3 text-sm text-gray-200 outline-none" placeholder="Ej: El usuario inicia sesión exitosamente"></div>
+<div class="grid grid-cols-3 gap-4">
+<div><label class="block text-sm text-gray-400 mb-2">Prioridad</label><select id="manual-priority" class="w-full bg-gray-800/80 border border-gray-700 rounded-xl p-3 text-sm text-gray-200 outline-none"><option value="high">Alta</option><option value="medium" selected>Media</option><option value="low">Baja</option></select></div>
+<div><label class="block text-sm text-gray-400 mb-2">Plataforma</label><select id="manual-platform" class="w-full bg-gray-800/80 border border-gray-700 rounded-xl p-3 text-sm text-gray-200 outline-none"><option value="mobile">Mobile</option><option value="web">Web</option><option value="api">API</option></select></div>
+<div><label class="block text-sm text-gray-400 mb-2">Tipo</label><select id="manual-type" class="w-full bg-gray-800/80 border border-gray-700 rounded-xl p-3 text-sm text-gray-200 outline-none"><option value="functional">Funcional</option><option value="performance">Performance</option><option value="security">Seguridad</option></select></div>
+</div>
+<div class="flex gap-3 pt-2">
+<button onclick="createManualTestCase()" id="btn-create-manual" class="flex-1 bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-500 hover:to-emerald-500 text-white font-medium py-3 rounded-xl transition"><i class="fas fa-plus mr-2"></i>Crear Caso</button>
+<button onclick="closeModal('modal-create-manual')" class="px-6 py-3 bg-gray-800 hover:bg-gray-700 text-gray-300 rounded-xl transition">Cancelar</button>
+</div>
+</div>
+</div>
+</div>
+
+<!-- ============ MODAL: NUEVA HISTORIA ============ -->
+<div id="modal-new-story" class="hidden fixed inset-0 z-[100] flex items-center justify-center modal-overlay">
+<div class="glass rounded-2xl p-6 neon w-full max-w-lg mx-4">
+<div class="flex items-center justify-between mb-4">
+<h3 class="text-lg font-semibold text-white"><i class="fas fa-plus-circle text-green-400 mr-2"></i>Guardar Historia Actual</h3>
+<button onclick="closeModal('modal-new-story')" class="text-gray-400 hover:text-white"><i class="fas fa-times text-xl"></i></button>
+</div>
+<p class="text-sm text-gray-400 mb-4">Guarda la historia actual con un nombre para identificarla.</p>
+<div class="space-y-4">
+<div><label class="block text-sm text-gray-400 mb-2">Nombre de la Historia</label><input type="text" id="story-name-input" class="w-full bg-gray-800/80 border border-gray-700 rounded-xl p-3 text-sm text-gray-200 outline-none" placeholder="Ej: Login de usuarios v1.0"></div>
+<div><label class="block text-sm text-gray-400 mb-2">User Story (actual)</label><textarea id="story-content-preview" class="w-full bg-gray-800/50 border border-gray-700 rounded-xl p-3 text-sm text-gray-400 outline-none resize-none" rows="3" readonly></textarea></div>
+<div class="p-3 rounded-xl bg-green-500/10 border border-green-500/30"><p class="text-xs text-green-300"><i class="fas fa-info-circle mr-1"></i>Los casos generados se mantendrán en el backend.</p></div>
+<div class="flex gap-3">
+<button onclick="confirmNewStory()" class="flex-1 bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-500 hover:to-emerald-500 text-white font-medium py-3 rounded-xl transition"><i class="fas fa-save mr-2"></i>Guardar y Crear Nueva</button>
+<button onclick="closeModal('modal-new-story')" class="px-6 py-3 bg-gray-800 hover:bg-gray-700 text-gray-300 rounded-xl transition">Cancelar</button>
+</div>
+</div>
+</div>
+</div>
+
+<!-- Modal: Detalle de Historia -->
+<div id="modal-story-detail" class="hidden fixed inset-0 z-[100] flex items-center justify-center modal-overlay">
+<div class="glass rounded-2xl p-6 neon w-full max-w-3xl mx-4 max-h-[90vh] overflow-y-auto">
+<div class="flex items-center justify-between mb-4">
+<h3 class="text-lg font-semibold text-white"><i class="fas fa-book-open text-indigo-400 mr-2"></i>Detalle de Historia</h3>
+<button onclick="closeModal('modal-story-detail')" class="text-gray-400 hover:text-white"><i class="fas fa-times text-xl"></i></button>
+</div>
+<div id="story-detail-content"></div>
+</div>
+</div>
+
+<!-- Notification -->
+<div id="notification" class="hidden fixed top-6 right-6 px-5 py-3 rounded-xl border z-[200] flex items-center gap-2 shadow-2xl fade-in"></div>
+
+<script>
+// ══════════════════════════════════════════════════════════════
+// CONFIGURACIÓN DEL BACKEND
+// ══════════════════════════════════════════════════════════════
+const API_URL = 'http://localhost:8000';
+
+// ══════════════════════════════════════════════════════════════
+// ESTADO GLOBAL
+// ══════════════════════════════════════════════════════════════
+let testCasesData = [];
+let executionsData = [];
+let statsData = { total_test_cases: 0, total_executions: 0, passed: 0, failed: 0, pass_rate: 0 };
+let lastGeneratedCases = [];
+const storiesHistory = [];
+let currentStoryCounter = 0;
+let currentActiveStoryId = null;
+let testsChartInstance = null;
+let distributionChartInstance = null;
+let coverageTrendChartInstance = null;
+let bugsChartInstance = null;
+
+// Datos Demo (Jira, Dispositivos, Reportes, Módulos)
+const devicesData = [
+{ name: 'Samsung Galaxy S24', os: 'Android 14', status: 'online', battery: 85, tests: 45, icon: 'fab fa-android', color: 'text-green-400' },
+{ name: 'Google Pixel 8', os: 'Android 14', status: 'online', battery: 92, tests: 38, icon: 'fab fa-android', color: 'text-green-400' },
+{ name: 'iPhone 15 Pro', os: 'iOS 17.2', status: 'online', battery: 78, tests: 52, icon: 'fab fa-apple', color: 'text-gray-300' },
+{ name: 'iPhone 14', os: 'iOS 17.1', status: 'busy', battery: 65, tests: 41, icon: 'fab fa-apple', color: 'text-gray-300' },
+{ name: 'Samsung Galaxy A54', os: 'Android 13', status: 'offline', battery: 0, tests: 22, icon: 'fab fa-android', color: 'text-green-400' },
+{ name: 'iPad Pro 12.9"', os: 'iPadOS 17.2', status: 'online', battery: 95, tests: 28, icon: 'fab fa-apple', color: 'text-gray-300' },
+];
+const jiraTickets = [
+{ key: 'PROJ-234', title: 'Login - Error en recuperación contraseña', type: 'bug', priority: 'critical', status: 'In Progress', assignee: 'Carlos M.' },
+{ key: 'PROJ-235', title: 'Checkout - Botón pago no responde en Android', type: 'bug', priority: 'high', status: 'Open', assignee: 'Ana R.' },
+{ key: 'PROJ-236', title: 'Ver historial de pedidos', type: 'story', priority: 'medium', status: 'In Review', assignee: 'Luis P.' },
+{ key: 'PROJ-237', title: 'Optimizar carga del feed', type: 'task', priority: 'medium', status: 'To Do', assignee: 'María G.' },
+];
+const modulesData = [
+{ name: 'Autenticación', coverage: 95, total: 24, covered: 23, color: 'from-green-500 to-emerald-400' },
+{ name: 'Navegación', coverage: 88, total: 18, covered: 16, color: 'from-blue-500 to-cyan-400' },
+{ name: 'Carrito & Checkout', coverage: 82, total: 32, covered: 26, color: 'from-purple-500 to-indigo-400' },
+{ name: 'Pagos', coverage: 75, total: 28, covered: 21, color: 'from-yellow-500 to-orange-400' },
+{ name: 'Perfil', coverage: 90, total: 15, covered: 14, color: 'from-pink-500 to-rose-400' },
+{ name: 'Notificaciones', coverage: 70, total: 12, covered: 8, color: 'from-cyan-500 to-teal-400' },
+];
+let reportsData = [
+{ name: 'Regression Suite - Sprint 24', type: 'Regression', date: '2024-01-15', tests: 247, passRate: 94.3 },
+{ name: 'Smoke Tests - Pre-deploy v2.4.1', type: 'Smoke', date: '2024-01-14', tests: 45, passRate: 100 },
+{ name: 'API Tests - Payment Module', type: 'API', date: '2024-01-14', tests: 89, passRate: 97.8 },
+{ name: 'Performance Tests - Load', type: 'Performance', date: '2024-01-13', tests: 12, passRate: 83.3 },
+];
+
+// ══════════════════════════════════════════════════════════════
+// FUNCIONES DE BACKEND
+// ══════════════════════════════════════════════════════════════
+async function checkBackendConnection() {
+  const statusEl = document.getElementById('backend-status');
+  try {
+    const response = await fetch(`${API_URL}/health`);
+    const data = await response.json();
+    statusEl.className = 'px-3 py-1 rounded-full text-xs font-medium bg-green-500/20 text-green-400 border border-green-500/30';
+    statusEl.innerHTML = '<i class="fas fa-circle text-[8px] mr-1 pulse-dot"></i>Backend Conectado';
+    return true;
+  } catch (error) {
+    statusEl.className = 'px-3 py-1 rounded-full text-xs font-medium bg-red-500/20 text-red-400 border border-red-500/30';
+    statusEl.innerHTML = '<i class="fas fa-circle text-[8px] mr-1"></i>Backend Desconectado';
+    return false;
+  }
+}
+
+async function loadStatsFromBackend() {
+  try {
+    const response = await fetch(`${API_URL}/api/v1/stats`);
+    statsData = await response.json();
+    updateDashboardStats();
+  } catch (error) { console.error('Error cargando stats:', error); }
+}
+
+async function loadTestCasesFromBackend() {
+  try {
+    const response = await fetch(`${API_URL}/api/v1/tests`);
+    const data = await response.json();
+    testCasesData = data.test_cases || [];
+    document.getElementById('available-tests-count').textContent = testCasesData.length;
+  } catch (error) { console.error('Error cargando casos:', error); }
+}
+
+async function loadExecutionsFromBackend() {
+  try {
+    const response = await fetch(`${API_URL}/api/v1/executions`);
+    const data = await response.json();
+    executionsData = data.executions || [];
+  } catch (error) { console.error('Error cargando ejecuciones:', error); }
+}
+
+async function refreshAllData() {
+  notify('Actualizando datos...', 'info');
+  await Promise.all([loadStatsFromBackend(), loadTestCasesFromBackend(), loadExecutionsFromBackend()]);
+  renderTestCases();
+  renderRecentExecutions();
+  renderActivityFeed();
+  updateDistributionChart();
+  updateCoverageGauges();
+  updateReportsTable();
+  updateCharts();
+  updateCleanCounts();
+  notify('✓ Datos actualizados', 'success');
+}
+
+async function createManualTestCase() {
+  const title = document.getElementById('manual-title').value.trim();
+  const description = document.getElementById('manual-description').value.trim();
+  const stepsText = document.getElementById('manual-steps').value.trim();
+  const expected = document.getElementById('manual-expected').value.trim();
+  const priority = document.getElementById('manual-priority').value;
+  const platform = document.getElementById('manual-platform').value;
+  const testType = document.getElementById('manual-type').value;
+  if (!title || !description || !stepsText || !expected) { notify('Completa todos los campos obligatorios', 'warning'); return; }
+  const steps = stepsText.split('\n').filter(s => s.trim() !== '');
+  const btn = document.getElementById('btn-create-manual');
+  btn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>Creando...';
+  btn.disabled = true;
+  try {
+    const response = await fetch(`${API_URL}/api/v1/tests/create`, {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ title, description, steps, expected_result: expected, priority, platform, test_type: testType })
+    });
+    const data = await response.json();
+    if (data.test_case) {
+      notify(`✓ Caso creado: ${data.test_case.title}`, 'success');
+      closeModal('modal-create-manual');
+      document.getElementById('manual-title').value = '';
+      document.getElementById('manual-description').value = '';
+      document.getElementById('manual-steps').value = '';
+      document.getElementById('manual-expected').value = '';
+      await refreshAllData();
+    } else { notify('Error: ' + JSON.stringify(data), 'error'); }
+  } catch (error) { notify('Error: ' + error.message, 'error'); }
+  finally { btn.innerHTML = '<i class="fas fa-plus mr-2"></i>Crear Caso'; btn.disabled = false; }
+}
+
+async function deleteTestCase(id) {
+  if (!confirm('¿Eliminar este caso de prueba?')) return;
+  try {
+    await fetch(`${API_URL}/api/v1/tests/${id}`, { method: 'DELETE' });
+    notify('✓ Caso eliminado', 'success');
+    await refreshAllData();
+  } catch (error) { notify('Error: ' + error.message, 'error'); }
+}
+
+async function testBackendConnection() {
+  const ok = await checkBackendConnection();
+  notify(ok ? '✓ Backend conectado' : ' No se pudo conectar', ok ? 'success' : 'error');
+}
+
+// ══════════════════════════════════════════════════════════════
+// LIMPIEZA SELECTIVA DE DATOS
+// ══════════════════════════════════════════════════════════════
+function openCleanModal() {
+  updateCleanCounts();
+  document.querySelectorAll('#modal-clean input[type="checkbox"]').forEach(cb => cb.checked = false);
+  document.querySelectorAll('.clean-option').forEach(opt => opt.classList.remove('selected'));
+  document.getElementById('modal-clean').classList.remove('hidden');
+}
+
+function updateCleanCounts() {
+  document.getElementById('count-cases').textContent = `${testCasesData.length} casos`;
+  document.getElementById('count-executions').textContent = `${executionsData.length} ejecuciones`;
+  document.getElementById('count-stories').textContent = `${storiesHistory.length} historias`;
+}
+
+function toggleCleanOption(element, type) {
+  const checkbox = element.querySelector('input[type="checkbox"]');
+  checkbox.checked = !checkbox.checked;
+  element.classList.toggle('selected', checkbox.checked);
+}
+
+async function executeSelectiveClean() {
+  const cleanCases = document.getElementById('chk-clean-cases').checked;
+  const cleanExecutions = document.getElementById('chk-clean-executions').checked;
+  const cleanStories = document.getElementById('chk-clean-stories').checked;
+  const cleanReports = document.getElementById('chk-clean-reports').checked;
+  
+  if (!cleanCases && !cleanExecutions && !cleanStories && !cleanReports) {
+    notify('Selecciona al menos un tipo de dato', 'warning');
+    return;
+  }
+  if (!confirm('¿Confirmas borrar los datos seleccionados? Esta acción no se puede deshacer.')) return;
+  
+  let cleanedItems = [];
+  try {
+    if (cleanCases) {
+      for (const tc of testCasesData) {
+        await fetch(`${API_URL}/api/v1/tests/${tc.id}`, { method: 'DELETE' });
+      }
+      cleanedItems.push('casos de prueba');
+    }
+    if (cleanStories) {
+      storiesHistory.length = 0;
+      currentStoryCounter = 0;
+      currentActiveStoryId = null;
+      document.getElementById('current-story-badge').classList.add('hidden');
+      document.getElementById('current-story-tag').classList.add('hidden');
+      renderStoriesHistory();
+      cleanedItems.push('historias');
+    }
+    if (cleanReports) {
+      reportsData.length = 0;
+      cleanedItems.push('reportes demo');
+    }
+    if (cleanExecutions) {
+      cleanedItems.push('ejecuciones (se borrarán al reiniciar backend)');
+    }
+    closeModal('modal-clean');
+    await refreshAllData();
+    notify(`✓ Borrado: ${cleanedItems.join(', ')}`, 'success');
+  } catch (error) {
+    notify('Error al borrar: ' + error.message, 'error');
+  }
+}
+
+function cleanReportsData() {
+  if (!confirm('¿Borrar todos los reportes?')) return;
+  reportsData.length = 0;
+  document.getElementById('reports-table').innerHTML = '';
+  notify('Reportes borrados', 'success');
+}
+
+function cleanCoverageData() {
+  if (!confirm('¿Borrar datos de cobertura?')) return;
+  modulesData.forEach(m => { m.coverage = 0; m.covered = 0; });
+  initCoverageCharts();
+  notify('Datos de cobertura borrados', 'success');
+}
+
+// ══════════════════════════════════════════════════════════════
+// NAVEGACIÓN
+// ══════════════════════════════════════════════════════════════
+function showSection(sectionId) {
+  document.querySelectorAll('[id^="section-"]').forEach(s => s.classList.add('hidden'));
+  document.getElementById(`section-${sectionId}`).classList.remove('hidden');
+  document.querySelectorAll('.sidebar-item').forEach(i => i.classList.remove('active'));
+  document.querySelector(`[data-section="${sectionId}"]`)?.classList.add('active');
+  const titles = { 'dashboard': 'Dashboard', 'ai-generator': 'Generador IA', 'test-executor': 'Ejecutor de Pruebas', 'test-cases': 'Casos de Prueba', 'reports': 'Reportes', 'coverage': 'Cobertura', 'security': 'Seguridad', 'jira': 'Integración Jira', 'devices': 'Dispositivos', 'pipeline': 'Pipeline CI/CD', 'settings': 'Configuración' };
+  document.getElementById('section-title').textContent = titles[sectionId] || 'Dashboard';
+  if (sectionId === 'test-cases') renderTestCases();
+  if (sectionId === 'reports') { updateReportsTable(); initReportsCharts(); }
+  if (sectionId === 'coverage') { initCoverageCharts(); updateCoverageGauges(); }
+  if (sectionId === 'jira') renderJiraTickets();
+  if (sectionId === 'devices') renderDevices();
+  if (sectionId === 'dashboard') { renderRecentExecutions(); renderActivityFeed(); updateCharts(); }
+}
+
+// ══════════════════════════════════════════════════════════════
+// DASHBOARD - ACTUALIZAR STATS
+// ═════════════════════════════════════════════════════════════
+function updateDashboardStats() {
+  document.getElementById('stat-total').textContent = statsData.total_test_cases || 0;
+  document.getElementById('stat-pass-rate').textContent = (statsData.pass_rate || 0) + '%';
+  document.getElementById('stat-bugs').textContent = statsData.failed || 0;
+  const aiCount = testCasesData.filter(tc => !tc.manual).length;
+  document.getElementById('stat-ai-generated').textContent = aiCount;
+  document.getElementById('bar-total').style.width = Math.min(100, (statsData.total_test_cases || 0) * 2) + '%';
+  document.getElementById('bar-pass').style.width = (statsData.pass_rate || 0) + '%';
+  document.getElementById('bar-ai').style.width = Math.min(100, aiCount * 2) + '%';
+  document.getElementById('bar-bugs').style.width = Math.min(100, (statsData.failed || 0) * 10) + '%';
+}
+
+function renderRecentExecutions() {
+  const container = document.getElementById('recent-executions');
+  if (executionsData.length === 0) {
+    container.innerHTML = '<div class="text-center py-8 text-gray-500"><i class="fas fa-hourglass-start text-3xl mb-3 text-gray-600"></i><p class="text-sm">Sin ejecuciones aún</p></div>';
+    return;
+  }
+  const recent = executionsData.slice(-5).reverse();
+  container.innerHTML = recent.map(ex => `
+    <div class="flex items-start gap-3 p-3 rounded-xl bg-gray-800/50">
+      <div class="w-8 h-8 rounded-lg ${ex.status === 'passed' ? 'bg-green-500/20' : 'bg-red-500/20'} flex items-center justify-center flex-shrink-0">
+        <i class="fas fa-${ex.status === 'passed' ? 'check text-green-400' : 'times text-red-400'} text-xs"></i>
+      </div>
+      <div class="flex-1">
+        <p class="text-sm text-gray-200">${ex.test_title || ex.test_case_id} - <span class="${ex.status === 'passed' ? 'text-green-400' : 'text-red-400'}">${ex.status}</span></p>
+        <p class="text-xs text-gray-500 mt-1">${ex.duration}s • ${ex.environment || 'staging'}</p>
+      </div>
+    </div>
+  `).join('');
+}
+
+function renderActivityFeed() {
+  const container = document.getElementById('activity-feed');
+  const activities = [];
+  if (testCasesData.length > 0) {
+    const manual = testCasesData.filter(tc => tc.manual).length;
+    const ai = testCasesData.length - manual;
+    if (ai > 0) activities.push({ icon: 'fa-robot', color: 'purple', text: `IA generó <span class="text-purple-400">${ai} casos</span>`, time: 'Reciente' });
+    if (manual > 0) activities.push({ icon: 'fa-user', color: 'green', text: `Se crearon <span class="text-green-400">${manual} casos manuales</span>`, time: 'Reciente' });
+  }
+  if (executionsData.length > 0) {
+    const passed = executionsData.filter(e => e.status === 'passed').length;
+    activities.push({ icon: 'fa-play-circle', color: 'cyan', text: `<span class="text-cyan-400">${executionsData.length} ejecuciones</span> - ${passed} pasaron`, time: 'Reciente' });
+  }
+  if (activities.length === 0) {
+    container.innerHTML = '<div class="text-center py-8 text-gray-500"><i class="fas fa-inbox text-3xl mb-3 text-gray-600"></i><p class="text-sm">Sin actividad aún. ¡Crea tu primer caso de prueba!</p></div>';
+    return;
+  }
+  container.innerHTML = activities.map(a => `
+    <div class="flex items-start gap-3 p-3 rounded-xl bg-gray-800/50">
+      <div class="w-8 h-8 rounded-lg bg-${a.color}-500/20 flex items-center justify-center flex-shrink-0">
+        <i class="fas ${a.icon} text-${a.color}-400 text-xs"></i>
+      </div>
+      <div class="flex-1">
+        <p class="text-sm text-gray-200">${a.text}</p>
+        <p class="text-xs text-gray-500 mt-1">${a.time}</p>
+      </div>
+    </div>
+  `).join('');
+}
+
+function updateDistributionChart() {
+  const total = testCasesData.length || 1;
+  const functional = testCasesData.filter(tc => tc.test_type === 'functional').length;
+  const security = testCasesData.filter(tc => tc.test_type === 'security').length;
+  const performance = testCasesData.filter(tc => tc.test_type === 'performance').length;
+  const other = total - functional - security - performance;
+  
+  document.getElementById('dist-functional').textContent = Math.round(functional / total * 100) + '%';
+  document.getElementById('dist-ui').textContent = Math.round(other / total * 100) + '%';
+  document.getElementById('dist-api').textContent = '0%';
+  document.getElementById('dist-perf').textContent = Math.round(performance / total * 100) + '%';
+  
+  if (distributionChartInstance) {
+    distributionChartInstance.data.datasets[0].data = [functional, other, 0, performance];
+    distributionChartInstance.update();
+  }
+}
+
+function updateCoverageGauges() {
+  const total = testCasesData.length || 1;
+  const manual = testCasesData.filter(tc => tc.manual).length;
+  const ai = testCasesData.length - manual;
+  const manualPct = Math.round(manual / total * 100);
+  const aiPct = Math.round(ai / total * 100);
+  const passRate = statsData.pass_rate || 0;
+  document.getElementById('gauge1-value').textContent = manualPct + '%';
+  document.getElementById('gauge1-detail').textContent = `${manual} casos`;
+  document.getElementById('gauge2-value').textContent = aiPct + '%';
+  document.getElementById('gauge2-detail').textContent = `${ai} casos`;
+  document.getElementById('gauge3-value').textContent = passRate + '%';
+  document.getElementById('gauge3-detail').textContent = `${statsData.total_executions || 0} ejecuciones`;
+  drawGauge('gauge1', manualPct, '#22c55e');
+  drawGauge('gauge2', aiPct, '#8b5cf6');
+  drawGauge('gauge3', passRate, '#06b6d4');
+}
+
+function updateReportsTable() {
+  const tbody = document.getElementById('reports-table');
+  if (reportsData.length === 0) {
+    tbody.innerHTML = '<tr><td colspan="5" class="py-8 text-center text-gray-500">Sin reportes</td></tr>';
+    return;
+  }
+  const typeColors = { 'Regression': 'bg-indigo-500/20 text-indigo-400', 'Smoke': 'bg-green-500/20 text-green-400', 'API': 'bg-cyan-500/20 text-cyan-400', 'Performance': 'bg-yellow-500/20 text-yellow-400' };
+  tbody.innerHTML = reportsData.map(r => {
+    const rateColor = r.passRate >= 95 ? 'text-green-400' : r.passRate >= 85 ? 'text-yellow-400' : 'text-red-400';
+    return `<tr class="border-b border-gray-800/50 hover:bg-gray-800/30"><td class="py-3 px-4 text-gray-200">${r.name}</td><td class="py-3 px-4"><span class="px-2 py-1 rounded-lg text-xs ${typeColors[r.type] || 'bg-gray-500/20 text-gray-400'}">${r.type}</span></td><td class="py-3 px-4 text-gray-400">${r.date}</td><td class="py-3 px-4 text-gray-300">${r.tests}</td><td class="py-3 px-4 ${rateColor} font-medium">${r.passRate}%</td></tr>`;
+  }).join('');
+}
+
+// ══════════════════════════════════════════════════════════════
+// AI GENERATOR - GENERACIÓN INTELIGENTE (MEJORA #1)
+// ══════════════════════════════════════════════════════════════
+async function generateTestCases() {
+  const userStory = document.getElementById('user-story-input').value;
+  if (!userStory.trim()) { notify('Ingresa una User Story', 'warning'); return; }
+  const progress = document.getElementById('generation-progress');
+  const btn = document.getElementById('generate-btn');
+  progress.classList.remove('hidden');
+  btn.disabled = true;
+  btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i>Generando...';
+  const steps = ['Analizando requisitos...', 'Evaluando riesgos...', 'Generando casos...', 'Validando...'];
+  for (let i = 0; i < 4; i++) {
+    await sleep(600);
+    document.getElementById('generation-status').textContent = steps[i];
+    document.getElementById('generation-bar').style.width = `${(i+1)*25}%`;
+  }
+  const type = document.getElementById('test-type-select').value;
+  const cases = generateCasesByType(type);
+  if (currentActiveStoryId) {
+    cases.forEach(c => { c.storyId = currentActiveStoryId; });
+  }
+  lastGeneratedCases = cases;
+  await sleep(400);
+  progress.classList.add('hidden');
+  btn.disabled = false;
+  btn.innerHTML = '<i class="fas fa-magic"></i>Generar Casos con IA';
+  document.getElementById('generation-bar').style.width = '0%';
+  renderGeneratedCases(cases);
+  document.getElementById('add-to-suite-section').classList.remove('hidden');
+  const storyInfo = currentActiveStoryId ? ` (Historia: ${currentActiveStoryId})` : '';
+  notify(`${cases.length} casos generados${storyInfo}`, 'success');
+}
+
+// ✅ MEJORA #1: Generación dinámica basada en análisis de User Story
+function generateCasesByType(type) {
+  const nextId = testCasesData.length + 1;
+  const userStory = document.getElementById('user-story-input').value.toLowerCase();
+  const analysis = {
+    hasLogin: /login|iniciar sesión|acceder|entrar|sign in/i.test(userStory),
+    hasRegister: /registr|crear cuenta|sign up|registro/i.test(userStory),
+    hasSearch: /buscar|search|filtrar|encontrar/i.test(userStory),
+    hasPayment: /pago|payment|tarjeta|compra|checkout/i.test(userStory),
+    hasProfile: /perfil|profile|cuenta|usuario/i.test(userStory),
+    hasUpload: /subir|upload|archivo|imagen|foto/i.test(userStory),
+    hasNotification: /notific|alerta|mensaje|notification/i.test(userStory),
+    hasForm: /formulario|form|campo|field|input/i.test(userStory)
+  };
+  const templates = {
+    login: [
+      { title: 'Login con credenciales válidas', priority: 'Crítica', type: 'Funcional', steps: 5, module: 'Autenticación' },
+      { title: 'Login con email inválido', priority: 'Alta', type: 'Validación', steps: 3, module: 'Autenticación' },
+      { title: 'Login con contraseña incorrecta', priority: 'Alta', type: 'Validación', steps: 3, module: 'Autenticación' },
+      { title: 'Login con campos vacíos', priority: 'Alta', type: 'Validación', steps: 2, module: 'Autenticación' },
+      { title: 'Login - SQL Injection', priority: 'Crítica', type: 'Seguridad', steps: 4, module: 'Seguridad' },
+      { title: 'Login - Brute force protection', priority: 'Alta', type: 'Seguridad', steps: 5, module: 'Seguridad' },
+      { title: 'Login - Tiempo de respuesta', priority: 'Media', type: 'Performance', steps: 3, module: 'Performance' },
+      { title: 'Login - UI responsive móvil', priority: 'Media', type: 'UI', steps: 4, module: 'UI/UX' }
+    ],
+    register: [
+      { title: 'Registro exitoso con datos válidos', priority: 'Crítica', type: 'Funcional', steps: 6, module: 'Registro' },
+      { title: 'Registro con email duplicado', priority: 'Alta', type: 'Validación', steps: 4, module: 'Registro' },
+      { title: 'Registro con contraseña débil', priority: 'Alta', type: 'Validación', steps: 3, module: 'Registro' },
+      { title: 'Registro - XSS en nombre', priority: 'Crítica', type: 'Seguridad', steps: 3, module: 'Seguridad' },
+      { title: 'Registro - Validación de edad', priority: 'Media', type: 'Funcional', steps: 4, module: 'Registro' }
+    ],
+    search: [
+      { title: 'Búsqueda con resultados encontrados', priority: 'Alta', type: 'Funcional', steps: 4, module: 'Búsqueda' },
+      { title: 'Búsqueda sin resultados', priority: 'Media', type: 'Funcional', steps: 3, module: 'Búsqueda' },
+      { title: 'Búsqueda con caracteres especiales', priority: 'Media', type: 'Seguridad', steps: 3, module: 'Seguridad' },
+      { title: 'Búsqueda - Paginación', priority: 'Media', type: 'Funcional', steps: 5, module: 'Búsqueda' },
+      { title: 'Búsqueda - Filtros combinados', priority: 'Alta', type: 'Funcional', steps: 6, module: 'Búsqueda' }
+    ],
+    payment: [
+      { title: 'Pago exitoso con tarjeta válida', priority: 'Crítica', type: 'Funcional', steps: 7, module: 'Pagos' },
+      { title: 'Pago con tarjeta expirada', priority: 'Alta', type: 'Validación', steps: 4, module: 'Pagos' },
+      { title: 'Pago con fondos insuficientes', priority: 'Alta', type: 'Validación', steps: 4, module: 'Pagos' },
+      { title: 'Pago - Enmascaramiento de tarjeta', priority: 'Crítica', type: 'Seguridad', steps: 3, module: 'Seguridad' },
+      { title: 'Pago - Timeout de transacción', priority: 'Alta', type: 'Performance', steps: 5, module: 'Performance' }
+    ],
+    profile: [
+      { title: 'Ver perfil de usuario', priority: 'Alta', type: 'Funcional', steps: 3, module: 'Perfil' },
+      { title: 'Editar información del perfil', priority: 'Alta', type: 'Funcional', steps: 5, module: 'Perfil' },
+      { title: 'Cambiar contraseña', priority: 'Crítica', type: 'Funcional', steps: 6, module: 'Perfil' },
+      { title: 'Subir foto de perfil', priority: 'Media', type: 'Funcional', steps: 4, module: 'Perfil' }
+    ],
+    default: [
+      { title: 'Flujo principal - Caso feliz', priority: 'Crítica', type: 'Funcional', steps: 5, module: 'General' },
+      { title: 'Validación de campos requeridos', priority: 'Alta', type: 'Validación', steps: 3, module: 'General' },
+      { title: 'Entrada con datos inválidos', priority: 'Alta', type: 'Validación', steps: 4, module: 'General' },
+      { title: 'Caso borde - Límites', priority: 'Media', type: 'Funcional', steps: 4, module: 'General' },
+      { title: 'Comportamiento sin conexión', priority: 'Alta', type: 'Network', steps: 6, module: 'Offline' },
+      { title: 'Input validation - Seguridad', priority: 'Crítica', type: 'Seguridad', steps: 4, module: 'Seguridad' },
+      { title: 'Tiempo de respuesta', priority: 'Media', type: 'Performance', steps: 3, module: 'Performance' }
+    ]
+  };
+  let selectedTemplates = [];
+  if (analysis.hasLogin) selectedTemplates = selectedTemplates.concat(templates.login);
+  if (analysis.hasRegister) selectedTemplates = selectedTemplates.concat(templates.register);
+  if (analysis.hasSearch) selectedTemplates = selectedTemplates.concat(templates.search);
+  if (analysis.hasPayment) selectedTemplates = selectedTemplates.concat(templates.payment);
+  if (analysis.hasProfile) selectedTemplates = selectedTemplates.concat(templates.profile);
+  if (selectedTemplates.length === 0) selectedTemplates = templates.default;
+  selectedTemplates = selectedTemplates.sort(() => Math.random() - 0.5);
+  if (type === 'security') {
+    selectedTemplates = selectedTemplates.filter(t => t.type === 'Seguridad');
+    if (selectedTemplates.length === 0) selectedTemplates = templates.login.filter(t => t.type === 'Seguridad');
+  } else if (type === 'api') {
+    const apiTemplates = [
+      { title: 'GET /api/users - Listar usuarios', priority: 'Alta', type: 'API', steps: 3, module: 'API' },
+      { title: 'POST /api/auth/login - Login válido', priority: 'Alta', type: 'API', steps: 4, module: 'API' },
+      { title: 'POST /api/auth/login - Credenciales inválidas', priority: 'Alta', type: 'API', steps: 3, module: 'API' },
+      { title: 'PUT /api/users/:id - Actualizar usuario', priority: 'Media', type: 'API', steps: 4, module: 'API' },
+      { title: 'DELETE /api/users/:id - Eliminar usuario', priority: 'Media', type: 'API', steps: 3, module: 'API' }
+    ];
+    selectedTemplates = apiTemplates.sort(() => Math.random() - 0.5);
+  } else {
+    selectedTemplates = selectedTemplates.slice(0, Math.min(7, selectedTemplates.length));
+  }
+  const prefix = type === 'security' ? 'SEC' : type === 'api' ? 'API' : 'TC';
+  const cases = selectedTemplates.map((template, idx) => ({
+    id: `${prefix}-${String(nextId + idx).padStart(3, '0')}`,
+    title: template.title,
+    priority: template.priority,
+    type: template.type,
+    steps: template.steps,
+    module: template.module,
+    status: 'pending',
+    platform: 'Mobile',
+    ai: true,
+    storyId: null,
+    manual: false
+  }));
+  return cases;
+}
+
+function renderGeneratedCases(cases) {
+  const container = document.getElementById('generated-results');
+  document.getElementById('cases-count').textContent = `${cases.length} casos nuevos`;
+  if (cases.length === 0) {
+    container.innerHTML = '<div class="text-center py-12 text-gray-500"><i class="fas fa-flask text-4xl mb-3 text-gray-600"></i><p class="text-sm">Genera casos con IA</p></div>';
+    return;
+  }
+  container.innerHTML = cases.map((tc, i) => `
+    <div class="p-3 rounded-xl bg-gray-800/50 border-l-4 border-l-indigo-500" style="animation:fadeIn .3s ease ${i*0.05}s both">
+      <div class="flex items-start justify-between mb-1">
+        <div class="flex items-center gap-2">
+          <span class="text-xs font-mono text-indigo-400">${tc.id}</span>
+          ${tc.storyId ? `<span class="story-id-badge" title="Asociado a ${tc.storyId}"><i class="fas fa-link text-[8px]"></i>${tc.storyId}</span>` : ''}
+        </div>
+        <span class="px-2 py-0.5 rounded text-[10px] ${getPriorityColor(tc.priority)}">${tc.priority}</span>
+      </div>
+      <p class="text-sm text-gray-200 font-medium">${tc.title}</p>
+      <p class="text-xs text-gray-500 mt-1">${tc.steps} pasos • ${tc.module}</p>
+      <div class="flex items-center gap-2 mt-2">
+        <span class="px-1.5 py-0.5 rounded text-[10px] bg-gray-700 text-gray-300">${tc.type}</span>
+        <span class="px-1.5 py-0.5 rounded text-[10px] bg-purple-500/20 text-purple-400"><i class="fas fa-robot mr-0.5"></i>IA</span>
+      </div>
+    </div>
+  `).join('');
+}
+
+async function addToTestSuite() {
+  if (lastGeneratedCases.length === 0) {
+    notify('No hay casos para agregar', 'warning');
+    return;
+  }
+  const btn = document.getElementById('btn-add-suite');
+  btn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>Guardando en PostgreSQL...';
+  btn.disabled = true;
+  
+  let addedCount = 0;
+  for (const c of lastGeneratedCases) {
+    try {
+      await fetch(`${API_URL}/api/v1/tests/create`, {
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ 
+          title: c.title, 
+          description: `Caso generado por IA para ${c.module}`, 
+          steps: Array.from({length: c.steps}, (_, i) => `Paso ${i+1}`), 
+          expected_result: 'Comportamiento esperado según el caso', 
+          priority: c.priority === 'Crítica' ? 'high' : c.priority === 'Alta' ? 'high' : 'medium', 
+          platform: 'mobile', 
+          test_type: c.type === 'UI' ? 'functional' : c.type.toLowerCase() 
+        })
+      });
+      addedCount++;
+    } catch (error) { console.error('Error guardando caso:', error); }
+  }
+  
+  btn.innerHTML = '<i class="fas fa-plus-circle"></i>Agregar Casos a la Suite de Pruebas (Guardar en BD)';
+  btn.disabled = false;
+  document.getElementById('add-to-suite-section').classList.add('hidden');
+  lastGeneratedCases = [];
+  await refreshAllData();
+  notify(`✓ ${addedCount} casos guardados en PostgreSQL`, 'success');
+}
+
+// ══════════════════════════════════════════════════════════════
+// HISTORIAS
+// ══════════════════════════════════════════════════════════════
+function saveCurrentStory() {
+  const storyInput = document.getElementById('user-story-input');
+  const storyContent = storyInput.value.trim();
+  if (!storyContent) { notify('Escribe una User Story primero', 'warning'); return; }
+  document.getElementById('story-content-preview').value = storyContent;
+  document.getElementById('story-name-input').value = `Historia ${currentStoryCounter + 1}`;
+  document.getElementById('modal-new-story').classList.remove('hidden');
+}
+
+function confirmNewStory() {
+  const name = document.getElementById('story-name-input').value.trim();
+  const content = document.getElementById('story-content-preview').value;
+  if (!name) { notify('Ingresa un nombre para la historia', 'warning'); return; }
+  currentStoryCounter++;
+  const storyId = `STORY-${String(currentStoryCounter).padStart(3, '0')}`;
+  storiesHistory.push({
+    id: storyId, name, content,
+    createdAt: new Date().toISOString(),
+    casesGenerated: testCasesData.length,
+    platform: document.getElementById('platform-select').value,
+    testType: document.getElementById('test-type-select').value
+  });
+  currentActiveStoryId = storyId;
+  document.getElementById('user-story-input').value = '';
+  document.getElementById('current-story-badge').classList.remove('hidden');
+  document.getElementById('current-story-name').textContent = `${storyId}: ${name}`;
+  document.getElementById('current-story-tag').classList.remove('hidden');
+  document.getElementById('current-story-tag-name').textContent = `${storyId}: ${name}`;
+  renderStoriesHistory();
+  closeModal('modal-new-story');
+  notify(`✓ Historia ${storyId} "${name}" guardada`, 'success');
+}
+
+function viewStoryDetail(storyId) {
+  const story = storiesHistory.find(s => s.id === storyId);
+  if (!story) return;
+  const associatedCases = testCasesData.filter(tc => tc.storyId === storyId);
+  document.getElementById('story-detail-content').innerHTML = `
+    <div class="space-y-4">
+      <div class="flex items-center gap-3 p-4 rounded-xl bg-indigo-500/10 border border-indigo-500/30">
+        <div class="w-12 h-12 rounded-xl bg-indigo-500/20 flex items-center justify-center flex-shrink-0"><i class="fas fa-bookmark text-indigo-400 text-xl"></i></div>
+        <div class="flex-1">
+          <div class="flex items-center gap-2 mb-1"><span class="story-id-badge">${story.id}</span><span class="text-xs text-gray-400">${new Date(story.createdAt).toLocaleString('es-ES')}</span></div>
+          <h4 class="text-white font-bold text-lg">${story.name}</h4>
+        </div>
+      </div>
+      <div class="p-4 rounded-xl bg-gray-800/50 border border-gray-700">
+        <p class="text-xs text-gray-400 mb-2 flex items-center gap-1"><i class="fas fa-file-alt"></i>User Story Completa</p>
+        <p class="text-sm text-gray-200 whitespace-pre-wrap leading-relaxed">${story.content}</p>
+      </div>
+      <div class="p-4 rounded-xl bg-purple-500/10 border border-purple-500/30">
+        <p class="text-xs text-purple-300 mb-3 flex items-center gap-1"><i class="fas fa-link"></i>Casos de Prueba Asociados (${associatedCases.length})</p>
+        ${associatedCases.length === 0 ? '<p class="text-xs text-gray-500 italic">No hay casos asociados a esta historia</p>' : `<div class="space-y-2 max-h-48 overflow-y-auto">${associatedCases.map(tc => `<div class="flex items-center gap-2 p-2 rounded-lg bg-gray-800/50"><span class="text-xs font-mono text-indigo-400">${tc.id}</span><span class="text-xs text-gray-200 flex-1">${tc.title}</span><span class="px-2 py-0.5 rounded text-[10px] ${getPriorityColor(tc.priority)}">${tc.priority}</span></div>`).join('')}</div>`}
+      </div>
+      <div class="flex gap-3">
+        <button onclick="loadStory('${story.id}')" class="flex-1 bg-green-600 hover:bg-green-500 text-white py-2.5 rounded-xl transition text-sm"><i class="fas fa-redo mr-1"></i>Cargar Historia</button>
+        <button onclick="closeModal('modal-story-detail')" class="px-6 py-2.5 bg-gray-800 hover:bg-gray-700 text-gray-300 rounded-xl transition text-sm">Cerrar</button>
+      </div>
+    </div>
+  `;
+  document.getElementById('modal-story-detail').classList.remove('hidden');
+}
+
+function renderStoriesHistory() {
+  const container = document.getElementById('stories-history');
+  if (storiesHistory.length === 0) {
+    container.innerHTML = '<div class="text-center py-6 text-gray-500 text-xs"><i class="fas fa-book-open text-2xl mb-2 text-gray-600"></i><p>Sin historias guardadas aún</p></div>';
+    return;
+  }
+  container.innerHTML = storiesHistory.slice().reverse().map(story => `
+    <div class="p-3 rounded-xl bg-gray-800/50 border border-gray-700 hover:border-indigo-500/50 transition">
+      <div class="flex items-center justify-between mb-1">
+        <div class="flex items-center gap-2">
+          <span class="story-id-badge">${story.id}</span>
+          <span class="text-sm text-white font-medium">${story.name}</span>
+        </div>
+        <span class="text-[10px] text-gray-500">${new Date(story.createdAt).toLocaleDateString('es-ES')}</span>
+      </div>
+      <p class="text-xs text-gray-400 line-clamp-2 mb-2">${story.content}</p>
+      <div class="flex items-center justify-between">
+        <span class="text-[10px] text-indigo-400"><i class="fas fa-clipboard-list mr-1"></i>${story.casesGenerated} casos</span>
+        <div class="flex gap-2">
+          <button onclick="viewStoryDetail('${story.id}')" class="text-[10px] text-indigo-400 hover:text-indigo-300" title="Ver historia completa"><i class="fas fa-eye mr-1"></i>Ver</button>
+          <button onclick="loadStory('${story.id}')" class="text-[10px] text-green-400 hover:text-green-300" title="Cargar historia"><i class="fas fa-redo mr-1"></i>Reusar</button>
+        </div>
+      </div>
+    </div>
+  `).join('');
+}
+
+function loadStory(id) {
+  const story = storiesHistory.find(s => s.id === id);
+  if (!story) return;
+  document.getElementById('user-story-input').value = story.content;
+  currentActiveStoryId = story.id;
+  document.getElementById('current-story-tag').classList.remove('hidden');
+  document.getElementById('current-story-tag-name').textContent = `${story.id}: ${story.name}`;
+  closeModal('modal-story-detail');
+  notify(`Historia ${story.id} cargada`, 'success');
+}
+
+function clearStoriesHistory() {
+  if (!confirm('¿Borrar el historial de historias?')) return;
+  storiesHistory.length = 0;
+  currentStoryCounter = 0;
+  currentActiveStoryId = null;
+  document.getElementById('current-story-badge').classList.add('hidden');
+  document.getElementById('current-story-tag').classList.add('hidden');
+  renderStoriesHistory();
+  notify('Historial de historias borrado', 'success');
+}
+
+// ══════════════════════════════════════════════════════════════
+// EXECUTOR
+// ══════════════════════════════════════════════════════════════
+async function executeTests() {
+  if (testCasesData.length === 0) { notify('No hay casos de prueba. Genera o crea algunos primero.', 'warning'); return; }
+  const suite = document.getElementById('test-suite-select').value;
+  const environment = document.getElementById('environment-select').value;
+  let casesToExecute = testCasesData;
+  if (suite === 'high') casesToExecute = testCasesData.filter(tc => tc.priority === 'high');
+  else if (suite === 'manual') casesToExecute = testCasesData.filter(tc => tc.manual);
+  else if (suite === 'ai') casesToExecute = testCasesData.filter(tc => !tc.manual);
+  if (casesToExecute.length === 0) { notify('No hay casos que coincidan con el filtro', 'warning'); return; }
+  const consoleEl = document.getElementById('execution-console');
+  const output = document.getElementById('console-output');
+  const btn = document.getElementById('execute-btn');
+  consoleEl.classList.remove('hidden');
+  output.innerHTML = '';
+  btn.disabled = true;
+  btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i>Ejecutando...';
+  const caseIds = casesToExecute.map(tc => tc.id);
+  output.innerHTML += `<div class="log-entry text-cyan-400">[INFO] Test Engine v3.2.1 initialized</div>`;
+  output.innerHTML += `<div class="log-entry text-cyan-400">[INFO] Conectando con backend...</div>`;
+  output.innerHTML += `<div class="log-entry text-cyan-400">[INFO] Entorno: ${environment}</div>`;
+  output.innerHTML += `<div class="log-entry text-yellow-400">[INFO] Loading test suite: ${caseIds.length} tests</div>`;
+  try {
+    const response = await fetch(`${API_URL}/api/v1/tests/execute`, {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ test_case_ids: caseIds, environment })
+    });
+    const data = await response.json();
+    const results = data.results || [];
+    output.innerHTML += `<div class="log-entry text-green-400">[OK] Backend respondió correctamente</div>`;
+    output.innerHTML += `<div class="log-entry text-cyan-400">[INFO] Starting parallel execution...</div>`;
+    results.forEach((r, idx) => {
+      setTimeout(() => {
+        const color = r.status === 'passed' ? 'text-green-400' : r.status === 'failed' ? 'text-red-400' : 'text-yellow-400';
+        const icon = r.status === 'passed' ? '✓' : r.status === 'failed' ? '✗' : '⚠';
+        output.innerHTML += `<div class="log-entry ${color}">[${icon}] ${r.test_title || r.test_case_id}: ${r.status} (${r.duration}s)</div>`;
+        output.scrollTop = output.scrollHeight;
+        const progress = Math.round(((idx+1)/results.length)*100);
+        document.getElementById('exec-bar').style.width = `${progress}%`;
+        document.getElementById('exec-progress').textContent = `${progress}%`;
+        if (idx === results.length - 1) {
+          output.innerHTML += `<div class="log-entry text-cyan-400">[INFO] ─────────────────────────────────────</div>`;
+          output.innerHTML += `<div class="log-entry text-cyan-400">[DONE] Execution completed: ${data.passed} passed, ${data.failed} failed</div>`;
+          document.getElementById('exec-status').innerHTML = '<span class="w-2 h-2 rounded-full bg-cyan-400 inline-block mr-1"></span>Completado';
+          btn.disabled = false;
+          btn.innerHTML = '<i class="fas fa-play"></i>Ejecutar Pruebas';
+          showLiveResults(data);
+          refreshAllData();
+        }
+      }, idx * 500);
+    });
+  } catch (error) {
+    output.innerHTML += `<div class="log-entry text-red-400">[ERROR] ${error.message}</div>`;
+    btn.disabled = false;
+    btn.innerHTML = '<i class="fas fa-play"></i>Ejecutar Pruebas';
+    notify('Error en ejecución: ' + error.message, 'error');
+  }
+}
+
+function showLiveResults(data) {
+  const results = data.results || [];
+  const passed = data.passed || 0;
+  const failed = data.failed || 0;
+  const rate = results.length > 0 ? ((passed/results.length)*100).toFixed(1) : 0;
+  document.getElementById('live-results').innerHTML = `
+    <div class="text-center mb-4"><div class="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-green-500/20 border border-green-500/30"><i class="fas fa-check-circle text-green-400"></i><span class="text-green-400 font-medium text-sm">Completada</span></div></div>
+    <div class="grid grid-cols-3 gap-2 mb-4">
+      <div class="bg-green-500/10 rounded-xl p-3 text-center"><p class="text-xl font-bold text-green-400">${passed}</p><p class="text-[10px] text-gray-400">Pasaron</p></div>
+      <div class="bg-red-500/10 rounded-xl p-3 text-center"><p class="text-xl font-bold text-red-400">${failed}</p><p class="text-[10px] text-gray-400">Fallaron</p></div>
+      <div class="bg-gray-700/50 rounded-xl p-3 text-center"><p class="text-xl font-bold text-gray-300">${rate}%</p><p class="text-[10px] text-gray-400">Pass Rate</p></div>
+    </div>
+    <div class="space-y-2 max-h-80 overflow-y-auto">
+      ${results.map(r => `<div class="flex items-center gap-2 p-2 rounded-lg ${r.status === 'passed' ? 'bg-green-500/10' : 'bg-red-500/10'}"><i class="fas fa-${r.status === 'passed' ? 'check text-green-400' : 'times text-red-400'} text-xs"></i><span class="text-xs text-gray-300 flex-1">${r.test_title || r.test_case_id}</span><span class="text-xs ${r.status === 'passed' ? 'text-gray-500' : 'text-red-400'}">${r.duration}s</span></div>`).join('')}
+    </div>
+  `;
+}
+
+// ══════════════════════════════════════════════════════════════
+// TEST CASES
+// ══════════════════════════════════════════════════════════════
+function renderTestCases() {
+  const container = document.getElementById('test-cases-list');
+  const filter = document.getElementById('filter-status')?.value || 'all';
+  const search = document.getElementById('search-cases')?.value?.toLowerCase() || '';
+  let filtered = testCasesData;
+  if (filter === 'manual') filtered = filtered.filter(tc => tc.manual);
+  else if (filter === 'ai') filtered = filtered.filter(tc => !tc.manual);
+  if (search) filtered = filtered.filter(tc => tc.title.toLowerCase().includes(search));
+  if (filtered.length === 0) {
+    container.innerHTML = `<div class="text-center py-12 text-gray-500"><i class="fas fa-search text-3xl mb-3"></i><p>No se encontraron casos</p></div>`;
+    return;
+  }
+  container.innerHTML = filtered.map(tc => {
+    const borderColor = tc.manual ? 'border-green-500' : 'border-indigo-500';
+    const priorityColor = getPriorityColor(tc.priority);
+    return `
+      <div class="p-4 rounded-xl bg-gray-800/50 border-l-4 ${borderColor} hover:bg-gray-800/80 transition">
+        <div class="flex items-center justify-between">
+          <div class="flex items-center gap-4 flex-1">
+            <div class="w-8 h-8 rounded-lg ${tc.manual ? 'bg-green-500/20' : 'bg-indigo-500/20'} flex items-center justify-center">
+              <i class="fas ${tc.manual ? 'fa-user text-green-400' : 'fa-robot text-indigo-400'} text-sm"></i>
+            </div>
+            <div class="flex-1">
+              <div class="flex items-center gap-2 flex-wrap">
+                <span class="text-xs font-mono text-indigo-400">${tc.id}</span>
+                <span class="px-2 py-0.5 rounded text-[10px] ${priorityColor}">${tc.priority}</span>
+                ${tc.manual ? '<span class="px-1.5 py-0.5 rounded text-[10px] bg-green-500/20 text-green-400"><i class="fas fa-user"></i> Manual</span>' : '<span class="px-1.5 py-0.5 rounded text-[10px] bg-purple-500/20 text-purple-400"><i class="fas fa-robot"></i> IA</span>'}
+                ${tc.storyId ? `<span class="story-id-badge"><i class="fas fa-link text-[8px]"></i>${tc.storyId}</span>` : ''}
+              </div>
+              <p class="text-sm text-gray-200 font-medium mt-0.5">${tc.title}</p>
+              <div class="flex items-center gap-3 mt-1">
+                <span class="text-xs text-gray-500"><i class="fas fa-mobile-alt mr-1"></i>${tc.platform}</span>
+                <span class="text-xs text-gray-500"><i class="fas fa-tag mr-1"></i>${tc.test_type || tc.type}</span>
+                ${tc.steps ? `<span class="text-xs text-gray-500"><i class="fas fa-list mr-1"></i>${tc.steps.length} pasos</span>` : ''}
+              </div>
+            </div>
+          </div>
+          <button onclick="deleteTestCase('${tc.id}')" class="px-3 py-2 rounded-lg bg-red-500/20 hover:bg-red-500/30 text-red-400 text-xs transition"><i class="fas fa-trash"></i></button>
+        </div>
+      </div>
+    `;
+  }).join('');
+}
+function filterTestCases() { renderTestCases(); }
+
+// ══════════════════════════════════════════════════════════════
+// DEVICES & JIRA (DEMO)
+// ═════¡Perfecto! Vamos a hacer la **fusión definitiva**.
+
+He tomado tu archivo `indexxxx.html` (el que está conectado al backend) y le he inyectado las "joyas" del archivo original `indexxx.txt`:
+
+1.  **Generación Inteligente (MEJORA #1):** Ahora el frontend analiza tu User Story y genera casos específicos (Login, Pagos, Búsqueda, etc.) antes de guardarlos.
+2.  **Botón "Agregar a la Suite":** Para que revises los casos generados antes de guardarlos en la base de datos.
+3.  **Sección Dispositivos:** Renderizado visual de los dispositivos (Demo).
+4.  **Sección Jira:** Renderizado de tickets (Demo).
+5.  **Configuración de Frameworks:** El selector de Appium, Maestro, etc., en Settings.
+
+---
+
+### 📋 INSTRUCCIONES:
+
+1.  Abre `frontend/sample-app/indexxxx.html` en VS Code.
+2.  **Borra todo** (`Cmd + A` -> `Delete`).
+3.  **Pega el siguiente código completo** y guarda (`Cmd + S`).
+
+```html
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>QA Mobile Testing AI - Dashboard Completo</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/fontsource/fonts/inter@latest/latin-400-normal.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/fontsource/fonts/inter@latest/latin-600-normal.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/fontsource/fonts/inter@latest/latin-700-normal.css">
+<style>
+*{font-family:'Inter',sans-serif}
+::-webkit-scrollbar{width:6px}
+::-webkit-scrollbar-track{background:#0f0f1a}
+::-webkit-scrollbar-thumb{background:#6366f1;border-radius:3px}
+body{background:linear-gradient(135deg,#07070f 0%,#0e0e24 50%,#091420 100%);color:#e5e7eb;min-height:100vh}
+.glass{background:rgba(255,255,255,.02);backdrop-filter:blur(10px);border:1px solid rgba(255,255,255,.05)}
+.neon{border:1px solid rgba(99,102,241,.2)}
+.card-glow{box-shadow:0 0 20px rgba(99,102,241,.08);transition:all .3s}
+.card-glow:hover{box-shadow:0 0 30px rgba(99,102,241,.18);transform:translateY(-2px)}
+.sidebar-item{transition:all .2s;border-left:3px solid transparent;cursor:pointer}
+.sidebar-item:hover,.sidebar-item.active{background:linear-gradient(90deg,rgba(99,102,241,.15),transparent);border-left:3px solid #6366f1}
+.pulse-dot{animation:pulse 2s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
+.fade-in{animation:fadeIn .4s ease-in}
+@keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+.status-running{animation:statusPulse 1.5s infinite}
+@keyframes statusPulse{0%,100%{box-shadow:0 0 0 0 rgba(34,197,94,.4)}50%{box-shadow:0 0 0 8px rgba(34,197,94,0)}}
+.log-entry{font-family:'Courier New',monospace;font-size:.72rem;line-height:1.5}
+.progress-bar{transition:width .5s ease-in-out}
+.modal-overlay{background:rgba(0,0,0,.7);backdrop-filter:blur(4px)}
+.history-badge{display:inline-flex;align-items:center;gap:4px;padding:2px 8px;border-radius:12px;font-size:10px;font-weight:600;background:rgba(99,102,241,.15);color:#a5b4fc;border:1px solid rgba(99,102,241,.3)}
+.clean-option{transition:all .2s;cursor:pointer;border:1px solid transparent}
+.clean-option:hover{background:rgba(99,102,241,.05);border-color:rgba(99,102,241,.3)}
+.clean-option.selected{background:rgba(239,68,68,.08);border-color:rgba(239,68,68,.4)}
+.story-id-badge{display:inline-flex;align-items:center;gap:3px;padding:1px 6px;border-radius:6px;font-size:9px;font-weight:700;font-family:'JetBrains Mono',monospace;background:rgba(139,92,246,.2);color:#c4b5fd;border:1px solid rgba(139,92,246,.3)}
+</style>
+</head>
+<body>
+<div class="flex min-h-screen">
+<!-- SIDEBAR -->
+<aside class="w-64 bg-gray-900/80 border-r border-gray-800 flex flex-col fixed h-full z-50">
+<div class="p-5 border-b border-gray-800">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-xl bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center"><i class="fas fa-mobile-alt text-white text-lg"></i></div>
+<div><h1 class="text-lg font-bold text-white">QA Mobile AI</h1><p class="text-xs text-gray-400">Testing Automation Suite</p></div>
+</div>
+</div>
+<nav class="flex-1 py-3 overflow-y-auto">
+<div class="px-4 mb-2"><span class="text-[10px] font-semibold text-gray-500 uppercase tracking-wider">Principal</span></div>
+<div class="sidebar-item active flex items-center gap-3 px-5 py-2.5 text-sm text-gray-300" data-section="dashboard" onclick="showSection('dashboard')"><i class="fas fa-chart-line w-5 text-center text-indigo-400"></i><span>Dashboard</span></div>
+<div class="sidebar-item flex items-center gap-3 px-5 py-2.5 text-sm text-gray-300" data-section="ai-generator" onclick="showSection('ai-generator')"><i class="fas fa-robot w-5 text-center text-purple-400"></i><span>Generador IA</span></div>
+<div class="sidebar-item flex items-center gap-3 px-5 py-2.5 text-sm text-gray-300" data-section="test-executor" onclick="showSection('test-executor')"><i class="fas fa-play-circle w-5 text-center text-green-400"></i><span>Ejecutor</span></div>
+<div class="sidebar-item flex items-center gap-3 px-5 py-2.5 text-sm text-gray-300" data-section="test-cases" onclick="showSection('test-cases')"><i class="fas fa-clipboard-check w-5 text-center text-yellow-400"></i><span>Casos de Prueba</span></div>
+<div class="px-4 mt-4 mb-2"><span class="text-[10px] font-semibold text-gray-500 uppercase tracking-wider">Análisis</span></div>
+<div class="sidebar-item flex items-center gap-3 px-5 py-2.5 text-sm text-gray-300" data-section="reports" onclick="showSection('reports')"><i class="fas fa-chart-bar w-5 text-center text-cyan-400"></i><span>Reportes</span></div>
+<div class="sidebar-item flex items-center gap-3 px-5 py-2.5 text-sm text-gray-300" data-section="coverage" onclick="showSection('coverage')"><i class="fas fa-layer-group w-5 text-center text-pink-400"></i><span>Cobertura</span></div>
+<div class="sidebar-item flex items-center gap-3 px-5 py-2.5 text-sm text-gray-300" data-section="security" onclick="showSection('security')"><i class="fas fa-shield-alt w-5 text-center text-red-400"></i><span>Seguridad</span></div>
+<div class="px-4 mt-4 mb-2"><span class="text-[10px] font-semibold text-gray-500 uppercase tracking-wider">Integraciones</span></div>
+<div class="sidebar-item flex items-center gap-3 px-5 py-2.5 text-sm text-gray-300" data-section="jira" onclick="showSection('jira')"><i class="fab fa-jira w-5 text-center text-blue-400"></i><span>Jira</span></div>
+<div class="sidebar-item flex items-center gap-3 px-5 py-2.5 text-sm text-gray-300" data-section="devices" onclick="showSection('devices')"><i class="fas fa-tablet-alt w-5 text-center text-orange-400"></i><span>Dispositivos</span></div>
+<div class="sidebar-item flex items-center gap-3 px-5 py-2.5 text-sm text-gray-300" data-section="pipeline" onclick="showSection('pipeline')"><i class="fas fa-code-branch w-5 text-center text-blue-400"></i><span>Pipeline CI/CD</span></div>
+<div class="sidebar-item flex items-center gap-3 px-5 py-2.5 text-sm text-gray-300" data-section="settings" onclick="showSection('settings')"><i class="fas fa-cog w-5 text-center text-gray-400"></i><span>Configuración</span></div>
+</nav>
+<div class="p-4 border-t border-gray-800">
+<div class="flex items-center gap-3">
+<div class="w-8 h-8 rounded-full bg-gradient-to-br from-green-400 to-emerald-600 flex items-center justify-center text-xs font-bold text-white">QA</div>
+<div><p class="text-sm font-medium text-gray-200">QA Engineer</p><p class="text-xs text-green-400"><span class="pulse-dot inline-block w-2 h-2 bg-green-400 rounded-full mr-1"></span>En línea</p></div>
+</div>
+</div>
+</aside>
+
+<main class="flex-1 ml-64">
+<header class="sticky top-0 z-40 bg-gray-900/60 backdrop-blur-lg border-b border-gray-800 px-6 py-3">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-4">
+<h2 class="text-xl font-bold text-white" id="section-title">Dashboard</h2>
+<span id="system-status" class="px-3 py-1 rounded-full text-xs font-medium bg-green-500/20 text-green-400 border border-green-500/30"><i class="fas fa-circle text-[8px] mr-1 pulse-dot"></i>Sistema Activo</span>
+<span id="backend-status" class="px-3 py-1 rounded-full text-xs font-medium bg-gray-500/20 text-gray-400 border border-gray-500/30"><i class="fas fa-circle text-[8px] mr-1"></i>Verificando backend...</span>
+<span id="current-story-badge" class="hidden history-badge"><i class="fas fa-bookmark text-[9px]"></i><span id="current-story-name">-</span></span>
+</div>
+<div class="flex items-center gap-3">
+<button onclick="openCleanModal()" class="px-3 py-1.5 rounded-lg bg-orange-500/20 hover:bg-orange-500/30 border border-orange-500/30 text-orange-400 text-xs transition" title="Limpiar datos selectivamente">
+<i class="fas fa-broom mr-1"></i>Limpiar Datos
+</button>
+<button onclick="refreshAllData()" class="px-3 py-1.5 rounded-lg bg-indigo-500/20 hover:bg-indigo-500/30 border border-indigo-500/30 text-indigo-400 text-xs transition">
+<i class="fas fa-sync-alt mr-1"></i>Actualizar
+</button>
+<div class="h-8 w-px bg-gray-700"></div>
+<span class="text-sm text-gray-400" id="current-time"></span>
+</div>
+</div>
+</header>
+
+<div class="p-6">
+
+<!-- ============ DASHBOARD ============ -->
+<section id="section-dashboard" class="fade-in">
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5 mb-6">
+<div class="card-glow glass rounded-2xl p-5 neon">
+<div class="flex items-center justify-between mb-3"><div class="w-12 h-12 rounded-xl bg-indigo-500/20 flex items-center justify-center"><i class="fas fa-clipboard-list text-indigo-400 text-xl"></i></div><span class="text-xs text-green-400 font-medium"><i class="fas fa-database mr-1"></i>Live</span></div>
+<h3 class="text-3xl font-bold text-white" id="stat-total">0</h3>
+<p class="text-sm text-gray-400 mt-1">Casos de Prueba</p>
+<div class="mt-3 h-1 bg-gray-800 rounded-full overflow-hidden"><div id="bar-total" class="h-full bg-gradient-to-r from-indigo-500 to-purple-500 rounded-full progress-bar" style="width:0%"></div></div>
+</div>
+<div class="card-glow glass rounded-2xl p-5 neon">
+<div class="flex items-center justify-between mb-3"><div class="w-12 h-12 rounded-xl bg-green-500/20 flex items-center justify-center"><i class="fas fa-check-circle text-green-400 text-xl"></i></div><span class="text-xs text-green-400 font-medium"><i class="fas fa-database mr-1"></i>Live</span></div>
+<h3 class="text-3xl font-bold text-white" id="stat-pass-rate">0%</h3>
+<p class="text-sm text-gray-400 mt-1">Tasa de Éxito</p>
+<div class="mt-3 h-1 bg-gray-800 rounded-full overflow-hidden"><div id="bar-pass" class="h-full bg-gradient-to-r from-green-500 to-emerald-500 rounded-full progress-bar" style="width:0%"></div></div>
+</div>
+<div class="card-glow glass rounded-2xl p-5 neon">
+<div class="flex items-center justify-between mb-3"><div class="w-12 h-12 rounded-xl bg-yellow-500/20 flex items-center justify-center"><i class="fas fa-robot text-yellow-400 text-xl"></i></div><span class="text-xs text-green-400 font-medium"><i class="fas fa-database mr-1"></i>Live</span></div>
+<h3 class="text-3xl font-bold text-white" id="stat-ai-generated">0</h3>
+<p class="text-sm text-gray-400 mt-1">Generados por IA</p>
+<div class="mt-3 h-1 bg-gray-800 rounded-full overflow-hidden"><div id="bar-ai" class="h-full bg-gradient-to-r from-yellow-500 to-orange-500 rounded-full progress-bar" style="width:0%"></div></div>
+</div>
+<div class="card-glow glass rounded-2xl p-5 neon">
+<div class="flex items-center justify-between mb-3"><div class="w-12 h-12 rounded-xl bg-red-500/20 flex items-center justify-center"><i class="fas fa-bug text-red-400 text-xl"></i></div><span class="text-xs text-red-400 font-medium"><i class="fas fa-database mr-1"></i>Live</span></div>
+<h3 class="text-3xl font-bold text-white" id="stat-bugs">0</h3>
+<p class="text-sm text-gray-400 mt-1">Fallaron</p>
+<div class="mt-3 h-1 bg-gray-800 rounded-full overflow-hidden"><div id="bar-bugs" class="h-full bg-gradient-to-r from-red-500 to-pink-500 rounded-full progress-bar" style="width:0%"></div></div>
+</div>
+</div>
+
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-5 mb-6">
+<div class="lg:col-span-2 card-glow glass rounded-2xl p-5 neon">
+<div class="flex items-center justify-between mb-4"><h3 class="text-lg font-semibold text-white">Resultados de Ejecuciones</h3></div>
+<canvas id="testsChart" height="200"></canvas>
+</div>
+<div class="card-glow glass rounded-2xl p-5 neon">
+<h3 class="text-lg font-semibold text-white mb-4">Distribución por Tipo</h3>
+<canvas id="distributionChart" height="200"></canvas>
+<div class="mt-4 space-y-2">
+<div class="flex items-center justify-between text-sm"><span class="flex items-center gap-2"><span class="w-3 h-3 rounded-full bg-indigo-500"></span>Funcional</span><span class="text-gray-400" id="dist-functional">0%</span></div>
+<div class="flex items-center justify-between text-sm"><span class="flex items-center gap-2"><span class="w-3 h-3 rounded-full bg-purple-500"></span>Performance</span><span class="text-gray-400" id="dist-performance">0%</span></div>
+<div class="flex items-center justify-between text-sm"><span class="flex items-center gap-2"><span class="w-3 h-3 rounded-full bg-cyan-500"></span>Seguridad</span><span class="text-gray-400" id="dist-security">0%</span></div>
+</div>
+</div>
+</div>
+
+<div class="grid grid-cols-1 lg:grid-cols-2 gap-5">
+<div class="card-glow glass rounded-2xl p-5 neon">
+<h3 class="text-lg font-semibold text-white mb-4"><i class="fas fa-history text-indigo-400 mr-2"></i>Actividad Reciente</h3>
+<div class="space-y-3" id="activity-feed">
+<div class="text-center py-8 text-gray-500"><i class="fas fa-inbox text-3xl mb-3 text-gray-600"></i><p class="text-sm">Cargando actividad...</p></div>
+</div>
+</div>
+<div class="card-glow glass rounded-2xl p-5 neon">
+<h3 class="text-lg font-semibold text-white mb-4"><i class="fas fa-running text-green-400 mr-2"></i>Últimas Ejecuciones</h3>
+<div class="space-y-3" id="recent-executions">
+<div class="text-center py-8 text-gray-500"><i class="fas fa-hourglass-start text-3xl mb-3 text-gray-600"></i><p class="text-sm">Cargando ejecuciones...</p></div>
+</div>
+</div>
+</div>
+</section>
+
+<!-- ============ AI GENERATOR ============ -->
+<section id="section-ai-generator" class="hidden fade-in">
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-5">
+<div class="lg:col-span-2 space-y-5">
+<div class="card-glow glass rounded-2xl p-6 neon">
+<div class="flex items-center justify-between mb-4">
+<h3 class="text-lg font-semibold text-white"><i class="fas fa-robot text-purple-400 mr-2"></i>Generador IA de Casos de Prueba</h3>
+<span id="current-story-tag" class="hidden history-badge"><i class="fas fa-bookmark text-[9px]"></i><span id="current-story-tag-name">-</span></span>
+</div>
+<div class="space-y-4">
+<div><label class="block text-sm text-gray-400 mb-2">User Story / Requerimiento</label>
+<textarea id="user-story-input" class="w-full bg-gray-800/80 border border-gray-700 rounded-xl p-4 text-sm text-gray-200 focus:border-indigo-500 outline-none resize-none" rows="3" placeholder="Ej: Como usuario quiero iniciar sesión con mi correo y contraseña..."></textarea></div>
+<div class="grid grid-cols-2 gap-4">
+<div><label class="block text-sm text-gray-400 mb-2">Plataforma</label>
+<select id="platform-select" class="w-full bg-gray-800/80 border border-gray-700 rounded-xl p-3 text-sm text-gray-200 outline-none">
+<option value="mobile">📱 Mobile</option>
+<option value="web">🌐 Web</option>
+<option value="api">🔌 API</option></select></div>
+<div><label class="block text-sm text-gray-400 mb-2">Tipo de Prueba</label>
+<select id="test-type-select" class="w-full bg-gray-800/80 border border-gray-700 rounded-xl p-3 text-sm text-gray-200 outline-none">
+<option value="functional">✅ Funcional</option>
+<option value="performance">⚡ Performance</option>
+<option value="security">🔒 Seguridad</option></select></div>
+</div>
+<div class="flex gap-3">
+<button onclick="generateTestCases()" id="generate-btn" class="flex-1 bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-500 hover:to-purple-500 text-white font-medium py-3 rounded-xl transition flex items-center justify-center gap-2"><i class="fas fa-magic"></i>Generar Casos con IA</button>
+<button onclick="saveCurrentStory()" class="px-5 py-3 bg-green-600 hover:bg-green-500 text-white rounded-xl transition flex items-center gap-2" title="Guardar historia actual y crear una nueva"><i class="fas fa-plus-circle"></i>Nueva Historia</button>
+</div>
+<p class="text-xs text-gray-500"><i class="fas fa-info-circle mr-1"></i>La IA analiza tu historia y genera casos específicos (Login, Pagos, Seguridad, etc.).</p>
+</div>
+</div>
+<div id="generation-progress" class="hidden card-glow glass rounded-2xl p-6 neon">
+<div class="flex items-center gap-3 mb-4">
+<div class="w-10 h-10 rounded-xl bg-purple-500/20 flex items-center justify-center"><i class="fas fa-brain text-purple-400 animate-pulse"></i></div>
+<div><h4 class="text-white font-medium">IA Procesando...</h4><p class="text-xs text-gray-400" id="generation-status">Analizando...</p></div>
+</div>
+<div class="mt-3 h-2 bg-gray-800 rounded-full overflow-hidden"><div id="generation-bar" class="h-full bg-gradient-to-r from-purple-500 to-indigo-500 rounded-full progress-bar" style="width:0%"></div></div>
+</div>
+<!-- Historial de historias -->
+<div class="card-glow glass rounded-2xl p-5 neon">
+<div class="flex items-center justify-between mb-3">
+<h3 class="text-md font-semibold text-white"><i class="fas fa-history text-indigo-400 mr-2"></i>Historias Trabajadas</h3>
+<button onclick="clearStoriesHistory()" class="text-xs text-gray-400 hover:text-red-400 transition"><i class="fas fa-trash mr-1"></i>Limpiar historial</button>
+</div>
+<div id="stories-history" class="space-y-2 max-h-64 overflow-y-auto">
+<div class="text-center py-6 text-gray-500 text-xs"><i class="fas fa-book-open text-2xl mb-2 text-gray-600"></i><p>Sin historias guardadas aún</p></div>
+</div>
+</div>
+</div>
+<!-- Casos de prueba -->
+<div class="card-glow glass rounded-2xl p-5 neon">
+<div class="flex items-center justify-between mb-4">
+<h3 class="text-lg font-semibold text-white"><i class="fas fa-list-check text-green-400 mr-2"></i>Casos generados</h3>
+<span class="text-sm text-gray-400" id="cases-count">0 casos</span>
+</div>
+<div id="generated-results" class="space-y-3 max-h-[600px] overflow-y-auto pr-2">
+<div class="text-center py-12 text-gray-500"><i class="fas fa-flask text-4xl mb-3 text-gray-600"></i><p class="text-sm">Genera casos con IA</p></div>
+</div>
+<!-- Botón "Agregar a Suite" -->
+<div id="add-to-suite-section" class="hidden mt-4 pt-4 border-t border-gray-700">
+<button onclick="addToTestSuite()" class="w-full bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-500 hover:to-emerald-500 text-white font-medium py-3 rounded-xl transition flex items-center justify-center gap-2">
+<i class="fas fa-plus-circle"></i>Agregar Casos a la Suite de Pruebas
+</button>
+<p class="text-xs text-gray-500 text-center mt-2"><i class="fas fa-info-circle mr-1"></i>Los casos generados se guardarán en PostgreSQL</p>
+</div>
+</div>
+</div>
+</section>
+
+<!-- ============ TEST EXECUTOR ============ -->
+<section id="section-test-executor" class="hidden fade-in">
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-5">
+<div class="lg:col-span-2 space-y-5">
+<div class="card-glow glass rounded-2xl p-6 neon">
+<div class="flex items-center justify-between mb-4">
+<h3 class="text-lg font-semibold text-white"><i class="fas fa-play-circle text-green-400 mr-2"></i>Ejecutor de Pruebas</h3>
+<span class="px-3 py-1 rounded-full text-xs bg-indigo-500/20 text-indigo-400 border border-indigo-500/30"><i class="fas fa-database mr-1"></i><span id="available-tests-count">0</span> casos en BD</span>
+</div>
+<div class="space-y-4">
+<div><label class="block text-sm text-gray-400 mb-2">Suite de Pruebas</label>
+<select id="test-suite-select" class="w-full bg-gray-800/80 border border-gray-700 rounded-xl p-3 text-sm text-gray-200 outline-none">
+<option value="all">📋 Todos los casos</option>
+<option value="high"> Solo prioridad Alta</option>
+<option value="manual">✋ Solo casos manuales</option>
+<option value="ai">🤖 Solo generados por IA</option>
+</select></div>
+<div class="grid grid-cols-2 gap-4">
+<div><label class="block text-sm text-gray-400 mb-2">Dispositivo</label>
+<select class="w-full bg-gray-800/80 border border-gray-700 rounded-xl p-3 text-sm text-gray-200 outline-none"><option>📱 Todos</option><option>🤖 Galaxy S24</option><option>🍎 iPhone 15 Pro</option></select></div>
+<div><label class="block text-sm text-gray-400 mb-2">Entorno</label>
+<select id="environment-select" class="w-full bg-gray-800/80 border border-gray-700 rounded-xl p-3 text-sm text-gray-200 outline-none"><option value="staging">🟡 Staging</option><option value="development">🔵 Development</option><option value="production">🟢 Production</option></select></div>
+</div>
+<button onclick="executeTests()" id="execute-btn" class="w-full bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-500 hover:to-emerald-500 text-white font-medium py-3 rounded-xl transition flex items-center justify-center gap-2"><i class="fas fa-play"></i>Ejecutar Pruebas</button>
+</div>
+</div>
+<div id="execution-console" class="hidden card-glow glass rounded-2xl p-5 neon">
+<div class="flex items-center justify-between mb-3">
+<h4 class="text-white font-medium flex items-center gap-2"><i class="fas fa-terminal text-green-400"></i>Consola en Vivo</h4>
+<span class="text-xs text-green-400" id="exec-status"><span class="w-2 h-2 rounded-full bg-green-400 pulse-dot inline-block mr-1"></span>Ejecutando...</span>
+</div>
+<div id="console-output" class="bg-gray-900 rounded-xl p-4 h-64 overflow-y-auto space-y-1"></div>
+<div class="mt-3 flex items-center gap-4">
+<div class="flex-1 h-2 bg-gray-800 rounded-full overflow-hidden"><div id="exec-bar" class="h-full bg-gradient-to-r from-green-500 to-emerald-400 rounded-full progress-bar" style="width:0%"></div></div>
+<span class="text-sm text-gray-400" id="exec-progress">0%</span>
+</div>
+</div>
+</div>
+<div class="card-glow glass rounded-2xl p-5 neon">
+<h3 class="text-lg font-semibold text-white mb-4"><i class="fas fa-chart-pie text-cyan-400 mr-2"></i>Resultados en Vivo</h3>
+<div id="live-results"><div class="text-center py-8 text-gray-500"><i class="fas fa-hourglass-start text-3xl mb-3 text-gray-600"></i><p class="text-sm">Inicia una ejecución</p></div></div>
+</div>
+</div>
+</section>
+
+<!-- ============ TEST CASES ============ -->
+<section id="section-test-cases" class="hidden fade-in">
+<div class="card-glow glass rounded-2xl p-6 neon">
+<div class="flex items-center justify-between mb-5 flex-wrap gap-3">
+<h3 class="text-lg font-semibold text-white"><i class="fas fa-clipboard-check text-yellow-400 mr-2"></i>Casos de Prueba</h3>
+<div class="flex gap-3">
+<button onclick="openCreateManualModal()" class="px-3 py-1.5 rounded-lg bg-green-500/20 hover:bg-green-500/30 border border-green-500/30 text-green-400 text-xs transition"><i class="fas fa-plus mr-1"></i>Nuevo Manual</button>
+<div class="relative"><input type="text" id="search-cases" class="bg-gray-800/80 border border-gray-700 rounded-xl pl-10 pr-4 py-2 text-sm text-gray-200 outline-none w-56" placeholder="Buscar..." oninput="filterTestCases()"><i class="fas fa-search absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 text-sm"></i></div>
+<select id="filter-status" class="bg-gray-800/80 border border-gray-700 rounded-xl px-3 py-2 text-sm text-gray-200 outline-none" onchange="filterTestCases()"><option value="all">Todos</option><option value="manual">✋ Manuales</option><option value="ai">🤖 IA</option></select>
+<button onclick="refreshAllData()" class="px-4 py-2 bg-gray-800 hover:bg-gray-700 text-gray-300 rounded-xl transition text-sm flex items-center gap-2"><i class="fas fa-sync-alt"></i>Refrescar</button>
+</div>
+</div>
+<div id="test-cases-list" class="space-y-3"></div>
+</div>
+</section>
+
+<!-- ============ REPORTS ============ -->
+<section id="section-reports" class="hidden fade-in">
+<div class="grid grid-cols-1 lg:grid-cols-2 gap-5 mb-5">
+<div class="card-glow glass rounded-2xl p-5 neon"><h3 class="text-lg font-semibold text-white mb-4"><i class="fas fa-chart-area text-cyan-400 mr-2"></i>Tendencia de Ejecuciones</h3><canvas id="coverageTrendChart" height="200"></canvas></div>
+<div class="card-glow glass rounded-2xl p-5 neon"><h3 class="text-lg font-semibold text-white mb-4"><i class="fas fa-bug text-red-400 mr-2"></i>Resultados por Estado</h3><canvas id="bugsChart" height="200"></canvas></div>
+</div>
+<div class="card-glow glass rounded-2xl p-5 neon">
+<div class="flex items-center justify-between mb-4">
+<h3 class="text-lg font-semibold text-white"><i class="fas fa-file-alt text-indigo-400 mr-2"></i>Historial de Ejecuciones</h3>
+</div>
+<div class="overflow-x-auto">
+<table class="w-full text-sm">
+<thead><tr class="border-b border-gray-800"><th class="text-left py-3 px-4 text-gray-400 font-medium">Caso</th><th class="text-left py-3 px-4 text-gray-400 font-medium">Estado</th><th class="text-left py-3 px-4 text-gray-400 font-medium">Duración</th><th class="text-left py-3 px-4 text-gray-400 font-medium">Entorno</th><th class="text-left py-3 px-4 text-gray-400 font-medium">Fecha</th></tr></thead>
+<tbody id="reports-table"></tbody>
+</table>
+</div>
+</div>
+</section>
+
+<!-- ============ COVERAGE ============ -->
+<section id="section-coverage" class="hidden fade-in">
+<div class="grid grid-cols-1 md:grid-cols-3 gap-5 mb-5">
+<div class="card-glow glass rounded-2xl p-5 neon text-center"><div class="relative inline-block"><canvas id="gauge1" width="150" height="150"></canvas><div class="absolute inset-0 flex items-center justify-center"><span class="text-2xl font-bold text-white" id="gauge1-value">0%</span></div></div><h4 class="text-white font-medium mt-3">Casos Manuales</h4><p class="text-xs text-gray-400 mt-1" id="gauge1-detail">0 casos</p></div>
+<div class="card-glow glass rounded-2xl p-5 neon text-center"><div class="relative inline-block"><canvas id="gauge2" width="150" height="150"></canvas><div class="absolute inset-0 flex items-center justify-center"><span class="text-2xl font-bold text-white" id="gauge2-value">0%</span></div></div><h4 class="text-white font-medium mt-3">Casos IA</h4><p class="text-xs text-gray-400 mt-1" id="gauge2-detail">0 casos</p></div>
+<div class="card-glow glass rounded-2xl p-5 neon text-center"><div class="relative inline-block"><canvas id="gauge3" width="150" height="150"></canvas><div class="absolute inset-0 flex items-center justify-center"><span class="text-2xl font-bold text-white" id="gauge3-value">0%</span></div></div><h4 class="text-white font-medium mt-3">Tasa de Éxito</h4><p class="text-xs text-gray-400 mt-1" id="gauge3-detail">0 ejecuciones</p></div>
+</div>
+</section>
+
+<!-- ============ SECURITY ============ -->
+<section id="section-security" class="hidden fade-in">
+<div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-5">
+<div class="card-glow glass rounded-xl p-4 neon text-center"><p class="text-2xl font-bold text-green-400">✓</p><p class="text-xs text-gray-400 mt-1">Backend Seguro</p></div>
+<div class="card-glow glass rounded-xl p-4 neon text-center"><p class="text-2xl font-bold text-cyan-400">PostgreSQL</p><p class="text-xs text-gray-400 mt-1">Base de Datos</p></div>
+<div class="card-glow glass rounded-xl p-4 neon text-center"><p class="text-2xl font-bold text-purple-400">Docker</p><p class="text-xs text-gray-400 mt-1">Contenedores</p></div>
+<div class="card-glow glass rounded-xl p-4 neon text-center"><p class="text-2xl font-bold text-indigo-400">FastAPI</p><p class="text-xs text-gray-400 mt-1">API Framework</p></div>
+</div>
+<div class="card-glow glass rounded-2xl p-5 neon">
+<h3 class="text-lg font-semibold text-white mb-4"><i class="fas fa-shield-alt text-cyan-400 mr-2"></i>Estado de Seguridad</h3>
+<div class="space-y-4">
+<div class="p-4 rounded-xl bg-green-500/10 border border-green-500/30"><div class="flex items-center gap-3"><i class="fas fa-check-circle text-green-400 text-xl"></i><div><p class="text-sm text-green-300 font-medium">Conexión Cifrada</p><p class="text-xs text-gray-400">Todas las comunicaciones usan HTTPS en producción</p></div></div></div>
+<div class="p-4 rounded-xl bg-green-500/10 border border-green-500/30"><div class="flex items-center gap-3"><i class="fas fa-check-circle text-green-400 text-xl"></i><div><p class="text-sm text-green-300 font-medium">Base de Datos Protegida</p><p class="text-xs text-gray-400">PostgreSQL con credenciales en variables de entorno</p></div></div></div>
+<div class="p-4 rounded-xl bg-green-500/10 border border-green-500/30"><div class="flex items-center gap-3"><i class="fas fa-check-circle text-green-400 text-xl"></i><div><p class="text-sm text-green-300 font-medium">CORS Configurado</p><p class="text-xs text-gray-400">Control de origen cruzado activo</p></div></div></div>
+</div>
+</div>
+</section>
+
+<!-- ============ JIRA ============ -->
+<section id="section-jira" class="hidden fade-in">
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-5">
+<div class="lg:col-span-2 card-glow glass rounded-2xl p-6 neon">
+<div class="flex items-center justify-between mb-4">
+<h3 class="text-lg font-semibold text-white"><i class="fab fa-jira text-blue-400 mr-2"></i>Integración Jira</h3>
+<div class="flex gap-2">
+<button onclick="cleanJiraData()" class="px-3 py-1.5 rounded-lg bg-orange-500/20 hover:bg-orange-500/30 border border-orange-500/30 text-orange-400 text-xs transition"><i class="fas fa-broom mr-1"></i>Limpiar Jira</button>
+<span class="px-3 py-1 rounded-full text-xs bg-yellow-500/20 text-yellow-400 border border-yellow-500/30"><i class="fas fa-flask mr-1"></i>Demo Mode</span>
+</div>
+</div>
+<div class="grid grid-cols-3 gap-4 mb-5">
+<div class="bg-gray-800/50 rounded-xl p-4 text-center"><p class="text-2xl font-bold text-blue-400">48</p><p class="text-xs text-gray-400">Tickets Sync</p></div>
+<div class="bg-gray-800/50 rounded-xl p-4 text-center"><p class="text-2xl font-bold text-green-400">12</p><p class="text-xs text-gray-400">Bugs Creados</p></div>
+<div class="bg-gray-800/50 rounded-xl p-4 text-center"><p class="text-2xl font-bold text-purple-400">8</p><p class="text-xs text-gray-400">Stories Linked</p></div>
+</div>
+<div class="space-y-3" id="jira-tickets"></div>
+</div>
+<div class="card-glow glass rounded-2xl p-5 neon">
+<h3 class="text-lg font-semibold text-white mb-4"><i class="fas fa-sync text-green-400 mr-2"></i>Automatización</h3>
+<div class="space-y-4">
+<div class="flex items-center justify-between p-3 bg-gray-800/50 rounded-xl"><div><p class="text-sm text-gray-200">Auto-sync</p><p class="text-xs text-gray-400">Cada 5 min</p></div><label class="relative inline-flex items-center cursor-pointer"><input type="checkbox" checked class="sr-only peer"><div class="w-11 h-6 bg-gray-700 rounded-full peer peer-checked:after:translate-x-full after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-indigo-600"></div></label></div>
+<div class="flex items-center justify-between p-3 bg-gray-800/50 rounded-xl"><div><p class="text-sm text-gray-200">Crear bugs auto</p><p class="text-xs text-gray-400">Al detectar fallos</p></div><label class="relative inline-flex items-center cursor-pointer"><input type="checkbox" checked class="sr-only peer"><div class="w-11 h-6 bg-gray-700 rounded-full peer peer-checked:after:translate-x-full after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-indigo-600"></div></label></div>
+<button onclick="syncJira()" class="w-full bg-blue-600 hover:bg-blue-500 text-white py-2.5 rounded-xl transition text-sm flex items-center justify-center gap-2"><i class="fas fa-sync-alt"></i>Sincronizar Ahora</button>
+</div>
+</div>
+</div>
+</section>
+
+<!-- ============ DEVICES ============ -->
+<section id="section-devices" class="hidden fade-in">
+<div class="flex items-center justify-between mb-5">
+<h3 class="text-lg font-semibold text-white"><i class="fas fa-tablet-alt text-orange-400 mr-2"></i>Dispositivos Conectados</h3>
+<span class="px-3 py-1 rounded-full text-xs bg-yellow-500/20 text-yellow-400 border border-yellow-500/30"><i class="fas fa-flask mr-1"></i>Demo Mode</span>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5" id="devices-grid"></div>
+</section>
+
+<!-- ============ PIPELINE ============ -->
+<section id="section-pipeline" class="hidden fade-in">
+<div class="card-glow glass rounded-2xl p-6 neon">
+<div class="flex items-center justify-between mb-5"><h3 class="text-lg font-semibold text-white"><i class="fas fa-code-branch text-blue-400 mr-2"></i>Pipeline DevSecOps CI/CD</h3><span class="px-3 py-1 rounded-full text-xs bg-yellow-500/20 text-yellow-400 border border-yellow-500/30"><i class="fas fa-flask mr-1"></i>Demo</span></div>
+<div class="flex items-center justify-between overflow-x-auto pb-4 gap-2">
+<div class="flex-shrink-0 bg-green-500/10 border border-green-500/30 rounded-xl p-3 text-center min-w-[110px]"><i class="fas fa-code-commit text-green-400 text-xl mb-2"></i><p class="text-xs text-gray-200 font-medium">Commit</p><p class="text-[10px] text-green-400 mt-1">✓ OK</p></div>
+<div class="flex-shrink-0 bg-green-500/10 border border-green-500/30 rounded-xl p-3 text-center min-w-[110px]"><i class="fas fa-search text-green-400 text-xl mb-2"></i><p class="text-xs text-gray-200 font-medium">SAST</p><p class="text-[10px] text-green-400 mt-1">✓ 0 issues</p></div>
+<div class="flex-shrink-0 bg-green-500/10 border border-green-500/30 rounded-xl p-3 text-center min-w-[110px]"><i class="fas fa-shield-alt text-green-400 text-xl mb-2"></i><p class="text-xs text-gray-200 font-medium">Security</p><p class="text-[10px] text-green-400 mt-1">✓ OK</p></div>
+<div class="flex-shrink-0 bg-green-500/10 border border-green-500/30 rounded-xl p-3 text-center min-w-[110px]"><i class="fas fa-vial text-green-400 text-xl mb-2"></i><p class="text-xs text-gray-200 font-medium">Unit Tests</p><p class="text-[10px] text-green-400 mt-1">✓ OK</p></div>
+<div class="flex-shrink-0 bg-purple-500/10 border border-purple-500/30 rounded-xl p-3 text-center min-w-[110px]"><i class="fas fa-robot text-purple-400 text-xl mb-2 animate-pulse"></i><p class="text-xs text-gray-200 font-medium">AI Gen</p><p class="text-[10px] text-purple-400 mt-1"> Running</p></div>
+<div class="flex-shrink-0 bg-gray-800/50 border border-gray-700 rounded-xl p-3 text-center min-w-[110px]"><i class="fas fa-tasks text-gray-500 text-xl mb-2"></i><p class="text-xs text-gray-400 font-medium">Integration</p><p class="text-[10px] text-gray-500 mt-1">Pending</p></div>
+<div class="flex-shrink-0 bg-gray-800/50 border border-gray-700 rounded-xl p-3 text-center min-w-[110px]"><i class="fas fa-desktop text-gray-500 text-xl mb-2"></i><p class="text-xs text-gray-400 font-medium">E2E Tests</p><p class="text-[10px] text-gray-500 mt-1">Pending</p></div>
+<div class="flex-shrink-0 bg-gray-800/50 border border-gray-700 rounded-xl p-3 text-center min-w-[110px]"><i class="fas fa-rocket text-gray-500 text-xl mb-2"></i><p class="text-xs text-gray-400 font-medium">Deploy</p><p class="text-[10px] text-gray-500 mt-1">Pending</p></div>
+</div>
+</div>
+</section>
+
+<!-- ============ SETTINGS ============ -->
+<section id="section-settings" class="hidden fade-in">
+<div class="grid grid-cols-1 lg:grid-cols-2 gap-5">
+<div class="card-glow glass rounded-2xl p-6 neon">
+<h3 class="text-lg font-semibold text-white mb-4"><i class="fas fa-key text-yellow-400 mr-2"></i>API Keys</h3>
+<div class="space-y-4">
+<div><label class="block text-sm text-gray-400 mb-2">OpenAI API Key</label><input type="password" class="w-full bg-gray-800/80 border border-gray-700 rounded-xl p-3 text-sm text-gray-200 outline-none" placeholder="sk-..."></div>
+<div><label class="block text-sm text-gray-400 mb-2">Jira API Token</label><input type="password" class="w-full bg-gray-800/80 border border-gray-700 rounded-xl p-3 text-sm text-gray-200 outline-none" placeholder="jira-..."></div>
+<button onclick="saveSettings()" class="w-full bg-gradient-to-r from-indigo-600 to-purple-600 text-white font-medium py-3 rounded-xl transition"><i class="fas fa-save mr-2"></i>Guardar</button>
+</div>
+</div>
+<div class="card-glow glass rounded-2xl p-6 neon">
+<h3 class="text-lg font-semibold text-white mb-4"><i class="fas fa-sliders-h text-cyan-400 mr-2"></i>Configuración de Pruebas</h3>
+<div class="space-y-4">
+<div><label class="block text-sm text-gray-400 mb-2">Timeout (seg)</label><input type="number" class="w-full bg-gray-800/80 border border-gray-700 rounded-xl p-3 text-sm text-gray-200 outline-none" value="30"></div>
+<div><label class="block text-sm text-gray-400 mb-2">Reintentos</label><input type="number" class="w-full bg-gray-800/80 border border-gray-700 rounded-xl p-3 text-sm text-gray-200 outline-none" value="2"></div>
+<div><label class="block text-sm text-gray-400 mb-2">Parallel Threads</label><input type="number" class="w-full bg-gray-800/80 border border-gray-700 rounded-xl p-3 text-sm text-gray-200 outline-none" value="4"></div>
+<div>
+<label class="block text-sm text-gray-400 mb-2">Framework de Testing</label>
+<select id="framework-select" class="w-full bg-gray-800/80 border border-gray-700 rounded-xl p-3 text-sm text-gray-200 outline-none">
+<option value="appium">🤖 Appium</option>
+<option value="detox">⚡ Detox</option>
+<option value="maestro">🎯 Maestro</option>
+<option value="playwright">🎭 Playwright Mobile</option>
+<option value="xcuitest">🍎 XCUITest (iOS)</option>
+<option value="espresso">☕ Espresso (Android)</option>
+</select>
+</div>
+</div>
+</div>
+</div>
+</section>
+
+</div>
+</main>
+</div>
+
+<!-- ============ MODAL: LIMPIEZA SELECTIVA ============ -->
+<div id="modal-clean" class="hidden fixed inset-0 z-[100] flex items-center justify-center modal-overlay">
+<div class="glass rounded-2xl p-6 neon w-full max-w-2xl mx-4 max-h-[90vh] overflow-y-auto">
+<div class="flex items-center justify-between mb-4">
+<h3 class="text-lg font-semibold text-white"><i class="fas fa-broom text-orange-400 mr-2"></i>Limpiar Datos Selectivamente</h3>
+<button onclick="closeModal('modal-clean')" class="text-gray-400 hover:text-white"><i class="fas fa-times text-xl"></i></button>
+</div>
+<p class="text-sm text-gray-400 mb-4">Selecciona qué datos quieres borrar de la base de datos PostgreSQL.</p>
+<div class="space-y-2 mb-5">
+<div class="clean-option flex items-center gap-3 p-4 rounded-xl bg-gray-800/50" onclick="toggleCleanOption(this, 'cases')">
+<input type="checkbox" id="chk-clean-cases" class="w-5 h-5 rounded bg-gray-700 border-gray-600 text-red-500 focus:ring-red-500">
+<div class="flex-1"><p class="text-sm text-gray-200 font-medium">📋 Casos de Prueba</p><p class="text-xs text-gray-500">Borra todos los casos de prueba (manuales y generados por IA)</p></div>
+<span class="text-xs text-indigo-400" id="count-cases">0 casos</span>
+</div>
+<div class="clean-option flex items-center gap-3 p-4 rounded-xl bg-gray-800/50" onclick="toggleCleanOption(this, 'executions')">
+<input type="checkbox" id="chk-clean-executions" class="w-5 h-5 rounded bg-gray-700 border-gray-600 text-red-500 focus:ring-red-500">
+<div class="flex-1"><p class="text-sm text-gray-200 font-medium">▶️ Ejecuciones de Pruebas</p><p class="text-xs text-gray-500">Borra el historial completo de ejecuciones</p></div>
+<span class="text-xs text-indigo-400" id="count-executions">0 ejecuciones</span>
+</div>
+<div class="clean-option flex items-center gap-3 p-4 rounded-xl bg-gray-800/50" onclick="toggleCleanOption(this, 'stories')">
+<input type="checkbox" id="chk-clean-stories" class="w-5 h-5 rounded bg-gray-700 border-gray-600 text-red-500 focus:ring-red-500">
+<div class="flex-1"><p class="text-sm text-gray-200 font-medium"> Historias de Usuario</p><p class="text-xs text-gray-500">Borra el historial de historias (solo frontend)</p></div>
+<span class="text-xs text-indigo-400" id="count-stories">0 historias</span>
+</div>
+<div class="clean-option flex items-center gap-3 p-4 rounded-xl bg-gray-800/50" onclick="toggleCleanOption(this, 'all')">
+<input type="checkbox" id="chk-clean-all" class="w-5 h-5 rounded bg-gray-700 border-gray-600 text-red-500 focus:ring-red-500">
+<div class="flex-1"><p class="text-sm text-red-300 font-medium">🗑️ Borrar TODO</p><p class="text-xs text-gray-500">Elimina todos los datos de la base de datos</p></div>
+<span class="text-xs text-red-400">Peligro</span>
+</div>
+</div>
+<div class="flex items-center gap-3 p-3 rounded-xl bg-red-500/10 border border-red-500/30 mb-4">
+<i class="fas fa-exclamation-triangle text-red-400"></i>
+<p class="text-xs text-red-300">Esta acción no se puede deshacer. Los datos se borrarán permanentemente de PostgreSQL.</p>
+</div>
+<div class="flex gap-3">
+<button onclick="executeSelectiveClean()" class="flex-1 bg-gradient-to-r from-red-600 to-orange-600 hover:from-red-500 hover:to-orange-500 text-white font-medium py-3 rounded-xl transition"><i class="fas fa-trash-alt mr-2"></i>Borrar Seleccionados</button>
+<button onclick="closeModal('modal-clean')" class="px-6 py-3 bg-gray-800 hover:bg-gray-700 text-gray-300 rounded-xl transition">Cancelar</button>
+</div>
+</div>
+</div>
+
+<!-- ============ MODAL: CREAR CASO MANUAL ============ -->
+<div id="modal-create-manual" class="hidden fixed inset-0 z-[100] flex items-center justify-center modal-overlay">
+<div class="glass rounded-2xl p-6 neon w-full max-w-2xl mx-4 max-h-[90vh] overflow-y-auto">
+<div class="flex items-center justify-between mb-4">
+<h3 class="text-lg font-semibold text-white"><i class="fas fa-plus-circle text-green-400 mr-2"></i>Crear Caso de Prueba Manual</h3>
+<button onclick="closeModal('modal-create-manual')" class="text-gray-400 hover:text-white"><i class="fas fa-times text-xl"></i></button>
+</div>
+<div class="space-y-4">
+<div class="grid grid-cols-2 gap-4">
+<div><label class="block text-sm text-gray-400 mb-2">Título del caso *</label><input type="text" id="manual-title" class="w-full bg-gray-800/80 border border-gray-700 rounded-xl p-3 text-sm text-gray-200 outline-none" placeholder="Ej: Verificar login con credenciales válidas"></div>
+<div><label class="block text-sm text-gray-400 mb-2">Descripción *</label><input type="text" id="manual-description" class="w-full bg-gray-800/80 border border-gray-700 rounded-xl p-3 text-sm text-gray-200 outline-none" placeholder="Ej: Validar que el usuario pueda iniciar sesión"></div>
+</div>
+<div><label class="block text-sm text-gray-400 mb-2">Pasos (uno por línea) *</label><textarea id="manual-steps" rows="4" class="w-full bg-gray-800/80 border border-gray-700 rounded-xl p-3 text-sm text-gray-200 outline-none resize-none" placeholder="Paso 1: Abrir la aplicación&#10;Paso 2: Navegar al login&#10;Paso 3: Ingresar credenciales"></textarea></div>
+<div><label class="block text-sm text-gray-400 mb-2">Resultado esperado *</label><input type="text" id="manual-expected" class="w-full bg-gray-800/80 border border-gray-700 rounded-xl p-3 text-sm text-gray-200 outline-none" placeholder="Ej: El usuario inicia sesión exitosamente"></div>
+<div class="grid grid-cols-3 gap-4">
+<div><label class="block text-sm text-gray-400 mb-2">Prioridad</label><select id="manual-priority" class="w-full bg-gray-800/80 border border-gray-700 rounded-xl p-3 text-sm text-gray-200 outline-none"><option value="high">Alta</option><option value="medium" selected>Media</option><option value="low">Baja</option></select></div>
+<div><label class="block text-sm text-gray-400 mb-2">Plataforma</label><select id="manual-platform" class="w-full bg-gray-800/80 border border-gray-700 rounded-xl p-3 text-sm text-gray-200 outline-none"><option value="mobile">Mobile</option><option value="web">Web</option><option value="api">API</option></select></div>
+<div><label class="block text-sm text-gray-400 mb-2">Tipo</label><select id="manual-type" class="w-full bg-gray-800/80 border border-gray-700 rounded-xl p-3 text-sm text-gray-200 outline-none"><option value="functional">Funcional</option><option value="performance">Performance</option><option value="security">Seguridad</option></select></div>
+</div>
+<div class="flex gap-3 pt-2">
+<button onclick="createManualTestCase()" id="btn-create-manual" class="flex-1 bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-500 hover:to-emerald-500 text-white font-medium py-3 rounded-xl transition"><i class="fas fa-plus mr-2"></i>Crear Caso</button>
+<button onclick="closeModal('modal-create-manual')" class="px-6 py-3 bg-gray-800 hover:bg-gray-700 text-gray-300 rounded-xl transition">Cancelar</button>
+</div>
+</div>
+</div>
+</div>
+
+<!-- ============ MODAL: NUEVA HISTORIA ============ -->
+<div id="modal-new-story" class="hidden fixed inset-0 z-[100] flex items-center justify-center modal-overlay">
+<div class="glass rounded-2xl p-6 neon w-full max-w-lg mx-4">
+<div class="flex items-center justify-between mb-4">
+<h3 class="text-lg font-semibold text-white"><i class="fas fa-plus-circle text-green-400 mr-2"></i>Guardar Historia Actual</h3>
+<button onclick="closeModal('modal-new-story')" class="text-gray-400 hover:text-white"><i class="fas fa-times text-xl"></i></button>
+</div>
+<p class="text-sm text-gray-400 mb-4">Guarda la historia actual con un nombre para identificarla.</p>
+<div class="space-y-4">
+<div><label class="block text-sm text-gray-400 mb-2">Nombre de la Historia</label><input type="text" id="story-name-input" class="w-full bg-gray-800/80 border border-gray-700 rounded-xl p-3 text-sm text-gray-200 outline-none" placeholder="Ej: Login de usuarios v1.0"></div>
+<div><label class="block text-sm text-gray-400 mb-2">User Story (actual)</label><textarea id="story-content-preview" class="w-full bg-gray-800/50 border border-gray-700 rounded-xl p-3 text-sm text-gray-400 outline-none resize-none" rows="3" readonly></textarea></div>
+<div class="p-3 rounded-xl bg-green-500/10 border border-green-500/30"><p class="text-xs text-green-300"><i class="fas fa-info-circle mr-1"></i>Los casos generados se mantendrán en el backend.</p></div>
+<div class="flex gap-3">
+<button onclick="confirmNewStory()" class="flex-1 bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-500 hover:to-emerald-500 text-white font-medium py-3 rounded-xl transition"><i class="fas fa-save mr-2"></i>Guardar y Crear Nueva</button>
+<button onclick="closeModal('modal-new-story')" class="px-6 py-3 bg-gray-800 hover:bg-gray-700 text-gray-300 rounded-xl transition">Cancelar</button>
+</div>
+</div>
+</div>
+</div>
+
+<!-- Notification -->
+<div id="notification" class="hidden fixed top-6 right-6 px-5 py-3 rounded-xl border z-[200] flex items-center gap-2 shadow-2xl fade-in"></div>
+
+<script>
+// ══════════════════════════════════════════════════════════════
+// CONFIGURACIÓN DEL BACKEND
+// ══════════════════════════════════════════════════════════════
+const API_URL = 'http://localhost:8000';
+
+// ══════════════════════════════════════════════════════════════
+// ESTADO GLOBAL & DATOS DEMO
+// ══════════════════════════════════════════════════════════════
+let testCasesData = [];
+let executionsData = [];
+let statsData = { total_test_cases: 0, total_executions: 0, passed: 0, failed: 0, pass_rate: 0 };
+let lastGeneratedCases = [];
+const storiesHistory = [];
+let currentStoryCounter = 0;
+let currentActiveStoryId = null;
+let testsChartInstance = null;
+let distributionChartInstance = null;
+let coverageTrendChartInstance = null;
+let bugsChartInstance = null;
+
+// Datos Demo para secciones no conectadas aún
+const devicesData = [
+{ name: 'Samsung Galaxy S24', os: 'Android 14', status: 'online', battery: 85, tests: 45, icon: 'fab fa-android', color: 'text-green-400' },
+{ name: 'Google Pixel 8', os: 'Android 14', status: 'online', battery: 92, tests: 38, icon: 'fab fa-android', color: 'text-green-400' },
+{ name: 'iPhone 15 Pro', os: 'iOS 17.2', status: 'online', battery: 78, tests: 52, icon: 'fab fa-apple', color: 'text-gray-300' },
+{ name: 'iPhone 14', os: 'iOS 17.1', status: 'busy', battery: 65, tests: 41, icon: 'fab fa-apple', color: 'text-gray-300' },
+{ name: 'Samsung Galaxy A54', os: 'Android 13', status: 'offline', battery: 0, tests: 22, icon: 'fab fa-android', color: 'text-green-400' },
+{ name: 'iPad Pro 12.9"', os: 'iPadOS 17.2', status: 'online', battery: 95, tests: 28, icon: 'fab fa-apple', color: 'text-gray-300' },
+];
+const jiraTickets = [
+{ key: 'PROJ-234', title: 'Login - Error en recuperación contraseña', type: 'bug', priority: 'critical', status: 'In Progress', assignee: 'Carlos M.' },
+{ key: 'PROJ-235', title: 'Checkout - Botón pago no responde en Android', type: 'bug', priority: 'high', status: 'Open', assignee: 'Ana R.' },
+{ key: 'PROJ-236', title: 'Ver historial de pedidos', type: 'story', priority: 'medium', status: 'In Review', assignee: 'Luis P.' },
+{ key: 'PROJ-237', title: 'Optimizar carga del feed', type: 'task', priority: 'medium', status: 'To Do', assignee: 'María G.' },
+];
+
+// ══════════════════════════════════════════════════════════════
+// FUNCIONES DE BACKEND
+// ══════════════════════════════════════════════════════════════
+async function checkBackendConnection() {
+  const statusEl = document.getElementById('backend-status');
+  try {
+    const response = await fetch(`${API_URL}/health`);
+    const data = await response.json();
+    statusEl.className = 'px-3 py-1 rounded-full text-xs font-medium bg-green-500/20 text-green-400 border border-green-500/30';
+    statusEl.innerHTML = '<i class="fas fa-circle text-[8px] mr-1 pulse-dot"></i>Backend Conectado';
+    return true;
+  } catch (error) {
+    statusEl.className = 'px-3 py-1 rounded-full text-xs font-medium bg-red-500/20 text-red-400 border border-red-500/30';
+    statusEl.innerHTML = '<i class="fas fa-circle text-[8px] mr-1"></i>Backend Desconectado';
+    return false;
+  }
+}
+
+async function loadStatsFromBackend() {
+  try {
+    const response = await fetch(`${API_URL}/api/v1/stats`);
+    statsData = await response.json();
+    updateDashboardStats();
+  } catch (error) { console.error('Error cargando stats:', error); }
+}
+
+async function loadTestCasesFromBackend() {
+  try {
+    const response = await fetch(`${API_URL}/api/v1/tests`);
+    const data = await response.json();
+    testCasesData = data.test_cases || [];
+    document.getElementById('available-tests-count').textContent = testCasesData.length;
+  } catch (error) { console.error('Error cargando casos:', error); }
+}
+
+async function loadExecutionsFromBackend() {
+  try {
+    const response = await fetch(`${API_URL}/api/v1/executions`);
+    const data = await response.json();
+    executionsData = data.executions || [];
+  } catch (error) { console.error('Error cargando ejecuciones:', error); }
+}
+
+async function refreshAllData() {
+  notify('Actualizando datos...', 'info');
+  await Promise.all([loadStatsFromBackend(), loadTestCasesFromBackend(), loadExecutionsFromBackend()]);
+  renderTestCases();
+  renderRecentExecutions();
+  renderActivityFeed();
+  updateDistributionChart();
+  updateCoverageGauges();
+  updateReportsTable();
+  updateCharts();
+  updateCleanCounts();
+  notify('✓ Datos actualizados', 'success');
+}
+
+async function createManualTestCase() {
+  const title = document.getElementById('manual-title').value.trim();
+  const description = document.getElementById('manual-description').value.trim();
+  const stepsText = document.getElementById('manual-steps').value.trim();
+  const expected = document.getElementById('manual-expected').value.trim();
+  const priority = document.getElementById('manual-priority').value;
+  const platform = document.getElementById('manual-platform').value;
+  const testType = document.getElementById('manual-type').value;
+  if (!title || !description || !stepsText || !expected) { notify('Completa todos los campos obligatorios', 'warning'); return; }
+  const steps = stepsText.split('\n').filter(s => s.trim() !== '');
+  const btn = document.getElementById('btn-create-manual');
+  btn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>Creando...';
+  btn.disabled = true;
+  try {
+    const response = await fetch(`${API_URL}/api/v1/tests/create`, {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ title, description, steps, expected_result: expected, priority, platform, test_type: testType })
+    });
+    const data = await response.json();
+    if (data.test_case) {
+      notify(`✓ Caso creado: ${data.test_case.title}`, 'success');
+      closeModal('modal-create-manual');
+      document.getElementById('manual-title').value = '';
+      document.getElementById('manual-description').value = '';
+      document.getElementById('manual-steps').value = '';
+      document.getElementById('manual-expected').value = '';
+      await refreshAllData();
+    } else { notify('Error: ' + JSON.stringify(data), 'error'); }
+  } catch (error) { notify('Error: ' + error.message, 'error'); }
+  finally { btn.innerHTML = '<i class="fas fa-plus mr-2"></i>Crear Caso'; btn.disabled = false; }
+}
+
+async function deleteTestCase(id) {
+  if (!confirm('¿Eliminar este caso de prueba?')) return;
+  try {
+    await fetch(`${API_URL}/api/v1/tests/${id}`, { method: 'DELETE' });
+    notify('✓ Caso eliminado', 'success');
+    await refreshAllData();
+  } catch (error) { notify('Error: ' + error.message, 'error'); }
+}
+
+async function testBackendConnection() {
+  const ok = await checkBackendConnection();
+  notify(ok ? '✓ Backend conectado' : '✗ No se pudo conectar', ok ? 'success' : 'error');
+}
+
+// ══════════════════════════════════════════════════════════════
+// LIMPIEZA SELECTIVA DE DATOS
+// ══════════════════════════════════════════════════════════════
+function openCleanModal() {
+  updateCleanCounts();
+  document.querySelectorAll('#modal-clean input[type="checkbox"]').forEach(cb => cb.checked = false);
+  document.querySelectorAll('.clean-option').forEach(opt => opt.classList.remove('selected'));
+  document.getElementById('modal-clean').classList.remove('hidden');
+}
+
+function updateCleanCounts() {
+  document.getElementById('count-cases').textContent = `${testCasesData.length} casos`;
+  document.getElementById('count-executions').textContent = `${executionsData.length} ejecuciones`;
+  document.getElementById('count-stories').textContent = `${storiesHistory.length} historias`;
+}
+
+function toggleCleanOption(element, type) {
+  const checkbox = element.querySelector('input[type="checkbox"]');
+  checkbox.checked = !checkbox.checked;
+  element.classList.toggle('selected', checkbox.checked);
+  if (type === 'all' && checkbox.checked) {
+    document.getElementById('chk-clean-cases').checked = false;
+    document.getElementById('chk-clean-executions').checked = false;
+    document.getElementById('chk-clean-stories').checked = false;
+    document.querySelectorAll('.clean-option').forEach(opt => {
+      if (!opt.onclick.toString().includes("'all'")) opt.classList.remove('selected');
+    });
+  }
+  if (type !== 'all' && checkbox.checked) {
+    document.getElementById('chk-clean-all').checked = false;
+    document.querySelectorAll('.clean-option').forEach(opt => {
+      if (opt.onclick.toString().includes("'all'")) opt.classList.remove('selected');
+    });
+  }
+}
+
+async function executeSelectiveClean() {
+  const cleanCases = document.getElementById('chk-clean-cases').checked;
+  const cleanExecutions = document.getElementById('chk-clean-executions').checked;
+  const cleanStories = document.getElementById('chk-clean-stories').checked;
+  const cleanAll = document.getElementById('chk-clean-all').checked;
+  if (!cleanCases && !cleanExecutions && !cleanStories && !cleanAll) {
+    notify('Selecciona al menos un tipo de dato', 'warning');
+    return;
+  }
+  if (!confirm('¿Confirmas borrar los datos seleccionados? Esta acción no se puede deshacer.')) return;
+  let cleanedItems = [];
+  try {
+    if (cleanAll || cleanCases) {
+      for (const tc of testCasesData) {
+        await fetch(`${API_URL}/api/v1/tests/${tc.id}`, { method: 'DELETE' });
+      }
+      cleanedItems.push('casos de prueba');
+    }
+    if (cleanAll || cleanStories) {
+      storiesHistory.length = 0;
+      currentStoryCounter = 0;
+      currentActiveStoryId = null;
+      document.getElementById('current-story-badge').classList.add('hidden');
+      document.getElementById('current-story-tag').classList.add('hidden');
+      renderStoriesHistory();
+      cleanedItems.push('historias');
+    }
+    if (cleanAll || cleanExecutions) {
+      cleanedItems.push('ejecuciones (se borrarán al reiniciar backend)');
+    }
+    closeModal('modal-clean');
+    await refreshAllData();
+    notify(`✓ Borrado: ${cleanedItems.join(', ')}`, 'success');
+  } catch (error) {
+    notify('Error al borrar: ' + error.message, 'error');
+  }
+}
+
+function cleanJiraData() {
+  if (!confirm('¿Borrar datos de Jira?')) return;
+  jiraTickets.length = 0;
+  renderJiraTickets();
+  notify('Datos de Jira borrados', 'success');
+}
+
+// ══════════════════════════════════════════════════════════════
+// NAVEGACIÓN
+// ══════════════════════════════════════════════════════════════
+function showSection(sectionId) {
+  document.querySelectorAll('[id^="section-"]').forEach(s => s.classList.add('hidden'));
+  document.getElementById(`section-${sectionId}`).classList.remove('hidden');
+  document.querySelectorAll('.sidebar-item').forEach(i => i.classList.remove('active'));
+  document.querySelector(`[data-section="${sectionId}"]`)?.classList.add('active');
+  const titles = { 'dashboard': 'Dashboard', 'ai-generator': 'Generador IA', 'test-executor': 'Ejecutor de Pruebas', 'test-cases': 'Casos de Prueba', 'reports': 'Reportes', 'coverage': 'Cobertura', 'security': 'Seguridad', 'jira': 'Integración Jira', 'devices': 'Dispositivos', 'pipeline': 'Pipeline CI/CD', 'settings': 'Configuración' };
+  document.getElementById('section-title').textContent = titles[sectionId] || 'Dashboard';
+  if (sectionId === 'test-cases') renderTestCases();
+  if (sectionId === 'reports') { updateReportsTable(); initReportsCharts(); }
+  if (sectionId === 'coverage') updateCoverageGauges();
+  if (sectionId === 'devices') renderDevices();
+  if (sectionId === 'jira') renderJiraTickets();
+  if (sectionId === 'dashboard') { renderRecentExecutions(); renderActivityFeed(); updateCharts(); }
+}
+
+// ══════════════════════════════════════════════════════════════
+// DASHBOARD - ACTUALIZAR STATS
+// ══════════════════════════════════════════════════════════════
+function updateDashboardStats() {
+  document.getElementById('stat-total').textContent = statsData.total_test_cases || 0;
+  document.getElementById('stat-pass-rate').textContent = (statsData.pass_rate || 0) + '%';
+  document.getElementById('stat-bugs').textContent = statsData.failed || 0;
+  const aiCount = testCasesData.filter(tc => !tc.manual).length;
+  document.getElementById('stat-ai-generated').textContent = aiCount;
+  document.getElementById('bar-total').style.width = Math.min(100, (statsData.total_test_cases || 0) * 2) + '%';
+  document.getElementById('bar-pass').style.width = (statsData.pass_rate || 0) + '%';
+  document.getElementById('bar-ai').style.width = Math.min(100, aiCount * 2) + '%';
+  document.getElementById('bar-bugs').style.width = Math.min(100, (statsData.failed || 0) * 10) + '%';
+}
+
+function renderRecentExecutions() {
+  const container = document.getElementById('recent-executions');
+  if (executionsData.length === 0) {
+    container.innerHTML = '<div class="text-center py-8 text-gray-500"><i class="fas fa-hourglass-start text-3xl mb-3 text-gray-600"></i><p class="text-sm">Sin ejecuciones aún</p></div>';
+    return;
+  }
+  const recent = executionsData.slice(-5).reverse();
+  container.innerHTML = recent.map(ex => `
+    <div class="flex items-start gap-3 p-3 rounded-xl bg-gray-800/50">
+      <div class="w-8 h-8 rounded-lg ${ex.status === 'passed' ? 'bg-green-500/20' : 'bg-red-500/20'} flex items-center justify-center flex-shrink-0">
+        <i class="fas fa-${ex.status === 'passed' ? 'check text-green-400' : 'times text-red-400'} text-xs"></i>
+      </div>
+      <div class="flex-1">
+        <p class="text-sm text-gray-200">${ex.test_title || ex.test_case_id} - <span class="${ex.status === 'passed' ? 'text-green-400' : 'text-red-400'}">${ex.status}</span></p>
+        <p class="text-xs text-gray-500 mt-1">${ex.duration}s • ${ex.environment || 'staging'}</p>
+      </div>
+    </div>
+  `).join('');
+}
+
+function renderActivityFeed() {
+  const container = document.getElementById('activity-feed');
+  const activities = [];
+  if (testCasesData.length > 0) {
+    const manual = testCasesData.filter(tc => tc.manual).length;
+    const ai = testCasesData.length - manual;
+    if (ai > 0) activities.push({ icon: 'fa-robot', color: 'purple', text: `IA generó <span class="text-purple-400">${ai} casos</span>`, time: 'Reciente' });
+    if (manual > 0) activities.push({ icon: 'fa-user', color: 'green', text: `Se crearon <span class="text-green-400">${manual} casos manuales</span>`, time: 'Reciente' });
+  }
+  if (executionsData.length > 0) {
+    const passed = executionsData.filter(e => e.status === 'passed').length;
+    activities.push({ icon: 'fa-play-circle', color: 'cyan', text: `<span class="text-cyan-400">${executionsData.length} ejecuciones</span> - ${passed} pasaron`, time: 'Reciente' });
+  }
+  if (activities.length === 0) {
+    container.innerHTML = '<div class="text-center py-8 text-gray-500"><i class="fas fa-inbox text-3xl mb-3 text-gray-600"></i><p class="text-sm">Sin actividad aún. ¡Crea tu primer caso de prueba!</p></div>';
+    return;
+  }
+  container.innerHTML = activities.map(a => `
+    <div class="flex items-start gap-3 p-3 rounded-xl bg-gray-800/50">
+      <div class="w-8 h-8 rounded-lg bg-${a.color}-500/20 flex items-center justify-center flex-shrink-0">
+        <i class="fas ${a.icon} text-${a.color}-400 text-xs"></i>
+      </div>
+      <div class="flex-1">
+        <p class="text-sm text-gray-200">${a.text}</p>
+        <p class="text-xs text-gray-500 mt-1">${a.time}</p>
+      </div>
+    </div>
+  `).join('');
+}
+
+function updateDistributionChart() {
+  const total = testCasesData.length || 1;
+  const functional = testCasesData.filter(tc => tc.test_type === 'functional').length;
+  const performance = testCasesData.filter(tc => tc.test_type === 'performance').length;
+  const security = testCasesData.filter(tc => tc.test_type === 'security').length;
+  document.getElementById('dist-functional').textContent = Math.round(functional / total * 100) + '%';
+  document.getElementById('dist-performance').textContent = Math.round(performance / total * 100) + '%';
+  document.getElementById('dist-security').textContent = Math.round(security / total * 100) + '%';
+  if (distributionChartInstance) {
+    distributionChartInstance.data.datasets[0].data = [functional, performance, security];
+    distributionChartInstance.update();
+  }
+}
+
+function updateCoverageGauges() {
+  const total = testCasesData.length || 1;
+  const manual = testCasesData.filter(tc => tc.manual).length;
+  const ai = testCasesData.length - manual;
+  const manualPct = Math.round(manual / total * 100);
+  const aiPct = Math.round(ai / total * 100);
+  const passRate = statsData.pass_rate || 0;
+  document.getElementById('gauge1-value').textContent = manualPct + '%';
+  document.getElementById('gauge1-detail').textContent = `${manual} casos`;
+  document.getElementById('gauge2-value').textContent = aiPct + '%';
+  document.getElementById('gauge2-detail').textContent = `${ai} casos`;
+  document.getElementById('gauge3-value').textContent = passRate + '%';
+  document.getElementById('gauge3-detail').textContent = `${statsData.total_executions || 0} ejecuciones`;
+  drawGauge('gauge1', manualPct, '#22c55e');
+  drawGauge('gauge2', aiPct, '#8b5cf6');
+  drawGauge('gauge3', passRate, '#06b6d4');
+}
+
+function updateReportsTable() {
+  const tbody = document.getElementById('reports-table');
+  if (executionsData.length === 0) {
+    tbody.innerHTML = '<tr><td colspan="5" class="py-8 text-center text-gray-500">Sin ejecuciones registradas</td></tr>';
+    return;
+  }
+  tbody.innerHTML = executionsData.slice().reverse().map(ex => {
+    const statusColor = ex.status === 'passed' ? 'text-green-400' : ex.status === 'failed' ? 'text-red-400' : 'text-yellow-400';
+    const statusIcon = ex.status === 'passed' ? '✓' : ex.status === 'failed' ? '✗' : '⚠';
+    return `<tr class="border-b border-gray-800/50 hover:bg-gray-800/30"><td class="py-3 px-4 text-gray-200">${ex.test_title || ex.test_case_id}</td><td class="py-3 px-4 ${statusColor} font-medium">${statusIcon} ${ex.status}</td><td class="py-3 px-4 text-gray-400">${ex.duration}s</td><td class="py-3 px-4 text-gray-400">${ex.environment || 'staging'}</td><td class="py-3 px-4 text-gray-500 text-xs">${ex.executed_at ? new Date(ex.executed_at).toLocaleString('es-ES') : '-'}</td></tr>`;
+  }).join('');
+}
+
+// ══════════════════════════════════════════════════════════════
+// AI GENERATOR - GENERACIÓN INTELIGENTE (MEJORA #1)
+// ══════════════════════════════════════════════════════════════
+async function generateTestCases() {
+  const userStory = document.getElementById('user-story-input').value;
+  if (!userStory.trim()) { notify('Ingresa una User Story', 'warning'); return; }
+  const progress = document.getElementById('generation-progress');
+  const btn = document.getElementById('generate-btn');
+  progress.classList.remove('hidden');
+  btn.disabled = true;
+  btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i>Generando...';
+  const steps = ['Analizando requisitos...', 'Evaluando riesgos...', 'Generando casos...', 'Validando...'];
+  for (let i = 0; i < 4; i++) {
+    await sleep(600);
+    document.getElementById('generation-status').textContent = steps[i];
+    document.getElementById('generation-bar').style.width = `${(i+1)*25}%`;
+  }
+  const type = document.getElementById('test-type-select').value;
+  // Usamos la generación inteligente del frontend
+  const cases = generateCasesByType(type);
+  
+  if (currentActiveStoryId) {
+    cases.forEach(c => { c.storyId = currentActiveStoryId; });
+  }
+  lastGeneratedCases = cases;
+  await sleep(400);
+  progress.classList.add('hidden');
+  btn.disabled = false;
+  btn.innerHTML = '<i class="fas fa-magic"></i>Generar Casos con IA';
+  document.getElementById('generation-bar').style.width = '0%';
+  renderGeneratedCases(lastGeneratedCases);
+  // Mostrar botón para agregar a la suite
+  document.getElementById('add-to-suite-section').classList.remove('hidden');
+  const storyInfo = currentActiveStoryId ? ` (Historia: ${currentActiveStoryId})` : '';
+  notify(`${lastGeneratedCases.length} casos generados${storyInfo}`, 'success');
+}
+
+// ✅ MEJORA #1: Generación dinámica basada en análisis de User Story
+function generateCasesByType(type) {
+  const nextId = testCasesData.length + 1;
+  const userStory = document.getElementById('user-story-input').value.toLowerCase();
+  const analysis = {
+    hasLogin: /login|iniciar sesión|acceder|entrar|sign in/i.test(userStory),
+    hasRegister: /registr|crear cuenta|sign up|registro/i.test(userStory),
+    hasSearch: /buscar|search|filtrar|encontrar/i.test(userStory),
+    hasPayment: /pago|payment|tarjeta|compra|checkout/i.test(userStory),
+    hasProfile: /perfil|profile|cuenta|usuario/i.test(userStory),
+    hasForm: /formulario|form|campo|field|input/i.test(userStory)
+  };
+  const templates = {
+    login: [
+      { title: 'Login con credenciales válidas', priority: 'high', type: 'functional', steps: 5, module: 'Autenticación' },
+      { title: 'Login con email inválido', priority: 'high', type: 'functional', steps: 3, module: 'Autenticación' },
+      { title: 'Login con contraseña incorrecta', priority: 'high', type: 'functional', steps: 3, module: 'Autenticación' },
+      { title: 'Login - SQL Injection', priority: 'high', type: 'security', steps: 4, module: 'Seguridad' },
+      { title: 'Login - Tiempo de respuesta', priority: 'medium', type: 'performance', steps: 3, module: 'Performance' }
+    ],
+    register: [
+      { title: 'Registro exitoso con datos válidos', priority: 'high', type: 'functional', steps: 6, module: 'Registro' },
+      { title: 'Registro con email duplicado', priority: 'high', type: 'functional', steps: 4, module: 'Registro' },
+      { title: 'Registro con contraseña débil', priority: 'high', type: 'functional', steps: 3, module: 'Registro' },
+      { title: 'Registro - XSS en nombre', priority: 'high', type: 'security', steps: 3, module: 'Seguridad' }
+    ],
+    payment: [
+      { title: 'Pago exitoso con tarjeta válida', priority: 'high', type: 'functional', steps: 7, module: 'Pagos' },
+      { title: 'Pago con tarjeta expirada', priority: 'high', type: 'functional', steps: 4, module: 'Pagos' },
+      { title: 'Pago - Enmascaramiento de tarjeta', priority: 'high', type: 'security', steps: 3, module: 'Seguridad' },
+      { title: 'Pago - Timeout de transacción', priority: 'high', type: 'performance', steps: 5, module: 'Performance' }
+    ],
+    default: [
+      { title: 'Flujo principal - Caso feliz', priority: 'high', type: 'functional', steps: 5, module: 'General' },
+      { title: 'Validación de campos requeridos', priority: 'high', type: 'functional', steps: 3, module: 'General' },
+      { title: 'Entrada con datos inválidos', priority: 'high', type: 'functional', steps: 4, module: 'General' },
+      { title: 'Comportamiento sin conexión', priority: 'high', type: 'functional', steps: 6, module: 'Offline' },
+      { title: 'Input validation - Seguridad', priority: 'high', type: 'security', steps: 4, module: 'Seguridad' }
+    ]
+  };
+  let selectedTemplates = [];
+  if (analysis.hasLogin) selectedTemplates = selectedTemplates.concat(templates.login);
+  if (analysis.hasRegister) selectedTemplates = selectedTemplates.concat(templates.register);
+  if (analysis.hasPayment) selectedTemplates = selectedTemplates.concat(templates.payment);
+  if (selectedTemplates.length === 0) selectedTemplates = templates.default;
+  selectedTemplates = selectedTemplates.sort(() => Math.random() - 0.5).slice(0, 5);
+  
+  const prefix = type === 'security' ? 'SEC' : type === 'performance' ? 'PERF' : 'TC';
+  return selectedTemplates.map((template, idx) => ({
+    id: `${prefix}-${String(nextId + idx).padStart(3, '0')}`,
+    title: template.title,
+    priority: template.priority,
+    test_type: template.type,
+    steps: Array.from({length: template.steps}, (_, i) => `Paso ${i+1}: ...`),
+    expected_result: 'Resultado esperado válido',
+    platform: document.getElementById('platform-select').value,
+    manual: false,
+    storyId: null
+  }));
+}
+
+function renderGeneratedCases(cases) {
+  const container = document.getElementById('generated-results');
+  document.getElementById('cases-count').textContent = `${cases.length} casos nuevos`;
+  if (cases.length === 0) {
+    container.innerHTML = '<div class="text-center py-12 text-gray-500"><i class="fas fa-flask text-4xl mb-3 text-gray-600"></i><p class="text-sm">Genera casos con IA</p></div>';
+    return;
+  }
+  container.innerHTML = cases.map((tc, i) => `
+    <div class="p-3 rounded-xl bg-gray-800/50 border-l-4 border-l-indigo-500" style="animation:fadeIn .3s ease ${i*0.05}s both">
+      <div class="flex items-start justify-between mb-1">
+        <div class="flex items-center gap-2">
+          <span class="text-xs font-mono text-indigo-400">${tc.id}</span>
+          ${tc.storyId ? `<span class="story-id-badge" title="Asociado a ${tc.storyId}"><i class="fas fa-link text-[8px]"></i>${tc.storyId}</span>` : ''}
+        </div>
+        <span class="px-2 py-0.5 rounded text-[10px] ${getPriorityColor(tc.priority)}">${tc.priority}</span>
+      </div>
+      <p class="text-sm text-gray-200 font-medium">${tc.title}</p>
+      <p class="text-xs text-gray-500 mt-1">${tc.steps ? tc.steps.length : 0} pasos</p>
+      <div class="flex items-center gap-2 mt-2">
+        <span class="px-1.5 py-0.5 rounded text-[10px] bg-gray-700 text-gray-300">${tc.test_type || tc.type}</span>
+        <span class="px-1.5 py-0.5 rounded text-[10px] bg-purple-500/20 text-purple-400"><i class="fas fa-robot mr-0.5"></i>IA</span>
+      </div>
+    </div>
+  `).join('');
+}
+
+async function addToTestSuite() {
+  if (lastGeneratedCases.length === 0) {
+    notify('No hay casos para agregar', 'warning');
+    return;
+  }
+  notify('Guardando casos en PostgreSQL...', 'info');
+  let addedCount = 0;
+  for (const c of lastGeneratedCases) {
+    try {
+      await fetch(`${API_URL}/api/v1/tests/create`, {
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          title: c.title, description: `Caso generado por IA`, steps: c.steps,
+          expected_result: c.expected_result, priority: c.priority,
+          platform: c.platform, test_type: c.test_type
+        })
+      });
+      addedCount++;
+    } catch (error) { console.error('Error guardando caso:', error); }
+  }
+  notify(`✓ ${addedCount} casos agregados a la Suite y guardados en BD`, 'success');
+  document.getElementById('add-to-suite-section').classList.add('hidden');
+  lastGeneratedCases = [];
+  document.getElementById('generated-results').innerHTML = '<div class="text-center py-12 text-gray-500"><i class="fas fa-flask text-4xl mb-3 text-gray-600"></i><p class="text-sm">Genera casos con IA</p></div>';
+  document.getElementById('cases-count').textContent = '0 casos';
+  await refreshAllData();
+}
+
+// ══════════════════════════════════════════════════════════════
+// HISTORIAS
+// ═════════════════════════════════════════════════════════════
+function saveCurrentStory() {
+  const storyInput = document.getElementById('user-story-input');
+  const storyContent = storyInput.value.trim();
+  if (!storyContent) { notify('Escribe una User Story primero', 'warning'); return; }
+  document.getElementById('story-content-preview').value = storyContent;
+  document.getElementById('story-name-input').value = `Historia ${currentStoryCounter + 1}`;
+  document.getElementById('modal-new-story').classList.remove('hidden');
+}
+
+function confirmNewStory() {
+  const name = document.getElementById('story-name-input').value.trim();
+  const content = document.getElementById('story-content-preview').value;
+  if (!name) { notify('Ingresa un nombre para la historia', 'warning'); return; }
+  currentStoryCounter++;
+  const storyId = `STORY-${String(currentStoryCounter).padStart(3, '0')}`;
+  storiesHistory.push({
+    id: storyId, name, content,
+    createdAt: new Date().toISOString(),
+    casesGenerated: testCasesData.length,
+    platform: document.getElementById('platform-select').value,
+    testType: document.getElementById('test-type-select').value
+  });
+  currentActiveStoryId = storyId;
+  document.getElementById('user-story-input').value = '';
+  document.getElementById('current-story-badge').classList.remove('hidden');
+  document.getElementById('current-story-name').textContent = `${storyId}: ${name}`;
+  document.getElementById('current-story-tag').classList.remove('hidden');
+  document.getElementById('current-story-tag-name').textContent = `${storyId}: ${name}`;
+  renderStoriesHistory();
+  closeModal('modal-new-story');
+  notify(`✓ Historia ${storyId} "${name}" guardada`, 'success');
+}
+
+function renderStoriesHistory() {
+  const container = document.getElementById('stories-history');
+  if (storiesHistory.length === 0) {
+    container.innerHTML = '<div class="text-center py-6 text-gray-500 text-xs"><i class="fas fa-book-open text-2xl mb-2 text-gray-600"></i><p>Sin historias guardadas aún</p></div>';
+    return;
+  }
+  container.innerHTML = storiesHistory.slice().reverse().map(story => `
+    <div class="p-3 rounded-xl bg-gray-800/50 border border-gray-700 hover:border-indigo-500/50 transition">
+      <div class="flex items-center justify-between mb-1">
+        <div class="flex items-center gap-2">
+          <span class="story-id-badge">${story.id}</span>
+          <span class="text-sm text-white font-medium">${story.name}</span>
+        </div>
+        <span class="text-[10px] text-gray-500">${new Date(story.createdAt).toLocaleDateString('es-ES')}</span>
+      </div>
+      <p class="text-xs text-gray-400 line-clamp-2 mb-2">${story.content}</p>
+      <div class="flex items-center justify-between">
+        <span class="text-[10px] text-indigo-400"><i class="fas fa-clipboard-list mr-1"></i>${story.casesGenerated} casos</span>
+        <button onclick="loadStory('${story.id}')" class="text-[10px] text-green-400 hover:text-green-300"><i class="fas fa-redo mr-1"></i>Reusar</button>
+      </div>
+    </div>
+  `).join('');
+}
+
+function loadStory(id) {
+  const story = storiesHistory.find(s => s.id === id);
+  if (!story) return;
+  document.getElementById('user-story-input').value = story.content;
+  currentActiveStoryId = story.id;
+  document.getElementById('current-story-tag').classList.remove('hidden');
+  document.getElementById('current-story-tag-name').textContent = `${story.id}: ${story.name}`;
+  notify(`Historia ${story.id} cargada`, 'success');
+}
+
+function clearStoriesHistory() {
+  if (!confirm('¿Borrar el historial de historias?')) return;
+  storiesHistory.length = 0;
+  currentStoryCounter = 0;
+  currentActiveStoryId = null;
+  document.getElementById('current-story-badge').classList.add('hidden');
+  document.getElementById('current-story-tag').classList.add('hidden');
+  renderStoriesHistory();
+  notify('Historial de historias borrado', 'success');
+}
+
+// ══════════════════════════════════════════════════════════════
+// EXECUTOR
+// ══════════════════════════════════════════════════════════════
+async function executeTests() {
+  if (testCasesData.length === 0) { notify('No hay casos de prueba. Genera o crea algunos primero.', 'warning'); return; }
+  const suite = document.getElementById('test-suite-select').value;
+  const environment = document.getElementById('environment-select').value;
+  let casesToExecute = testCasesData;
+  if (suite === 'high') casesToExecute = testCasesData.filter(tc => tc.priority === 'high');
+  else if (suite === 'manual') casesToExecute = testCasesData.filter(tc => tc.manual);
+  else if (suite === 'ai') casesToExecute = testCasesData.filter(tc => !tc.manual);
+  if (casesToExecute.length === 0) { notify('No hay casos que coincidan con el filtro', 'warning'); return; }
+  const consoleEl = document.getElementById('execution-console');
+  const output = document.getElementById('console-output');
+  const btn = document.getElementById('execute-btn');
+  consoleEl.classList.remove('hidden');
+  output.innerHTML = '';
+  btn.disabled = true;
+  btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i>Ejecutando...';
+  const caseIds = casesToExecute.map(tc => tc.id);
+  output.innerHTML += `<div class="log-entry text-cyan-400">[INFO] Iniciando ejecución de ${caseIds.length} casos...</div>`;
+  output.innerHTML += `<div class="log-entry text-cyan-400">[INFO] Entorno: ${environment}</div>`;
+  output.innerHTML += `<div class="log-entry text-cyan-400">[INFO] Conectando con backend...</div>`;
+  try {
+    const response = await fetch(`${API_URL}/api/v1/tests/execute`, {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ test_case_ids: caseIds, environment })
+    });
+    const data = await response.json();
+    const results = data.results || [];
+    output.innerHTML += `<div class="log-entry text-green-400">[OK] Backend respondió correctamente</div>`;
+    output.innerHTML += `<div class="log-entry text-cyan-400">[INFO] Procesando ${results.length} resultados...</div>`;
+    results.forEach((r, idx) => {
+      setTimeout(() => {
+        const color = r.status === 'passed' ? 'text-green-400' : r.status === 'failed' ? 'text-red-400' : 'text-yellow-400';
+        const icon = r.status === 'passed' ? '✓' : r.status === 'failed' ? '✗' : '⚠';
+        output.innerHTML += `<div class="log-entry ${color}">[${icon}] ${r.test_title || r.test_case_id}: ${r.status} (${r.duration}s)</div>`;
+        output.scrollTop = output.scrollHeight;
+        const progress = Math.round(((idx+1)/results.length)*100);
+        document.getElementById('exec-bar').style.width = `${progress}%`;
+        document.getElementById('exec-progress').textContent = `${progress}%`;
+        if (idx === results.length - 1) {
+          output.innerHTML += `<div class="log-entry text-cyan-400">[INFO] ─────────────────────────────────────</div>`;
+          output.innerHTML += `<div class="log-entry text-cyan-400">[DONE] Ejecución completada: ${data.passed} pasaron, ${data.failed} fallaron</div>`;
+          document.getElementById('exec-status').innerHTML = '<span class="w-2 h-2 rounded-full bg-cyan-400 inline-block mr-1"></span>Completado';
+          btn.disabled = false;
+          btn.innerHTML = '<i class="fas fa-play"></i>Ejecutar Pruebas';
+          showLiveResults(data);
+          refreshAllData();
+        }
+      }, idx * 500);
+    });
+  } catch (error) {
+    output.innerHTML += `<div class="log-entry text-red-400">[ERROR] ${error.message}</div>`;
+    btn.disabled = false;
+    btn.innerHTML = '<i class="fas fa-play"></i>Ejecutar Pruebas';
+    notify('Error en ejecución: ' + error.message, 'error');
+  }
+}
+
+function showLiveResults(data) {
+  const results = data.results || [];
+  const passed = data.passed || 0;
+  const failed = data.failed || 0;
+  const rate = results.length > 0 ? ((passed/results.length)*100).toFixed(1) : 0;
+  document.getElementById('live-results').innerHTML = `
+    <div class="text-center mb-4"><div class="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-green-500/20 border border-green-500/30"><i class="fas fa-check-circle text-green-400"></i><span class="text-green-400 font-medium text-sm">Completada</span></div></div>
+    <div class="grid grid-cols-3 gap-2 mb-4">
+      <div class="bg-green-500/10 rounded-xl p-3 text-center"><p class="text-xl font-bold text-green-400">${passed}</p><p class="text-[10px] text-gray-400">Pasaron</p></div>
+      <div class="bg-red-500/10 rounded-xl p-3 text-center"><p class="text-xl font-bold text-red-400">${failed}</p><p class="text-[10px] text-gray-400">Fallaron</p></div>
+      <div class="bg-gray-700/50 rounded-xl p-3 text-center"><p class="text-xl font-bold text-gray-300">${rate}%</p><p class="text-[10px] text-gray-400">Pass Rate</p></div>
+    </div>
+    <div class="space-y-2 max-h-80 overflow-y-auto">
+      ${results.map(r => `<div class="flex items-center gap-2 p-2 rounded-lg ${r.status === 'passed' ? 'bg-green-500/10' : 'bg-red-500/10'}"><i class="fas fa-${r.status === 'passed' ? 'check text-green-400' : 'times text-red-400'} text-xs"></i><span class="text-xs text-gray-300 flex-1">${r.test_title || r.test_case_id}</span><span class="text-xs ${r.status === 'passed' ? 'text-gray-500' : 'text-red-400'}">${r.duration}s</span></div>`).join('')}
+    </div>
+  `;
+}
+
+// ══════════════════════════════════════════════════════════════
+// TEST CASES
+// ═════════════════════════════════════════════════════════════
+function renderTestCases() {
+  const container = document.getElementById('test-cases-list');
+  const filter = document.getElementById('filter-status')?.value || 'all';
+  const search = document.getElementById('search-cases')?.value?.toLowerCase() || '';
+  let filtered = testCasesData;
+  if (filter === 'manual') filtered = filtered.filter(tc => tc.manual);
+  else if (filter === 'ai') filtered = filtered.filter(tc => !tc.manual);
+  if (search) filtered = filtered.filter(tc => tc.title.toLowerCase().includes(search));
+  if (filtered.length === 0) {
+    container.innerHTML = `<div class="text-center py-12 text-gray-500"><i class="fas fa-search text-3xl mb-3"></i><p>No se encontraron casos</p></div>`;
+    return;
+  }
+  container.innerHTML = filtered.map(tc => {
+    const borderColor = tc.manual ? 'border-green-500' : 'border-indigo-500';
+    const priorityColor = getPriorityColor(tc.priority);
+    return `
+      <div class="p-4 rounded-xl bg-gray-800/50 border-l-4 ${borderColor} hover:bg-gray-800/80 transition">
+        <div class="flex items-center justify-between">
+          <div class="flex items-center gap-4 flex-1">
+            <div class="w-8 h-8 rounded-lg ${tc.manual ? 'bg-green-500/20' : 'bg-indigo-500/20'} flex items-center justify-center">
+              <i class="fas ${tc.manual ? 'fa-user text-green-400' : 'fa-robot text-indigo-400'} text-sm"></i>
+            </div>
+            <div class="flex-1">
+              <div class="flex items-center gap-2 flex-wrap">
+                <span class="text-xs font-mono text-indigo-400">${tc.id}</span>
+                <span class="px-2 py-0.5 rounded text-[10px] ${priorityColor}">${tc.priority}</span>
+                ${tc.manual ? '<span class="px-1.5 py-0.5 rounded text-[10px] bg-green-500/20 text-green-400"><i class="fas fa-user"></i> Manual</span>' : '<span class="px-1.5 py-0.5 rounded text-[10px] bg-purple-500/20 text-purple-400"><i class="fas fa-robot"></i> IA</span>'}
+                ${tc.storyId ? `<span class="story-id-badge"><i class="fas fa-link text-[8px]"></i>${tc.storyId}</span>` : ''}
+              </div>
+              <p class="text-sm text-gray-200 font-medium mt-0.5">${tc.title}</p>
+              <div class="flex items-center gap-3 mt-1">
+                <span class="text-xs text-gray-500"><i class="fas fa-mobile-alt mr-1"></i>${tc.platform}</span>
+                <span class="text-xs text-gray-500"><i class="fas fa-tag mr-1"></i>${tc.test_type || tc.type}</span>
+                ${tc.steps ? `<span class="text-xs text-gray-500"><i class="fas fa-list mr-1"></i>${tc.steps.length} pasos</span>` : ''}
+              </div>
+            </div>
+          </div>
+          <button onclick="deleteTestCase('${tc.id}')" class="px-3 py-2 rounded-lg bg-red-500/20 hover:bg-red-500/30 text-red-400 text-xs transition"><i class="fas fa-trash"></i></button>
+        </div>
+      </div>
+    `;
+  }).join('');
+}
+function filterTestCases() { renderTestCases(); }
+
+// ══════════════════════════════════════════════════════════════
+// DEVICES & JIRA (DEMO)
+// ══════════════════════════════════════════════════════════════
+function renderDevices() {
+  document.getElementById('devices-grid').innerHTML = devicesData.map(d => {
+    const statusConfig = { online: { label: 'En línea', color: 'text-green-400', bg: 'bg-green-500/20', dot: 'bg-green-400' }, busy: { label: 'Ocupado', color: 'text-yellow-400', bg: 'bg-yellow-500/20', dot: 'bg-yellow-400' }, offline: { label: 'Desconectado', color: 'text-gray-400', bg: 'bg-gray-500/20', dot: 'bg-gray-400' } };
+    const s = statusConfig[d.status];
+    return `
+      <div class="card-glow glass rounded-2xl p-5 neon">
+        <div class="flex items-center justify-between mb-4">
+          <div class="w-12 h-12 rounded-xl ${s.bg} flex items-center justify-center"><i class="${d.icon} ${d.color} text-2xl"></i></div>
+          <span class="px-2 py-1 rounded-lg text-xs ${s.bg} ${s.color}"><span class="w-1.5 h-1.5 rounded-full ${s.dot} inline-block mr-1 ${d.status === 'online' ? 'pulse-dot' : ''}"></span>${s.label}</span>
+        </div>
+        <h4 class="text-white font-medium">${d.name}</h4>
+        <p class="text-sm text-gray-400">${d.os}</p>
+        <div class="mt-4 space-y-2">
+          <div class="flex items-center justify-between text-sm"><span class="text-gray-400"><i class="fas fa-battery-three-quarters mr-1"></i>Batería</span><span class="${d.battery > 50 ? 'text-green-400' : d.battery > 20 ? 'text-yellow-400' : 'text-red-400'}">${d.battery}%</span></div>
+          <div class="flex items-center justify-between text-sm"><span class="text-gray-400"><i class="fas fa-clipboard-check mr-1"></i>Tests</span><span class="text-indigo-400">${d.tests}</span></div>
+        </div>
+        <div class="mt-4 flex gap-2">
+          <button class="flex-1 py-2 rounded-xl text-xs ${d.status === 'offline' ? 'bg-gray-800 text-gray-500 cursor-not-allowed' : 'bg-indigo-600 hover:bg-indigo-500 text-white'}" ${d.status === 'offline' ? 'disabled' : ''}><i class="fas fa-play mr-1"></i>Ejecutar</button>
+          <button class="py-2 px-3 rounded-xl text-xs bg-gray-800 hover:bg-gray-700 text-gray-300"><i class="fas fa-info-circle"></i></button>
+        </div>
+      </div>
+    `;
+  }).join('');
+}
+
+function renderJiraTickets() {
+  const container = document.getElementById('jira-tickets');
+  if (jiraTickets.length === 0) {
+    container.innerHTML = '<div class="text-center py-8 text-gray-500"><i class="fab fa-jira text-3xl mb-3 text-gray-600"></i><p class="text-sm">Sin tickets sincronizados</p></div>';
+    return;
+  }
+  container.innerHTML = jiraTickets.map(t => {
+    const typeIcons = { bug: 'fas fa-bug text-red-400', story: 'fas fa-book text-green-400', task: 'fas fa-tasks text-blue-400' };
+    const priorityColors = { critical: 'bg-red-500/20 text-red-400', high: 'bg-orange-500/20 text-orange-400', medium: 'bg-yellow-500/20 text-yellow-400' };
+    const statusColors = { 'Open': 'bg-blue-500/20 text-blue-400', 'In Progress': 'bg-yellow-500/20 text-yellow-400', 'In Review': 'bg-purple-500/20 text-purple-400', 'To Do': 'bg-gray-500/20 text-gray-400' };
+    return `
+      <div class="p-4 rounded-xl bg-gray-800/50 border border-gray-700 hover:border-indigo-500/50 transition">
+        <div class="flex items-center justify-between mb-2">
+          <div class="flex items-center gap-2"><i class="${typeIcons[t.type]} text-sm"></i><span class="text-xs font-mono text-indigo-400">${t.key}</span><span class="px-2 py-0.5 rounded text-[10px] ${priorityColors[t.priority]}">${t.priority}</span></div>
+          <span class="px-2 py-0.5 rounded text-[10px] ${statusColors[t.status]}">${t.status}</span>
+        </div>
+        <p class="text-sm text-gray-200">${t.title}</p>
+        <div class="flex items-center gap-2 mt-2"><div class="w-5 h-5 rounded-full bg-gradient-to-br from-indigo-400 to-purple-500 flex items-center justify-center text-[8px] text-white font-bold">${t.assignee.charAt(0)}</div><span class="text-xs text-gray-400">${t.assignee}</span></div>
+      </div>
+    `;
+  }).join('');
+}
+
+function syncJira() { notify('Sincronizando con Jira...', 'info'); setTimeout(() => notify('Jira sincronizado', 'success'), 1500); }
+function saveSettings() { notify('Configuración guardada', 'success'); }
+
+// ══════════════════════════════════════════════════════════════
+// CHARTS
+// ═════════════════════════════════════════════════════════════
+function initDashboardCharts() {
+  if (testsChartInstance) testsChartInstance.destroy();
+  testsChartInstance = new Chart(document.getElementById('testsChart').getContext('2d'), {
+    type: 'line',
+    data: { labels: ['Ejec 1', '2', '3', '4', '5', '6', '7'], datasets: [{ label: 'Pasaron', data: [0,0,0,0,0,0,0], borderColor: '#22c55e', backgroundColor: 'rgba(34,197,94,0.1)', fill: true, tension: 0.4, borderWidth: 2, pointRadius: 4, pointBackgroundColor: '#22c55e' }, { label: 'Fallaron', data: [0,0,0,0,0,0,0], borderColor: '#ef4444', backgroundColor: 'rgba(239,68,68,0.1)', fill: true, tension: 0.4, borderWidth: 2, pointRadius: 4, pointBackgroundColor: '#ef4444' }] },
+    options: { responsive: true, plugins: { legend: { labels: { color: '#9ca3af' } } }, scales: { x: { ticks: { color: '#6b7280' }, grid: { color: 'rgba(75,85,99,0.2)' } }, y: { ticks: { color: '#6b7280' }, grid: { color: 'rgba(75,85,99,0.2)' } } } }
+  });
+  if (distributionChartInstance) distributionChartInstance.destroy();
+  distributionChartInstance = new Chart(document.getElementById('distributionChart').getContext('2d'), {
+    type: 'doughnut',
+    data: { labels: ['Funcional', 'Performance', 'Seguridad'], datasets: [{ data: [0, 0, 0], backgroundColor: ['#6366f1', '#eab308', '#ef4444'], borderWidth: 0 }] },
+    options: { responsive: true, cutout: '65%', plugins: { legend: { display: false } } }
+  });
+}
+
+function initReportsCharts() {
+  const ctx1 = document.getElementById('coverageTrendChart');
+  if (coverageTrendChartInstance) coverageTrendChartInstance.destroy();
+  coverageTrendChartInstance = new Chart(ctx1.getContext('2d'), {
+    type: 'line',
+    data: { labels: ['Ejec 1', '2', '3', '4', '5', '6', '7'], datasets: [{ label: 'Pass Rate %', data: [0,0,0,0,0,0,0], borderColor: '#06b6d4', backgroundColor: 'rgba(6,182,212,0.1)', fill: true, tension: 0.4, borderWidth: 2 }] },
+    options: { responsive: true, plugins: { legend: { labels: { color: '#9ca3af' } } }, scales: { x: { ticks: { color: '#6b7280' }, grid: { color: 'rgba(75,85,99,0.2)' } }, y: { ticks: { color: '#6b7280' }, grid: { color: 'rgba(75,85,99,0.2)' }, min: 0, max: 100 } } }
+  });
+  const ctx2 = document.getElementById('bugsChart');
+  if (bugsChartInstance) bugsChartInstance.destroy();
+  bugsChartInstance = new Chart(ctx2.getContext('2d'), {
+    type: 'bar',
+    data: { labels: ['Pasaron', 'Fallaron', 'Error'], datasets: [{ label: 'Cantidad', data: [statsData.passed || 0, statsData.failed || 0, 0], backgroundColor: ['#22c55e', '#ef4444', '#eab308'], borderRadius: 8 }] },
+    options: { responsive: true, plugins: { legend: { display: false } }, scales: { x: { ticks: { color: '#6b7280' }, grid: { display: false } }, y: { ticks: { color: '#6b7280' }, grid: { color: 'rgba(75,85,99,0.2)' } } } }
+  });
+}
+
+function updateCharts() {
+  if (testsChartInstance) {
+    const passedPerExec = [statsData.passed || 0];
+    const failedPerExec = [statsData.failed || 0];
+    testsChartInstance.data.datasets[0].data = passedPerExec;
+    testsChartInstance.data.datasets[1].data = failedPerExec;
+    testsChartInstance.update();
+  }
+  if (bugsChartInstance) {
+    bugsChartInstance.data.datasets[0].data = [statsData.passed || 0, statsData.failed || 0, 0];
+    bugsChartInstance.update();
+  }
+}
+
+function drawGauge(id, pct, color) {
+  const canvas = document.getElementById(id);
+  if (!canvas) return;
+  const ctx = canvas.getContext('2d');
+  const cx = canvas.width/2, cy = canvas.height/2, r = 60;
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  ctx.beginPath(); ctx.arc(cx, cy, r, 0.75*Math.PI, 2.25*Math.PI);
+  ctx.strokeStyle = 'rgba(75,85,99,0.3)'; ctx.lineWidth = 12; ctx.lineCap = 'round'; ctx.stroke();
+  ctx.beginPath(); ctx.arc(cx, cy, r, 0.75*Math.PI, 0.75*Math.PI + (pct/100)*1.5*Math.PI);
+  ctx.strokeStyle = color; ctx.lineWidth = 12; ctx.lineCap = 'round'; ctx.stroke();
+}
+
+// ══════════════════════════════════════════════════════════════
+// UTILS
+// ══════════════════════════════════════════════════════════════
+function getPriorityColor(p) {
+  return { 'high': 'bg-red-500/20 text-red-400', 'medium': 'bg-yellow-500/20 text-yellow-400', 'low': 'bg-green-500/20 text-green-400' }[p] || 'bg-gray-500/20 text-gray-400';
+}
+function notify(message, type = 'info') {
+  const colors = { success: 'bg-green-500/20 border-green-500/30 text-green-400', warning: 'bg-yellow-500/20 border-yellow-500/30 text-yellow-400', error: 'bg-red-500/20 border-red-500/30 text-red-400', info: 'bg-blue-500/20 border-blue-500/30 text-blue-400' };
+  const icons = { success: 'fa-check-circle', warning: 'fa-exclamation-triangle', error: 'fa-times-circle', info: 'fa-info-circle' };
+  const n = document.getElementById('notification');
+  n.className = `fixed top-6 right-6 px-5 py-3 rounded-xl border ${colors[type]} z-[200] flex items-center gap-2 shadow-2xl fade-in`;
+  n.innerHTML = `<i class="fas ${icons[type]}"></i><span class="text-sm">${message}</span>`;
+  n.classList.remove('hidden');
+  setTimeout(() => { n.style.opacity = '0'; n.style.transition = 'opacity .3s'; setTimeout(() => { n.classList.add('hidden'); n.style.opacity = '1'; }, 300); }, 3000);
+}
+function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
+function updateTime() { document.getElementById('current-time').textContent = new Date().toLocaleString('es-ES', { weekday: 'short', day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' }); }
+function closeModal(id) { document.getElementById(id).classList.add('hidden'); }
+function openCreateManualModal() { document.getElementById('modal-create-manual').classList.remove('hidden'); }
+
+// ══════════════════════════════════════════════════════════════
+// INIT
+// ══════════════════════════════════════════════════════════════
+document.addEventListener('DOMContentLoaded', async () => {
+  initDashboardCharts();
+  updateTime();
+  setInterval(updateTime, 60000);
+  await checkBackendConnection();
+  await refreshAllData();
+});
+</script>
+</body>
+</html>
