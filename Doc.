@@ -1,0 +1,1508 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>QA Mobile Testing AI - Documentación del Proyecto</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/fontsource/fonts/inter@latest/latin-400-normal.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/fontsource/fonts/inter@latest/latin-600-normal.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/fontsource/fonts/inter@latest/latin-700-normal.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/fontsource/fonts/jetbrains-mono@latest/latin-400-normal.css">
+<style>
+*{font-family:'Inter',sans-serif;scroll-behavior:smooth}
+code,pre,.mono{font-family:'JetBrains Mono',monospace}
+::-webkit-scrollbar{width:8px;height:8px}
+::-webkit-scrollbar-track{background:#0f0f1a}
+::-webkit-scrollbar-thumb{background:#6366f1;border-radius:4px}
+body{background:linear-gradient(135deg,#07070f 0%,#0e0e24 50%,#091420 100%);color:#e5e7eb;min-height:100vh}
+.glass{background:rgba(255,255,255,.02);backdrop-filter:blur(10px);border:1px solid rgba(255,255,255,.05)}
+.neon{border:1px solid rgba(99,102,241,.2)}
+.card-glow{box-shadow:0 0 20px rgba(99,102,241,.08);transition:all .3s}
+.card-glow:hover{box-shadow:0 0 30px rgba(99,102,241,.18);transform:translateY(-2px)}
+.sidebar-item{transition:all .2s;border-left:3px solid transparent;cursor:pointer;color:#d1d5db}
+.sidebar-item:hover,.sidebar-item.active{background:linear-gradient(90deg,rgba(99,102,241,.15),transparent);border-left:3px solid #6366f1;color:#fff}
+.fade-in{animation:fadeIn .4s ease-in}
+@keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+.code-block{position:relative;background:#0a0a14;border:1px solid rgba(99,102,241,.2);border-radius:12px;overflow:hidden}
+.code-header{background:rgba(99,102,241,.1);padding:8px 16px;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid rgba(99,102,241,.2)}
+.copy-btn{background:rgba(99,102,241,.2);border:none;color:#a5b4fc;padding:4px 12px;border-radius:6px;cursor:pointer;font-size:11px;transition:all .2s}
+.copy-btn:hover{background:rgba(99,102,241,.4)}
+.copy-btn.copied{background:rgba(34,197,94,.3);color:#86efac}
+pre{padding:16px;overflow-x:auto;font-size:12px;line-height:1.6;color:#e5e7eb;margin:0}
+.info-box{background:rgba(99,102,241,.1);border:1px solid rgba(99,102,241,.3);border-radius:12px;padding:16px}
+.warning-box{background:rgba(234,179,8,.1);border:1px solid rgba(234,179,8,.3);border-radius:12px;padding:16px}
+.success-box{background:rgba(34,197,94,.1);border:1px solid rgba(34,197,94,.3);border-radius:12px;padding:16px}
+.danger-box{background:rgba(239,68,68,.1);border:1px solid rgba(239,68,68,.3);border-radius:12px;padding:16px}
+.toc-link{display:block;padding:6px 12px;color:#9ca3af;text-decoration:none;border-left:2px solid transparent;transition:all .2s;font-size:13px}
+.toc-link:hover{color:#fff;background:rgba(99,102,241,.1);border-left-color:#6366f1}
+.toc-link.active{color:#a5b4fc;border-left-color:#6366f1;background:rgba(99,102,241,.1)}
+.gradient-text{background:linear-gradient(135deg,#6366f1,#8b5cf6,#ec4899);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.hero-gradient{background:linear-gradient(135deg,rgba(99,102,241,.15),rgba(139,92,246,.15),rgba(236,72,153,.15))}
+.section-divider{height:1px;background:linear-gradient(90deg,transparent,rgba(99,102,241,.3),transparent);margin:40px 0}
+.badge{display:inline-flex;align-items:center;gap:4px;padding:2px 8px;border-radius:6px;font-size:10px;font-weight:600;font-family:'JetBrains Mono',monospace}
+.badge-purple{background:rgba(139,92,246,.2);color:#c4b5fd;border:1px solid rgba(139,92,246,.3)}
+.badge-green{background:rgba(34,197,94,.2);color:#86efac;border:1px solid rgba(34,197,94,.3)}
+.badge-blue{background:rgba(59,130,246,.2);color:#93c5fd;border:1px solid rgba(59,130,246,.3)}
+.badge-orange{background:rgba(249,115,22,.2);color:#fdba74;border:1px solid rgba(249,115,22,.3)}
+.badge-red{background:rgba(239,68,68,.2);color:#fca5a5;border:1px solid rgba(239,68,68,.3)}
+.badge-yellow{background:rgba(234,179,8,.2);color:#fde047;border:1px solid rgba(234,179,8,.3)}
+.badge-gray{background:rgba(107,114,128,.2);color:#d1d5db;border:1px solid rgba(107,114,128,.3)}
+.arch-node{transition:all .3s;cursor:pointer}
+.arch-node:hover{transform:scale(1.05);box-shadow:0 0 25px rgba(99,102,241,.3)}
+.flow-line{stroke-dasharray:5 5;animation:dash 20s linear infinite}
+@keyframes dash{to{stroke-dashoffset:-1000}}
+@media print{
+body{background:white;color:black}
+.no-print{display:none!important}
+.card-glow,.glass{background:white;border:1px solid #ddd;box-shadow:none}
+}
+</style>
+</head>
+<body>
+<div class="flex min-h-screen">
+<!-- SIDEBAR -->
+<aside class="w-72 bg-gray-900/80 border-r border-gray-800 flex flex-col fixed h-full z-50 overflow-y-auto no-print">
+<div class="p-5 border-b border-gray-800 sticky top-0 bg-gray-900/95 backdrop-blur z-10">
+<div class="flex items-center gap-3 mb-4">
+<div class="w-10 h-10 rounded-xl bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center">
+<i class="fas fa-book-open text-white text-lg"></i>
+</div>
+<div>
+<h1 class="text-lg font-bold text-white">Documentación</h1>
+<p class="text-xs text-gray-400">QA Mobile Testing AI v1.1</p>
+</div>
+</div>
+<div class="flex gap-2">
+<button onclick="window.print()" class="flex-1 px-3 py-1.5 rounded-lg bg-indigo-600 hover:bg-indigo-500 text-white text-xs transition"><i class="fas fa-print mr-1"></i>Imprimir</button>
+<button onclick="downloadDocs()" class="flex-1 px-3 py-1.5 rounded-lg bg-gray-800 hover:bg-gray-700 text-gray-300 text-xs transition"><i class="fas fa-download mr-1"></i>Descargar</button>
+</div>
+</div>
+<nav class="py-3 px-3">
+<div class="px-2 mb-2"><span class="text-[10px] font-semibold text-gray-500 uppercase tracking-wider">Inicio</span></div>
+<a href="#overview" class="sidebar-item active flex items-center gap-3 px-3 py-2 text-sm rounded-lg"><i class="fas fa-home w-4 text-center text-indigo-400"></i><span>Vista General</span></a>
+<a href="#quickstart" class="sidebar-item flex items-center gap-3 px-3 py-2 text-sm rounded-lg"><i class="fas fa-rocket w-4 text-center text-green-400"></i><span>Inicio Rápido</span></a>
+<a href="#current-status" class="sidebar-item flex items-center gap-3 px-3 py-2 text-sm rounded-lg"><i class="fas fa-tasks w-4 text-center text-yellow-400"></i><span>Estado Actual</span></a>
+<div class="px-2 mt-4 mb-2"><span class="text-[10px] font-semibold text-gray-500 uppercase tracking-wider">Arquitectura</span></div>
+<a href="#architecture" class="sidebar-item flex items-center gap-3 px-3 py-2 text-sm rounded-lg"><i class="fas fa-project-diagram w-4 text-center text-cyan-400"></i><span>Arquitectura</span></a>
+<a href="#components" class="sidebar-item flex items-center gap-3 px-3 py-2 text-sm rounded-lg"><i class="fas fa-cubes w-4 text-center text-purple-400"></i><span>Componentes</span></a>
+<a href="#workflows" class="sidebar-item flex items-center gap-3 px-3 py-2 text-sm rounded-lg"><i class="fas fa-stream w-4 text-center text-pink-400"></i><span>Flujos de Trabajo</span></a>
+<div class="px-2 mt-4 mb-2"><span class="text-[10px] font-semibold text-gray-500 uppercase tracking-wider">Guías</span></div>
+<a href="#installation" class="sidebar-item flex items-center gap-3 px-3 py-2 text-sm rounded-lg"><i class="fas fa-download w-4 text-center text-blue-400"></i><span>Instalación</span></a>
+<a href="#configuration" class="sidebar-item flex items-center gap-3 px-3 py-2 text-sm rounded-lg"><i class="fas fa-sliders-h w-4 text-center text-yellow-400"></i><span>Configuración</span></a>
+<a href="#usage" class="sidebar-item flex items-center gap-3 px-3 py-2 text-sm rounded-lg"><i class="fas fa-play w-4 text-center text-emerald-400"></i><span>Uso del Dashboard</span></a>
+<a href="#api" class="sidebar-item flex items-center gap-3 px-3 py-2 text-sm rounded-lg"><i class="fas fa-code w-4 text-center text-orange-400"></i><span>API Reference</span></a>
+<div class="px-2 mt-4 mb-2"><span class="text-[10px] font-semibold text-gray-500 uppercase tracking-wider">Características</span></div>
+<a href="#ai-generation" class="sidebar-item flex items-center gap-3 px-3 py-2 text-sm rounded-lg"><i class="fas fa-robot w-4 text-center text-purple-400"></i><span>Generación IA</span></a>
+<a href="#test-execution" class="sidebar-item flex items-center gap-3 px-3 py-2 text-sm rounded-lg"><i class="fas fa-play-circle w-4 text-center text-green-400"></i><span>Ejecución de Tests</span></a>
+<a href="#security" class="sidebar-item flex items-center gap-3 px-3 py-2 text-sm rounded-lg"><i class="fas fa-shield-alt w-4 text-center text-red-400"></i><span>Seguridad</span></a>
+<a href="#jira" class="sidebar-item flex items-center gap-3 px-3 py-2 text-sm rounded-lg"><i class="fab fa-jira w-4 text-center text-blue-400"></i><span>Integración Jira</span></a>
+<a href="#pipeline" class="sidebar-item flex items-center gap-3 px-3 py-2 text-sm rounded-lg"><i class="fas fa-code-branch w-4 text-center text-blue-300"></i><span>Pipeline CI/CD</span></a>
+<div class="px-2 mt-4 mb-2"><span class="text-[10px] font-semibold text-gray-500 uppercase tracking-wider">Referencia</span></div>
+<a href="#file-structure" class="sidebar-item flex items-center gap-3 px-3 py-2 text-sm rounded-lg"><i class="fas fa-folder-tree w-4 text-center text-amber-400"></i><span>Estructura</span></a>
+<a href="#troubleshooting" class="sidebar-item flex items-center gap-3 px-3 py-2 text-sm rounded-lg"><i class="fas fa-bug w-4 text-center text-red-400"></i><span>Troubleshooting</span></a>
+<a href="#faq" class="sidebar-item flex items-center gap-3 px-3 py-2 text-sm rounded-lg"><i class="fas fa-question-circle w-4 text-center text-cyan-400"></i><span>FAQ</span></a>
+<a href="#roadmap" class="sidebar-item flex items-center gap-3 px-3 py-2 text-sm rounded-lg"><i class="fas fa-map w-4 text-center text-pink-400"></i><span>Roadmap</span></a>
+</nav>
+<div class="p-4 border-t border-gray-800 mt-auto">
+<div class="text-xs text-gray-500 text-center">
+<p>Documentación v1.1</p>
+<p class="mt-1">© 2024 QA Mobile Testing AI</p>
+</div>
+</div>
+</aside>
+<!-- MAIN CONTENT -->
+<main class="flex-1 ml-72 p-8 max-w-6xl">
+<!-- HERO -->
+<section id="overview" class="mb-12 fade-in">
+<div class="hero-gradient rounded-3xl p-10 border border-indigo-500/20 mb-8">
+<div class="flex items-center gap-3 mb-4">
+<div class="w-16 h-16 rounded-2xl bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center">
+<i class="fas fa-mobile-alt text-white text-3xl"></i>
+</div>
+<div>
+<h1 class="text-5xl font-bold gradient-text mb-2">QA Mobile Testing AI</h1>
+<p class="text-lg text-gray-300">Suite de Automatización de Pruebas con Inteligencia Artificial</p>
+</div>
+</div>
+<p class="text-gray-400 text-base leading-relaxed max-w-4xl">
+Plataforma integral para la automatización de pruebas de aplicaciones móviles que combina
+<strong class="text-white">arquitectura de microservicios</strong>, <strong class="text-white">generación inteligente de casos con IA</strong>,
+<strong class="text-white">integración con Jira</strong>, <strong class="text-white">gestión segura de datos</strong> y
+<strong class="text-white">pipelines DevSecOps</strong> para ofrecer una solución completa y escalable.
+</p>
+<div class="flex flex-wrap gap-3 mt-6">
+<span class="badge badge-purple"><i class="fas fa-robot"></i>IA GPT-4</span>
+<span class="badge badge-green"><i class="fas fa-shield-alt"></i>DevSecOps</span>
+<span class="badge badge-blue"><i class="fab fa-jira"></i>Jira Integration</span>
+<span class="badge badge-orange"><i class="fas fa-microchip"></i>Microservicios</span>
+<span class="badge badge-red"><i class="fas fa-lock"></i>Seguridad E2E</span>
+</div>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+<div class="card-glow glass rounded-2xl p-5 neon">
+<div class="w-12 h-12 rounded-xl bg-indigo-500/20 flex items-center justify-center mb-3">
+<i class="fas fa-robot text-indigo-400 text-xl"></i>
+</div>
+<h3 class="text-white font-semibold mb-1">IA Avanzada</h3>
+<p class="text-xs text-gray-400">Generación automática de casos con GPT-4</p>
+</div>
+<div class="card-glow glass rounded-2xl p-5 neon">
+<div class="w-12 h-12 rounded-xl bg-green-500/20 flex items-center justify-center mb-3">
+<i class="fas fa-bolt text-green-400 text-xl"></i>
+</div>
+<h3 class="text-white font-semibold mb-1">Alto Rendimiento</h3>
+<p class="text-xs text-gray-400">Ejecución paralela y optimizada</p>
+</div>
+<div class="card-glow glass rounded-2xl p-5 neon">
+<div class="w-12 h-12 rounded-xl bg-red-500/20 flex items-center justify-center mb-3">
+<i class="fas fa-shield-alt text-red-400 text-xl"></i>
+</div>
+<h3 class="text-white font-semibold mb-1">Seguridad</h3>
+<p class="text-xs text-gray-400">Enmascaramiento y cifrado E2E</p>
+</div>
+<div class="card-glow glass rounded-2xl p-5 neon">
+<div class="w-12 h-12 rounded-xl bg-cyan-500/20 flex items-center justify-center mb-3">
+<i class="fas fa-chart-line text-cyan-400 text-xl"></i>
+</div>
+<h3 class="text-white font-semibold mb-1">Observabilidad</h3>
+<p class="text-xs text-gray-400">Monitoreo con Prometheus + Grafana</p>
+</div>
+</div>
+</section>
+<!-- QUICK START -->
+<section id="quickstart" class="mb-12">
+<h2 class="text-3xl font-bold text-white mb-6 flex items-center gap-3">
+<i class="fas fa-rocket text-green-400"></i>
+Inicio Rápido
+</h2>
+<p class="text-gray-400 mb-6">Pon el sistema en funcionamiento en menos de 5 minutos siguiendo estos pasos.</p>
+<div class="space-y-4">
+<div class="glass rounded-2xl p-6 neon">
+<div class="flex items-start gap-4">
+<div class="w-10 h-10 rounded-xl bg-green-500/20 flex items-center justify-center flex-shrink-0">
+<span class="text-green-400 font-bold">1</span>
+</div>
+<div class="flex-1">
+<h3 class="text-white font-semibold mb-2">Clonar el repositorio</h3>
+<div class="code-block">
+<div class="code-header">
+<span class="text-xs text-gray-400"><i class="fas fa-terminal mr-2"></i>Terminal</span>
+<button class="copy-btn" onclick="copyCode(this)"><i class="fas fa-copy mr-1"></i>Copiar</button>
+</div>
+<pre><code>git clone https://github.com/tu-usuario/qa-mobile-testing-ai.git
+cd qa-mobile-testing-ai</code></pre>
+</div>
+</div>
+</div>
+</div>
+<div class="glass rounded-2xl p-6 neon">
+<div class="flex items-start gap-4">
+<div class="w-10 h-10 rounded-xl bg-green-500/20 flex items-center justify-center flex-shrink-0">
+<span class="text-green-400 font-bold">2</span>
+</div>
+<div class="flex-1">
+<h3 class="text-white font-semibold mb-2">Configurar variables de entorno</h3>
+<div class="code-block">
+<div class="code-header">
+<span class="text-xs text-gray-400"><i class="fas fa-file-code mr-2"></i>.env</span>
+<button class="copy-btn" onclick="copyCode(this)"><i class="fas fa-copy mr-1"></i>Copiar</button>
+</div>
+<pre><code>cp .env.example .env
+# Editar .env con tus credenciales</code></pre>
+</div>
+</div>
+</div>
+</div>
+<div class="glass rounded-2xl p-6 neon">
+<div class="flex items-start gap-4">
+<div class="w-10 h-10 rounded-xl bg-green-500/20 flex items-center justify-center flex-shrink-0">
+<span class="text-green-400 font-bold">3</span>
+</div>
+<div class="flex-1">
+<h3 class="text-white font-semibold mb-2">Levantar los servicios con Docker</h3>
+<p class="text-sm text-gray-400 mb-3">Ejecuta el siguiente comando para iniciar todos los contenedores:</p>
+<div class="code-block">
+<div class="code-header"><span class="text-xs text-gray-400">Terminal</span></div>
+<pre><code>cd backend
+docker-compose up -d</code></pre>
+</div>
+</div>
+</div>
+</div>
+<div class="glass rounded-2xl p-6 neon">
+<div class="flex items-start gap-4">
+<div class="w-10 h-10 rounded-xl bg-green-500/20 flex items-center justify-center flex-shrink-0">
+<span class="text-green-400 font-bold">4</span>
+</div>
+<div class="flex-1">
+<h3 class="text-white font-semibold mb-2">Acceder al Dashboard</h3>
+<div class="grid grid-cols-1 md:grid-cols-3 gap-3">
+<a href="http://localhost:5000" class="p-3 rounded-xl bg-indigo-500/10 border border-indigo-500/30 hover:bg-indigo-500/20 transition">
+<p class="text-xs text-indigo-400">Dashboard</p>
+<p class="text-sm text-white mono">localhost:5000</p>
+</a>
+<a href="http://localhost:8000/docs" class="p-3 rounded-xl bg-purple-500/10 border border-purple-500/30 hover:bg-purple-500/20 transition">
+<p class="text-xs text-purple-400">API Docs</p>
+<p class="text-sm text-white mono">localhost:8000/docs</p>
+</a>
+<a href="http://localhost:3000" class="p-3 rounded-xl bg-cyan-500/10 border border-cyan-500/30 hover:bg-cyan-500/20 transition">
+<p class="text-xs text-cyan-400">Sample App</p>
+<p class="text-sm text-white mono">localhost:3000</p>
+</a>
+</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+<div class="section-divider"></div>
+<!-- ESTADO ACTUAL DEL PROYECTO -->
+<section id="current-status" class="mb-12">
+<h2 class="text-3xl font-bold text-white mb-6 flex items-center gap-3">
+<i class="fas fa-tasks text-yellow-400"></i>
+Estado Actual del Proyecto
+</h2>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+<div class="card-glow glass rounded-2xl p-5 neon border-l-4 border-l-green-500">
+<h3 class="text-white font-semibold mb-3 flex items-center gap-2"><i class="fas fa-check-circle text-green-400"></i> Completado (100%)</h3>
+<ul class="text-sm text-gray-300 space-y-2">
+<li class="flex items-center gap-2"><span class="badge badge-green">Frontend</span> Dashboard completo (11 secciones)</li>
+<li class="flex items-center gap-2"><span class="badge badge-green">IA Local</span> Generación inteligente por contexto</li>
+<li class="flex items-center gap-2"><span class="badge badge-green">Backend</span> FastAPI + PostgreSQL conectados</li>
+<li class="flex items-center gap-2"><span class="badge badge-green">Docker</span> 4 contenedores corriendo</li>
+<li class="flex items-center gap-2"><span class="badge badge-green">Historias</span> Sistema de IDs (STORY-001)</li>
+<li class="flex items-center gap-2"><span class="badge badge-green">Limpieza</span> Modal selectivo funcional</li>
+</ul>
+</div>
+<div class="card-glow glass rounded-2xl p-5 neon border-l-4 border-l-yellow-500">
+<h3 class="text-white font-semibold mb-3 flex items-center gap-2"><i class="fas fa-spinner text-yellow-400"></i> En Progreso (40%)</h3>
+<ul class="text-sm text-gray-300 space-y-2">
+<li class="flex items-center gap-2"><span class="badge badge-yellow">Ejecutor</span> Consola en vivo (simulada)</li>
+<li class="flex items-center gap-2"><span class="badge badge-yellow">Reportes</span> Gráficos dinámicos básicos</li>
+<li class="flex items-center gap-2"><span class="badge badge-yellow">Limpieza</span> Modal selectivo funcional</li>
+</ul>
+</div>
+<div class="card-glow glass rounded-2xl p-5 neon border-l-4 border-l-red-500">
+<h3 class="text-white font-semibold mb-3 flex items-center gap-2"><i class="fas fa-exclamation-triangle text-red-400"></i> Pendiente Alta Prioridad</h3>
+<ul class="text-sm text-gray-300 space-y-2">
+<li class="flex items-center gap-2"><span class="badge badge-red">OpenAI</span> Integración GPT-4 real</li>
+<li class="flex items-center gap-2"><span class="badge badge-red">Appium</span> Ejecución real en dispositivos</li>
+<li class="flex items-center gap-2"><span class="badge badge-red">CSV</span> Exportación funcional de casos</li>
+</ul>
+</div>
+<div class="card-glow glass rounded-2xl p-5 neon border-l-4 border-l-gray-500">
+<h3 class="text-white font-semibold mb-3 flex items-center gap-2"><i class="fas fa-clock text-gray-400"></i> Pendiente Baja Prioridad</h3>
+<ul class="text-sm text-gray-300 space-y-2">
+<li class="flex items-center gap-2"><span class="badge badge-gray">Jira</span> Integración API real</li>
+<li class="flex items-center gap-2"><span class="badge badge-gray">Auth</span> Login y multi-usuario</li>
+<li class="flex items-center gap-2"><span class="badge badge-gray">CI/CD</span> Pipeline automatizado</li>
+</ul>
+</div>
+</div>
+</section>
+<div class="section-divider"></div>
+<!-- ARCHITECTURE -->
+<section id="architecture" class="mb-12">
+<h2 class="text-3xl font-bold text-white mb-6 flex items-center gap-3">
+<i class="fas fa-project-diagram text-cyan-400"></i>
+Arquitectura del Sistema
+</h2>
+<div class="glass rounded-2xl p-6 neon mb-6">
+<h3 class="text-xl font-semibold text-white mb-4">Diagrama de Arquitectura</h3>
+<svg width="100%" height="520" viewBox="0 0 1000 520" class="rounded-xl">
+<!-- Capas -->
+<rect x="10" y="10" width="980" height="80" rx="10" fill="rgba(99,102,241,.05)" stroke="rgba(99,102,241,.2)"/>
+<text x="30" y="35" fill="#6366f1" font-size="11" font-weight="600">FRONTEND LAYER</text>
+<rect x="10" y="100" width="980" height="80" rx="10" fill="rgba(139,92,246,.05)" stroke="rgba(139,92,246,.2)"/>
+<text x="30" y="125" fill="#8b5cf6" font-size="11" font-weight="600">CORE SERVICES</text>
+<rect x="10" y="190" width="980" height="80" rx="10" fill="rgba(6,182,212,.05)" stroke="rgba(6,182,212,.2)"/>
+<text x="30" y="215" fill="#06b6d4" font-size="11" font-weight="600">INFRASTRUCTURE</text>
+<rect x="10" y="280" width="480" height="80" rx="10" fill="rgba(34,197,94,.05)" stroke="rgba(34,197,94,.2)"/>
+<text x="30" y="305" fill="#22c55e" font-size="11" font-weight="600">EXTERNAL SERVICES</text>
+<rect x="510" y="280" width="480" height="80" rx="10" fill="rgba(236,72,153,.05)" stroke="rgba(236,72,153,.2)"/>
+<text x="530" y="305" fill="#ec4899" font-size="11" font-weight="600">REPORTING & ANALYTICS</text>
+<!-- Frontend -->
+<rect x="100" y="40" width="120" height="40" rx="8" fill="rgba(99,102,241,.15)" stroke="#6366f1" stroke-width="1.5"/>
+<text x="160" y="64" fill="#a5b4fc" font-size="10" text-anchor="middle">Web Dashboard</text>
+<rect x="300" y="40" width="120" height="40" rx="8" fill="rgba(99,102,241,.15)" stroke="#6366f1" stroke-width="1.5"/>
+<text x="360" y="64" fill="#a5b4fc" font-size="10" text-anchor="middle">API Gateway</text>
+<rect x="500" y="40" width="120" height="40" rx="8" fill="rgba(99,102,241,.15)" stroke="#6366f1" stroke-width="1.5"/>
+<text x="560" y="64" fill="#a5b4fc" font-size="10" text-anchor="middle">Auth Service</text>
+<!-- Core -->
+<rect x="80" y="130" width="140" height="40" rx="8" fill="rgba(139,92,246,.15)" stroke="#8b5cf6" stroke-width="1.5"/>
+<text x="150" y="154" fill="#c4b5fd" font-size="10" text-anchor="middle">Test Case Gen AI</text>
+<rect x="280" y="130" width="140" height="40" rx="8" fill="rgba(139,92,246,.15)" stroke="#8b5cf6" stroke-width="1.5"/>
+<text x="350" y="154" fill="#c4b5fd" font-size="10" text-anchor="middle">Test Executor</text>
+<rect x="480" y="130" width="140" height="40" rx="8" fill="rgba(139,92,246,.15)" stroke="#8b5cf6" stroke-width="1.5"/>
+<text x="550" y="154" fill="#c4b5fd" font-size="10" text-anchor="middle">Data Manager</text>
+<rect x="680" y="130" width="140" height="40" rx="8" fill="rgba(139,92,246,.15)" stroke="#8b5cf6" stroke-width="1.5"/>
+<text x="750" y="154" fill="#c4b5fd" font-size="10" text-anchor="middle">Jira Integration</text>
+<!-- Infrastructure -->
+<rect x="80" y="220" width="120" height="40" rx="8" fill="rgba(6,182,212,.15)" stroke="#06b6d4" stroke-width="1.5"/>
+<text x="140" y="244" fill="#67e8f9" font-size="10" text-anchor="middle">Docker</text>
+<rect x="260" y="220" width="120" height="40" rx="8" fill="rgba(6,182,212,.15)" stroke="#06b6d4" stroke-width="1.5"/>
+<text x="320" y="244" fill="#67e8f9" font-size="10" text-anchor="middle">PostgreSQL</text>
+<rect x="440" y="220" width="120" height="40" rx="8" fill="rgba(6,182,212,.15)" stroke="#06b6d4" stroke-width="1.5"/>
+<text x="500" y="244" fill="#67e8f9" font-size="10" text-anchor="middle">HashiCorp Vault</text>
+<rect x="620" y="220" width="120" height="40" rx="8" fill="rgba(6,182,212,.15)" stroke="#06b6d4" stroke-width="1.5"/>
+<text x="680" y="244" fill="#67e8f9" font-size="10" text-anchor="middle">RabbitMQ</text>
+<!-- External -->
+<rect x="50" y="310" width="90" height="35" rx="6" fill="rgba(34,197,94,.1)" stroke="#22c55e"/>
+<text x="95" y="331" fill="#86efac" font-size="9" text-anchor="middle">Jira</text>
+<rect x="160" y="310" width="90" height="35" rx="6" fill="rgba(34,197,94,.1)" stroke="#22c55e"/>
+<text x="205" y="331" fill="#86efac" font-size="9" text-anchor="middle">OpenAI API</text>
+<rect x="270" y="310" width="90" height="35" rx="6" fill="rgba(34,197,94,.1)" stroke="#22c55e"/>
+<text x="315" y="331" fill="#86efac" font-size="9" text-anchor="middle">Slack</text>
+<rect x="380" y="310" width="90" height="35" rx="6" fill="rgba(34,197,94,.1)" stroke="#22c55e"/>
+<text x="425" y="331" fill="#86efac" font-size="9" text-anchor="middle">SonarQube</text>
+<!-- Reporting -->
+<rect x="540" y="310" width="120" height="35" rx="6" fill="rgba(236,72,153,.1)" stroke="#ec4899"/>
+<text x="600" y="331" fill="#f9a8d4" font-size="9" text-anchor="middle">Allure Reports</text>
+<rect x="680" y="310" width="120" height="35" rx="6" fill="rgba(236,72,153,.1)" stroke="#ec4899"/>
+<text x="740" y="331" fill="#f9a8d4" font-size="9" text-anchor="middle">Grafana</text>
+<rect x="820" y="310" width="120" height="35" rx="6" fill="rgba(236,72,153,.1)" stroke="#ec4899"/>
+<text x="880" y="331" fill="#f9a8d4" font-size="9" text-anchor="middle">Prometheus</text>
+<!-- Mobile Runners -->
+<rect x="10" y="380" width="980" height="100" rx="10" fill="rgba(251,146,60,.05)" stroke="rgba(251,146,60,.2)"/>
+<text x="30" y="405" fill="#fb923c" font-size="11" font-weight="600">MOBILE TEST RUNNERS</text>
+<rect x="60" y="415" width="130" height="45" rx="8" fill="rgba(34,197,94,.15)" stroke="#22c55e" stroke-width="1.5"/>
+<text x="125" y="435" fill="#86efac" font-size="9" text-anchor="middle">🤖 Appium</text>
+<text x="125" y="450" fill="#86efac" font-size="8" text-anchor="middle">Android Runner</text>
+<rect x="220" y="415" width="130" height="45" rx="8" fill="rgba(34,197,94,.15)" stroke="#22c55e" stroke-width="1.5"/>
+<text x="285" y="435" fill="#86efac" font-size="9" text-anchor="middle">🎭 Detox</text>
+<text x="285" y="450" fill="#86efac" font-size="8" text-anchor="middle">React Native</text>
+<rect x="380" y="415" width="130" height="45" rx="8" fill="rgba(99,102,241,.15)" stroke="#6366f1" stroke-width="1.5"/>
+<text x="445" y="435" fill="#a5b4fc" font-size="9" text-anchor="middle">🎭 Playwright</text>
+<text x="445" y="450" fill="#a5b4fc" font-size="8" text-anchor="middle">Mobile Web</text>
+<rect x="540" y="415" width="130" height="45" rx="8" fill="rgba(6,182,212,.15)" stroke="#06b6d4" stroke-width="1.5"/>
+<text x="605" y="435" fill="#67e8f9" font-size="9" text-anchor="middle">🎯 Maestro</text>
+<text x="605" y="450" fill="#67e8f9" font-size="8" text-anchor="middle">UI Flows</text>
+<rect x="700" y="415" width="130" height="45" rx="8" fill="rgba(236,72,153,.15)" stroke="#ec4899" stroke-width="1.5"/>
+<text x="765" y="435" fill="#f9a8d4" font-size="9" text-anchor="middle">📱 XCUITest</text>
+<text x="765" y="450" fill="#f9a8d4" font-size="8" text-anchor="middle">iOS Native</text>
+<rect x="860" y="415" width="110" height="45" rx="8" fill="rgba(251,146,60,.15)" stroke="#fb923c" stroke-width="1.5"/>
+<text x="915" y="435" fill="#fdba74" font-size="9" text-anchor="middle">⚡ Espresso</text>
+<text x="915" y="450" fill="#fdba74" font-size="8" text-anchor="middle">Android Native</text>
+<!-- Conexiones -->
+<line x1="160" y1="80" x2="360" y2="130" stroke="rgba(99,102,241,.4)" stroke-width="1" class="flow-line"/>
+<line x1="360" y1="80" x2="150" y2="130" stroke="rgba(99,102,241,.4)" stroke-width="1" class="flow-line"/>
+<line x1="360" y1="80" x2="350" y2="130" stroke="rgba(99,102,241,.4)" stroke-width="1" class="flow-line"/>
+<line x1="360" y1="80" x2="550" y2="130" stroke="rgba(99,102,241,.4)" stroke-width="1" class="flow-line"/>
+<line x1="360" y1="80" x2="750" y2="130" stroke="rgba(99,102,241,.4)" stroke-width="1" class="flow-line"/>
+<line x1="150" y1="170" x2="205" y2="310" stroke="rgba(139,92,246,.3)" stroke-width="1" class="flow-line"/>
+<line x1="350" y1="170" x2="320" y2="220" stroke="rgba(139,92,246,.3)" stroke-width="1" class="flow-line"/>
+<line x1="350" y1="170" x2="680" y2="220" stroke="rgba(139,92,246,.3)" stroke-width="1" class="flow-line"/>
+<line x1="550" y1="170" x2="500" y2="220" stroke="rgba(139,92,246,.3)" stroke-width="1" class="flow-line"/>
+<line x1="750" y1="170" x2="95" y2="310" stroke="rgba(139,92,246,.3)" stroke-width="1" class="flow-line"/>
+<line x1="350" y1="170" x2="600" y2="310" stroke="rgba(236,72,153,.3)" stroke-width="1" class="flow-line"/>
+<line x1="350" y1="170" x2="880" y2="310" stroke="rgba(236,72,153,.3)" stroke-width="1" class="flow-line"/>
+<line x1="350" y1="170" x2="125" y2="415" stroke="rgba(251,146,60,.3)" stroke-width="1" class="flow-line"/>
+<line x1="350" y1="170" x2="285" y2="415" stroke="rgba(251,146,60,.3)" stroke-width="1" class="flow-line"/>
+<line x1="350" y1="170" x2="445" y2="415" stroke="rgba(251,146,60,.3)" stroke-width="1" class="flow-line"/>
+<line x1="350" y1="170" x2="605" y2="415" stroke="rgba(251,146,60,.3)" stroke-width="1" class="flow-line"/>
+<line x1="350" y1="170" x2="765" y2="415" stroke="rgba(251,146,60,.3)" stroke-width="1" class="flow-line"/>
+<line x1="350" y1="170" x2="915" y2="415" stroke="rgba(251,146,60,.3)" stroke-width="1" class="flow-line"/>
+</svg>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+<div class="glass rounded-2xl p-5 neon">
+<h4 class="text-white font-semibold mb-3 flex items-center gap-2">
+<i class="fas fa-check-circle text-green-400"></i>Principios
+</h4>
+<ul class="text-sm text-gray-300 space-y-2">
+<li>• Microservicios distribuidos</li>
+<li>• Comunicación asíncrona</li>
+<li>• API REST síncrona</li>
+<li>• Seguridad por diseño</li>
+<li>• Observabilidad completa</li>
+</ul>
+</div>
+<div class="glass rounded-2xl p-5 neon">
+<h4 class="text-white font-semibold mb-3 flex items-center gap-2">
+<i class="fas fa-cogs text-cyan-400"></i>Tecnologías
+</h4>
+<ul class="text-sm text-gray-300 space-y-2">
+<li>• <strong>Frontend:</strong> HTML + Tailwind + Chart.js</li>
+<li>• <strong>Backend:</strong> Python 3.11 + FastAPI</li>
+<li>• <strong>Testing:</strong> Playwright, Appium, Maestro</li>
+<li>• <strong>IA:</strong> OpenAI GPT-4</li>
+<li>• <strong>DB:</strong> PostgreSQL + Redis</li>
+</ul>
+</div>
+<div class="glass rounded-2xl p-5 neon">
+<h4 class="text-white font-semibold mb-3 flex items-center gap-2">
+<i class="fas fa-plug text-purple-400"></i>Integraciones
+</h4>
+<ul class="text-sm text-gray-300 space-y-2">
+<li>• Jira Cloud/Server</li>
+<li>• Slack / Teams</li>
+<li>• SonarQube</li>
+<li>• Prometheus + Grafana</li>
+<li>• Allure Reports</li>
+</ul>
+</div>
+</div>
+</section>
+<div class="section-divider"></div>
+<!-- COMPONENTS -->
+<section id="components" class="mb-12">
+<h2 class="text-3xl font-bold text-white mb-6 flex items-center gap-3">
+<i class="fas fa-cubes text-purple-400"></i>
+Componentes del Sistema
+</h2>
+<div class="space-y-4">
+<div class="glass rounded-2xl p-6 neon">
+<div class="flex items-start gap-4">
+<div class="w-14 h-14 rounded-xl bg-purple-500/20 flex items-center justify-center flex-shrink-0">
+<i class="fas fa-robot text-purple-400 text-2xl"></i>
+</div>
+<div class="flex-1">
+<div class="flex items-center gap-3 mb-2">
+<h3 class="text-white font-semibold text-xl">Generador IA de Casos de Prueba</h3>
+<span class="badge badge-purple">AI Powered</span>
+</div>
+<p class="text-gray-400 text-sm mb-3">Motor inteligente que analiza User Stories y genera casos de prueba exhaustivos usando GPT-4, incluyendo happy path, casos negativos, casos de borde, seguridad y performance.</p>
+<div class="grid grid-cols-2 md:grid-cols-4 gap-2">
+<div class="p-2 rounded-lg bg-gray-800/50 text-center"><p class="text-[10px] text-gray-400">Modelo</p><p class="text-xs text-white">GPT-4</p></div>
+<div class="p-2 rounded-lg bg-gray-800/50 text-center"><p class="text-[10px] text-gray-400">Tokens</p><p class="text-xs text-white">2048 max</p></div>
+<div class="p-2 rounded-lg bg-gray-800/50 text-center"><p class="text-[10px] text-gray-400">Temp</p><p class="text-xs text-white">0.3</p></div>
+<div class="p-2 rounded-lg bg-gray-800/50 text-center"><p class="text-[10px] text-gray-400">Formato</p><p class="text-xs text-white">JSON</p></div>
+</div>
+</div>
+</div>
+</div>
+<div class="glass rounded-2xl p-6 neon">
+<div class="flex items-start gap-4">
+<div class="w-14 h-14 rounded-xl bg-green-500/20 flex items-center justify-center flex-shrink-0">
+<i class="fas fa-play-circle text-green-400 text-2xl"></i>
+</div>
+<div class="flex-1">
+<div class="flex items-center gap-3 mb-2">
+<h3 class="text-white font-semibold text-xl">Ejecutor de Pruebas</h3>
+<span class="badge badge-green">Multi-Runner</span>
+</div>
+<p class="text-gray-400 text-sm mb-3">Motor de ejecución que soporta múltiples runners (Playwright, Appium, Maestro, Detox, XCUITest, Espresso) con ejecución paralela, recolección de resultados y generación de reportes.</p>
+<div class="flex flex-wrap gap-2">
+<span class="badge badge-green">Playwright</span>
+<span class="badge badge-green">Appium</span>
+<span class="badge badge-green">Maestro</span>
+<span class="badge badge-green">Detox</span>
+<span class="badge badge-green">XCUITest</span>
+<span class="badge badge-green">Espresso</span>
+</div>
+</div>
+</div>
+</div>
+<div class="glass rounded-2xl p-6 neon">
+<div class="flex items-start gap-4">
+<div class="w-14 h-14 rounded-xl bg-blue-500/20 flex items-center justify-center flex-shrink-0">
+<i class="fab fa-jira text-blue-400 text-2xl"></i>
+</div>
+<div class="flex-1">
+<div class="flex items-center gap-3 mb-2">
+<h3 class="text-white font-semibold text-xl">Integración con Jira</h3>
+<span class="badge badge-blue">Bidireccional</span>
+</div>
+<p class="text-gray-400 text-sm mb-3">Sincronización completa con Jira: crea casos de prueba vinculados a User Stories, actualiza estados automáticamente, crea bugs al detectar fallos y notifica al equipo.</p>
+<ul class="text-sm text-gray-300 space-y-1">
+<li>• Sincronización automática de épicas/historias</li>
+<li>• Asociación test-executions ↔ user stories</li>
+<li>• Cierre automático de issues según resultados</li>
+</ul>
+</div>
+</div>
+</div>
+<div class="glass rounded-2xl p-6 neon">
+<div class="flex items-start gap-4">
+<div class="w-14 h-14 rounded-xl bg-red-500/20 flex items-center justify-center flex-shrink-0">
+<i class="fas fa-shield-alt text-red-400 text-2xl"></i>
+</div>
+<div class="flex-1">
+<div class="flex items-center gap-3 mb-2">
+<h3 class="text-white font-semibold text-xl">Data Manager & Seguridad</h3>
+<span class="badge badge-red">GDPR Compliant</span>
+</div>
+<p class="text-gray-400 text-sm mb-3">Clasificación automática de PII, enmascaramiento inteligente, generación de datos sintéticos con Faker, cifrado AES-256-GCM y gestión de secretos con HashiCorp Vault.</p>
+<div class="grid grid-cols-2 md:grid-cols-4 gap-2">
+<div class="p-2 rounded-lg bg-gray-800/50 text-center"><p class="text-[10px] text-gray-400">Cifrado</p><p class="text-xs text-white">AES-256-GCM</p></div>
+<div class="p-2 rounded-lg bg-gray-800/50 text-center"><p class="text-[10px] text-gray-400">Vault</p><p class="text-xs text-white">HashiCorp</p></div>
+<div class="p-2 rounded-lg bg-gray-800/50 text-center"><p class="text-[10px] text-gray-400">PII</p><p class="text-xs text-white">Auto-detect</p></div>
+<div class="p-2 rounded-lg bg-gray-800/50 text-center"><p class="text-[10px] text-gray-400">Compliance</p><p class="text-xs text-white">GDPR/SOX</p></div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+<div class="section-divider"></div>
+<!-- WORKFLOWS -->
+<section id="workflows" class="mb-12">
+<h2 class="text-3xl font-bold text-white mb-6 flex items-center gap-3">
+<i class="fas fa-stream text-pink-400"></i>
+Flujos de Trabajo
+</h2>
+<div class="space-y-6">
+<div class="glass rounded-2xl p-6 neon">
+<h3 class="text-xl font-semibold text-white mb-4 flex items-center gap-2">
+<i class="fas fa-magic text-purple-400"></i>
+Flujo 1: Generación Automática de Casos
+</h3>
+<div class="flex flex-wrap items-center gap-2 text-sm">
+<div class="px-3 py-2 rounded-lg bg-blue-500/10 border border-blue-500/30"><i class="fas fa-user text-blue-400 mr-2"></i>Dev crea User Story</div>
+<i class="fas fa-arrow-right text-gray-600"></i>
+<div class="px-3 py-2 rounded-lg bg-blue-500/10 border border-blue-500/30"><i class="fab fa-jira text-blue-400 mr-2"></i>Jira dispara webhook</div>
+<i class="fas fa-arrow-right text-gray-600"></i>
+<div class="px-3 py-2 rounded-lg bg-purple-500/10 border border-purple-500/30"><i class="fas fa-brain text-purple-400 mr-2"></i>IA analiza requisitos</div>
+<i class="fas fa-arrow-right text-gray-600"></i>
+<div class="px-3 py-2 rounded-lg bg-purple-500/10 border border-purple-500/30"><i class="fas fa-robot text-purple-400 mr-2"></i>IA evalúa riesgos</div>
+<i class="fas fa-arrow-right text-gray-600"></i>
+<div class="px-3 py-2 rounded-lg bg-purple-500/10 border border-purple-500/30"><i class="fas fa-magic text-purple-400 mr-2"></i>IA genera casos</div>
+<i class="fas fa-arrow-right text-gray-600"></i>
+<div class="px-3 py-2 rounded-lg bg-green-500/10 border border-green-500/30"><i class="fas fa-check text-green-400 mr-2"></i>Casos validados</div>
+</div>
+</div>
+<div class="glass rounded-2xl p-6 neon">
+<h3 class="text-xl font-semibold text-white mb-4 flex items-center gap-2">
+<i class="fas fa-play text-green-400"></i>
+Flujo 2: Ejecución de Pruebas
+</h3>
+<div class="flex flex-wrap items-center gap-2 text-sm">
+<div class="px-3 py-2 rounded-lg bg-green-500/10 border border-green-500/30"><i class="fas fa-bolt text-green-400 mr-2"></i>Trigger (Manual/CI/CD)</div>
+<i class="fas fa-arrow-right text-gray-600"></i>
+<div class="px-3 py-2 rounded-lg bg-cyan-500/10 border border-cyan-500/30"><i class="fas fa-cog text-cyan-400 mr-2"></i>Preparar entorno</div>
+<i class="fas fa-arrow-right text-gray-600"></i>
+<div class="px-3 py-2 rounded-lg bg-cyan-500/10 border border-cyan-500/30"><i class="fas fa-database text-cyan-400 mr-2"></i>Preparar datos</div>
+<i class="fas fa-arrow-right text-gray-600"></i>
+<div class="px-3 py-2 rounded-lg bg-orange-500/10 border border-orange-500/30"><i class="fas fa-running text-orange-400 mr-2"></i>Ejecutar runners</div>
+<i class="fas fa-arrow-right text-gray-600"></i>
+<div class="px-3 py-2 rounded-lg bg-purple-500/10 border border-purple-500/30"><i class="fas fa-chart-bar text-purple-400 mr-2"></i>Analizar resultados</div>
+<i class="fas fa-arrow-right text-gray-600"></i>
+<div class="px-3 py-2 rounded-lg bg-pink-500/10 border border-pink-500/30"><i class="fas fa-file-alt text-pink-400 mr-2"></i>Generar reportes</div>
+<i class="fas fa-arrow-right text-gray-600"></i>
+<div class="px-3 py-2 rounded-lg bg-blue-500/10 border border-blue-500/30"><i class="fab fa-jira text-blue-400 mr-2"></i>Sync Jira</div>
+</div>
+</div>
+<div class="glass rounded-2xl p-6 neon">
+<h3 class="text-xl font-semibold text-white mb-4 flex items-center gap-2">
+<i class="fas fa-lock text-red-400"></i>
+Flujo 3: Seguridad y Gestión de Datos
+</h3>
+<div class="flex flex-wrap items-center gap-2 text-sm">
+<div class="px-3 py-2 rounded-lg bg-gray-500/10 border border-gray-500/30"><i class="fas fa-database text-gray-400 mr-2"></i>Datos de entrada</div>
+<i class="fas fa-arrow-right text-gray-600"></i>
+<div class="px-3 py-2 rounded-lg bg-yellow-500/10 border border-yellow-500/30"><i class="fas fa-search text-yellow-400 mr-2"></i>Clasificador PII</div>
+<i class="fas fa-arrow-right text-gray-600"></i>
+<div class="px-3 py-2 rounded-lg bg-red-500/10 border border-red-500/30"><i class="fas fa-mask text-red-400 mr-2"></i>Enmascaramiento</div>
+<i class="fas fa-arrow-right text-gray-600"></i>
+<div class="px-3 py-2 rounded-lg bg-indigo-500/10 border border-indigo-500/30"><i class="fas fa-vault text-indigo-400 mr-2"></i>Vault Storage</div>
+<i class="fas fa-arrow-right text-gray-600"></i>
+<div class="px-3 py-2 rounded-lg bg-green-500/10 border border-green-500/30"><i class="fas fa-check text-green-400 mr-2"></i>Datos seguros</div>
+</div>
+</div>
+</div>
+</section>
+<div class="section-divider"></div>
+<!-- INSTALLATION -->
+<section id="installation" class="mb-12">
+<h2 class="text-3xl font-bold text-white mb-6 flex items-center gap-3">
+<i class="fas fa-download text-blue-400"></i>
+Instalación
+</h2>
+<div class="warning-box mb-6">
+<div class="flex items-start gap-3">
+<i class="fas fa-exclamation-triangle text-yellow-400 mt-1"></i>
+<div>
+<p class="text-yellow-200 font-semibold mb-1">Prerrequisitos</p>
+<ul class="text-sm text-gray-300 space-y-1">
+<li>• Docker 24+ y Docker Compose 2+ (recomendado)</li>
+<li>• Python 3.11+ (instalación manual)</li>
+<li>• Node.js 20+ (para frontend)</li>
+<li>• Cuenta Jira Software (Cloud o Server)</li>
+<li>• Clave OpenAI API (si usas IA)</li>
+</ul>
+</div>
+</div>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+<div class="glass rounded-2xl p-6 neon">
+<h3 class="text-white font-semibold mb-3 flex items-center gap-2">
+<i class="fab fa-docker text-blue-400"></i>Opción A: Docker (Recomendado)
+</h3>
+<div class="code-block">
+<div class="code-header">
+<span class="text-xs text-gray-400">Terminal</span>
+<button class="copy-btn" onclick="copyCode(this)"><i class="fas fa-copy mr-1"></i>Copiar</button>
+</div>
+<pre><code>git clone &lt;URL_REPO&gt;
+cd test-case-automation-suite
+cp .env.example .env
+# Editar .env con tus credenciales
+# Iniciar el entorno
+sudo docker-compose up --build</code></pre>
+</div>
+</div>
+<div class="glass rounded-2xl p-6 neon">
+<h3 class="text-white font-semibold mb-3 flex items-center gap-2">
+<i class="fab fa-python text-yellow-400"></i>Opción B: Manual (Python)
+</h3>
+<div class="code-block">
+<div class="code-header">
+<span class="text-xs text-gray-400">Terminal</span>
+<button class="copy-btn" onclick="copyCode(this)"><i class="fas fa-copy mr-1"></i>Copiar</button>
+</div>
+<pre><code>python3 -m venv .venv
+source .venv/bin/activate
+pip install -r requirements.txt
+playwright install
+# Ejecutar
+uvicorn src.api.main:app --reload</code></pre>
+</div>
+</div>
+</div>
+<div class="success-box">
+<div class="flex items-start gap-3">
+<i class="fas fa-check-circle text-green-400 mt-1"></i>
+<div>
+<p class="text-green-200 font-semibold mb-1">Verificación</p>
+<p class="text-sm text-gray-300">Después de la instalación, verifica que todo funcione:</p>
+<div class="mt-2 mono text-xs text-gray-300">
+<p>• Dashboard: <span class="text-indigo-400">http://localhost:5000</span></p>
+<p>• API: <span class="text-indigo-400">http://localhost:8000/docs</span></p>
+<p>• Sample App: <span class="text-indigo-400">http://localhost:3000</span></p>
+</div>
+</div>
+</div>
+</div>
+</section>
+<div class="section-divider"></div>
+<!-- CONFIGURATION -->
+<section id="configuration" class="mb-12">
+<h2 class="text-3xl font-bold text-white mb-6 flex items-center gap-3">
+<i class="fas fa-sliders-h text-yellow-400"></i>
+Configuración
+</h2>
+<div class="space-y-6">
+<div class="glass rounded-2xl p-6 neon">
+<h3 class="text-xl font-semibold text-white mb-4">Archivo .env</h3>
+<div class="code-block">
+<div class="code-header">
+<span class="text-xs text-gray-400"><i class="fas fa-file-code mr-2"></i>.env</span>
+<button class="copy-btn" onclick="copyCode(this)"><i class="fas fa-copy mr-1"></i>Copiar</button>
+</div>
+<pre><code># Jira Integration
+JIRA_SERVER=https://tuempresa.atlassian.net
+JIRA_EMAIL=qa@tuempresa.com
+JIRA_TOKEN=your-jira-token-here
+# OpenAI API
+OPENAI_API_KEY=sk-your-openai-key-here
+OPENAI_MODEL=gpt-4
+OPENAI_MAX_TOKENS=2048
+# Database
+DATABASE_URL=postgresql+asyncpg://user:password@localhost:5432/testautomation
+REDIS_URL=redis://localhost:6379/0
+# Message Queue
+RABBITMQ_URL=amqp://guest:guest@localhost:5672/
+# Security
+VAULT_URL=http://localhost:8200
+VAULT_TOKEN=your-vault-token
+ENCRYPTION_KEY=your-encryption-key
+# Monitoring
+PROMETHEUS_PORT=9090
+GRAFANA_PORT=3000
+# Testing
+PLAYWRIGHT_BROWSERS_PATH=/ms-playwright
+HEADLESS=true
+PARALLEL_WORKERS=4</code></pre>
+</div>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+<div class="glass rounded-2xl p-6 neon">
+<h3 class="text-white font-semibold mb-3 flex items-center gap-2">
+<i class="fas fa-cog text-cyan-400"></i>config/automation.yaml
+</h3>
+<p class="text-sm text-gray-400 mb-3">Configura integraciones y features IA:</p>
+<div class="code-block">
+<pre><code>jira:
+enabled: true
+project_key: PROJ
+auto_sync: true
+slack:
+enabled: true
+channel: "#qa-testing"
+ai:
+model: gpt-4
+temperature: 0.3
+max_tokens: 2048</code></pre>
+</div>
+</div>
+<div class="glass rounded-2xl p-6 neon">
+<h3 class="text-white font-semibold mb-3 flex items-center gap-2">
+<i class="fas fa-lock text-red-400"></i>config/security.yaml
+</h3>
+<p class="text-sm text-gray-400 mb-3">Clasifica campos sensibles:</p>
+<div class="code-block">
+<pre><code>classification:
+email:
+sensitivity: high
+masking: format_preserve
+credit_card:
+sensitivity: critical
+masking: partial_mask
+password:
+sensitivity: critical
+masking: full_mask</code></pre>
+</div>
+</div>
+</div>
+</div>
+</section>
+<div class="section-divider"></div>
+<!-- USAGE -->
+<section id="usage" class="mb-12">
+<h2 class="text-3xl font-bold text-white mb-6 flex items-center gap-3">
+<i class="fas fa-play text-emerald-400"></i>
+Uso del Dashboard
+</h2>
+<div class="space-y-4">
+<div class="glass rounded-2xl p-6 neon">
+<h3 class="text-white font-semibold mb-3 flex items-center gap-2">
+<i class="fas fa-robot text-purple-400"></i>1. Generar Casos de Prueba con IA
+</h3>
+<ol class="text-sm text-gray-300 space-y-2 list-decimal list-inside">
+<li>Ve a <strong class="text-white">Generador IA</strong> en el menú lateral</li>
+<li>Escribe tu User Story en el campo de texto</li>
+<li>Selecciona plataforma (Emulador/Android/iOS) y tipo de prueba</li>
+<li>Haz clic en <strong class="text-indigo-400">"Generar con IA"</strong></li>
+<li>Revisa los casos generados en el panel derecho</li>
+<li>Haz clic en <strong class="text-green-400">"Agregar a la Suite"</strong> para guardarlos</li>
+</ol>
+</div>
+<div class="glass rounded-2xl p-6 neon">
+<h3 class="text-white font-semibold mb-3 flex items-center gap-2">
+<i class="fas fa-edit text-blue-400"></i>2. Agregar Casos Manualmente
+</h3>
+<ol class="text-sm text-gray-300 space-y-2 list-decimal list-inside">
+<li>Ve a <strong class="text-white">Casos de Prueba</strong> o <strong class="text-white">Generador IA</strong></li>
+<li>Haz clic en el botón azul <strong class="text-blue-400">"➕ Agregar Manual"</strong></li>
+<li>Completa: ID, Título, Pasos, Resultado Esperado, Prioridad</li>
+<li>Haz clic en <strong class="text-green-400">"Guardar"</strong></li>
+</ol>
+</div>
+<div class="glass rounded-2xl p-6 neon">
+<h3 class="text-white font-semibold mb-3 flex items-center gap-2">
+<i class="fas fa-play-circle text-green-400"></i>3. Ejecutar Pruebas
+</h3>
+<ol class="text-sm text-gray-300 space-y-2 list-decimal list-inside">
+<li>Ve a <strong class="text-white">Ejecutor</strong> en el menú lateral</li>
+<li>Selecciona dispositivo y entorno</li>
+<li>Haz clic en <strong class="text-green-400">"Ejecutar Pruebas"</strong></li>
+<li>Observa la consola en vivo con el progreso</li>
+<li>Revisa los resultados en el panel derecho</li>
+</ol>
+</div>
+<div class="glass rounded-2xl p-6 neon">
+<h3 class="text-white font-semibold mb-3 flex items-center gap-2">
+<i class="fas fa-eye text-indigo-400"></i>4. Ver Detalle de un Caso
+</h3>
+<ol class="text-sm text-gray-300 space-y-2 list-decimal list-inside">
+<li>Ve a <strong class="text-white">Casos de Prueba</strong></li>
+<li>Haz clic en el ícono <strong class="text-indigo-400">👁️</strong> de cualquier caso</li>
+<li>Se abre un modal con: ID, Título, Descripción, Pasos numerados, Resultado Esperado</li>
+</ol>
+</div>
+<div class="glass rounded-2xl p-6 neon">
+<h3 class="text-white font-semibold mb-3 flex items-center gap-2">
+<i class="fas fa-trash text-red-400"></i>5. Eliminar Casos
+</h3>
+<ol class="text-sm text-gray-300 space-y-2 list-decimal list-inside">
+<li><strong>Individual:</strong> Haz clic en el ícono 🗑️ de un caso</li>
+<li><strong>Masivo:</strong> Marca varios checkboxes → clic en "Eliminar (N)"</li>
+<li><strong>Todos:</strong> Usa "Seleccionar todos" → "Eliminar"</li>
+</ol>
+</div>
+<div class="glass rounded-2xl p-6 neon">
+<h3 class="text-white font-semibold mb-3 flex items-center gap-2">
+<i class="fas fa-broom text-orange-400"></i>6. Limpieza Selectiva
+</h3>
+<ol class="text-sm text-gray-300 space-y-2 list-decimal list-inside">
+<li>Haz clic en <strong class="text-orange-400">"Limpiar Datos"</strong> del header</li>
+<li>Selecciona qué borrar: Casos, Ejecuciones, Historias, Actividad</li>
+<li>Confirma la acción</li>
+</ol>
+</div>
+</div>
+</section>
+<div class="section-divider"></div>
+<!-- API REFERENCE -->
+<section id="api" class="mb-12">
+<h2 class="text-3xl font-bold text-white mb-6 flex items-center gap-3">
+<i class="fas fa-code text-orange-400"></i>
+API Reference
+</h2>
+<div class="info-box mb-6">
+<div class="flex items-start gap-3">
+<i class="fas fa-info-circle text-indigo-400 mt-1"></i>
+<div>
+<p class="text-indigo-200 font-semibold mb-1">Documentación Interactiva</p>
+<p class="text-sm text-gray-300">Accede a la documentación completa de la API en: <code class="text-indigo-400">http://localhost:8000/docs</code></p>
+</div>
+</div>
+</div>
+<div class="space-y-4">
+<div class="glass rounded-2xl p-6 neon">
+<div class="flex items-center gap-3 mb-3">
+<span class="px-3 py-1 rounded bg-green-500/20 text-green-400 text-xs font-mono font-bold">GET</span>
+<code class="text-white">/health</code>
+</div>
+<p class="text-sm text-gray-400 mb-3">Verifica el estado de salud del backend.</p>
+<div class="code-block">
+<div class="code-header"><span class="text-xs text-gray-400">Respuesta</span></div>
+<pre><code>{
+"status": "healthy",
+"version": "1.0.0"
+}</code></pre>
+</div>
+</div>
+<div class="glass rounded-2xl p-6 neon">
+<div class="flex items-center gap-3 mb-3">
+<span class="px-3 py-1 rounded bg-blue-500/20 text-blue-400 text-xs font-mono font-bold">POST</span>
+<code class="text-white">/api/v1/ai/generate</code>
+</div>
+<p class="text-sm text-gray-400 mb-3">Genera casos de prueba con IA desde una User Story.</p>
+<div class="code-block">
+<div class="code-header"><span class="text-xs text-gray-400">Request Body</span></div>
+<pre><code>{
+"user_story": "Como usuario quiero iniciar sesión...",
+"platform": "mobile",
+"test_type": "functional"
+}</code></pre>
+</div>
+</div>
+<div class="glass rounded-2xl p-6 neon">
+<div class="flex items-center gap-3 mb-3">
+<span class="px-3 py-1 rounded bg-blue-500/20 text-blue-400 text-xs font-mono font-bold">POST</span>
+<code class="text-white">/api/v1/tests/execute</code>
+</div>
+<p class="text-sm text-gray-400 mb-3">Ejecuta una suite de pruebas.</p>
+<div class="code-block">
+<div class="code-header"><span class="text-xs text-gray-400">Request Body</span></div>
+<pre><code>{
+"suite_id": "SUITE-001",
+"test_cases": ["TC-001", "TC-002"],
+"platform": "mobile",
+"environment": "staging"
+}</code></pre>
+</div>
+</div>
+<div class="glass rounded-2xl p-6 neon">
+<div class="flex items-center gap-3 mb-3">
+<span class="px-3 py-1 rounded bg-green-500/20 text-green-400 text-xs font-mono font-bold">GET</span>
+<code class="text-white">/api/v1/tests/cases</code>
+</div>
+<p class="text-sm text-gray-400">Lista todos los casos de prueba.</p>
+</div>
+<div class="glass rounded-2xl p-6 neon">
+<div class="flex items-center gap-3 mb-3">
+<span class="px-3 py-1 rounded bg-green-500/20 text-green-400 text-xs font-mono font-bold">GET</span>
+<code class="text-white">/api/v1/tests/executions</code>
+</div>
+<p class="text-sm text-gray-400">Lista todas las ejecuciones.</p>
+</div>
+</div>
+</section>
+<div class="section-divider"></div>
+<!-- AI GENERATION -->
+<section id="ai-generation" class="mb-12">
+<h2 class="text-3xl font-bold text-white mb-6 flex items-center gap-3">
+<i class="fas fa-robot text-purple-400"></i>
+Generación IA de Casos
+</h2>
+<div class="glass rounded-2xl p-6 neon mb-6">
+<h3 class="text-xl font-semibold text-white mb-4">Cómo Funciona</h3>
+<div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+<div class="text-center">
+<div class="w-16 h-16 rounded-2xl bg-purple-500/20 flex items-center justify-center mx-auto mb-3">
+<i class="fas fa-file-alt text-purple-400 text-2xl"></i>
+</div>
+<h4 class="text-white font-semibold text-sm mb-1">1. Input</h4>
+<p class="text-xs text-gray-400">User Story + contexto</p>
+</div>
+<div class="text-center">
+<div class="w-16 h-16 rounded-2xl bg-indigo-500/20 flex items-center justify-center mx-auto mb-3">
+<i class="fas fa-brain text-indigo-400 text-2xl"></i>
+</div>
+<h4 class="text-white font-semibold text-sm mb-1">2. Análisis</h4>
+<p class="text-xs text-gray-400">NLP + evaluación de riesgos</p>
+</div>
+<div class="text-center">
+<div class="w-16 h-16 rounded-2xl bg-pink-500/20 flex items-center justify-center mx-auto mb-3">
+<i class="fas fa-magic text-pink-400 text-2xl"></i>
+</div>
+<h4 class="text-white font-semibold text-sm mb-1">3. Generación</h4>
+<p class="text-xs text-gray-400">GPT-4 genera casos</p>
+</div>
+<div class="text-center">
+<div class="w-16 h-16 rounded-2xl bg-green-500/20 flex items-center justify-center mx-auto mb-3">
+<i class="fas fa-check text-green-400 text-2xl"></i>
+</div>
+<h4 class="text-white font-semibold text-sm mb-1">4. Validación</h4>
+<p class="text-xs text-gray-400">Validación y optimización</p>
+</div>
+</div>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+<div class="glass rounded-2xl p-6 neon">
+<h3 class="text-white font-semibold mb-3">Tipos de Casos Generados</h3>
+<ul class="text-sm text-gray-300 space-y-2">
+<li>✅ <strong class="text-white">Happy Path:</strong> Flujo principal exitoso</li>
+<li>❌ <strong class="text-white">Casos Negativos:</strong> Datos inválidos, errores</li>
+<li>⚠️ <strong class="text-white">Casos de Borde:</strong> Límites, valores extremos</li>
+<li>🔒 <strong class="text-white">Seguridad:</strong> SQLi, XSS, fuerza bruta</li>
+<li>⚡ <strong class="text-white">Performance:</strong> Carga, estrés</li>
+<li>♿ <strong class="text-white">Accesibilidad:</strong> WCAG compliance</li>
+</ul>
+</div>
+<div class="glass rounded-2xl p-6 neon">
+<h3 class="text-white font-semibold mb-3">Estructura de un Caso</h3>
+<div class="code-block">
+<pre><code>{
+"id": "TC-001",
+"title": "Login con credenciales válidas",
+"description": "Verificar login exitoso",
+"priority": "Alta",
+"type": "Funcional",
+"steps": [
+"Abrir la aplicación",
+"Ingresar email válido",
+"Ingresar password válido",
+"Presionar Login"
+],
+"expected": "Acceso al dashboard",
+"platform": "Mobile",
+"ai": true,
+"storyId": "STORY-001"
+}</code></pre>
+</div>
+</div>
+</div>
+</section>
+<div class="section-divider"></div>
+<!-- TEST EXECUTION -->
+<section id="test-execution" class="mb-12">
+<h2 class="text-3xl font-bold text-white mb-6 flex items-center gap-3">
+<i class="fas fa-play-circle text-green-400"></i>
+Ejecución de Pruebas
+</h2>
+<div class="glass rounded-2xl p-6 neon mb-6">
+<h3 class="text-xl font-semibold text-white mb-4">Runners Soportados</h3>
+<div class="grid grid-cols-2 md:grid-cols-3 gap-3">
+<div class="p-3 rounded-xl bg-green-500/10 border border-green-500/30">
+<p class="text-white font-semibold text-sm"> Appium</p>
+<p class="text-xs text-gray-400">Android nativo</p>
+</div>
+<div class="p-3 rounded-xl bg-indigo-500/10 border border-indigo-500/30">
+<p class="text-white font-semibold text-sm">🎭 Playwright</p>
+<p class="text-xs text-gray-400">Mobile web + híbrido</p>
+</div>
+<div class="p-3 rounded-xl bg-cyan-500/10 border border-cyan-500/30">
+<p class="text-white font-semibold text-sm">🎯 Maestro</p>
+<p class="text-xs text-gray-400">UI flows mobile</p>
+</div>
+<div class="p-3 rounded-xl bg-purple-500/10 border border-purple-500/30">
+<p class="text-white font-semibold text-sm">⚡ Detox</p>
+<p class="text-xs text-gray-400">React Native</p>
+</div>
+<div class="p-3 rounded-xl bg-pink-500/10 border border-pink-500/30">
+<p class="text-white font-semibold text-sm">📱 XCUITest</p>
+<p class="text-xs text-gray-400">iOS nativo</p>
+</div>
+<div class="p-3 rounded-xl bg-orange-500/10 border border-orange-500/30">
+<p class="text-white font-semibold text-sm">☕ Espresso</p>
+<p class="text-xs text-gray-400">Android nativo</p>
+</div>
+</div>
+</div>
+<div class="glass rounded-2xl p-6 neon">
+<h3 class="text-xl font-semibold text-white mb-4">Métricas de Ejecución</h3>
+<div class="grid grid-cols-2 md:grid-cols-4 gap-3">
+<div class="p-3 rounded-xl bg-gray-800/50 text-center">
+<p class="text-2xl font-bold text-white" id="metric-total">-</p>
+<p class="text-xs text-gray-400">Total Tests</p>
+</div>
+<div class="p-3 rounded-xl bg-green-500/10 text-center">
+<p class="text-2xl font-bold text-green-400" id="metric-passed">-</p>
+<p class="text-xs text-gray-400">Pasaron</p>
+</div>
+<div class="p-3 rounded-xl bg-red-500/10 text-center">
+<p class="text-2xl font-bold text-red-400" id="metric-failed">-</p>
+<p class="text-xs text-gray-400">Fallaron</p>
+</div>
+<div class="p-3 rounded-xl bg-cyan-500/10 text-center">
+<p class="text-2xl font-bold text-cyan-400" id="metric-rate">-</p>
+<p class="text-xs text-gray-400">Pass Rate</p>
+</div>
+</div>
+</div>
+</section>
+<div class="section-divider"></div>
+<!-- SECURITY -->
+<section id="security" class="mb-12">
+<h2 class="text-3xl font-bold text-white mb-6 flex items-center gap-3">
+<i class="fas fa-shield-alt text-red-400"></i>
+Seguridad y Gestión de Datos
+</h2>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+<div class="glass rounded-2xl p-6 neon">
+<h3 class="text-white font-semibold mb-3 flex items-center gap-2">
+<i class="fas fa-mask text-cyan-400"></i>Estrategias de Enmascaramiento
+</h3>
+<div class="space-y-3">
+<div class="p-3 rounded-lg bg-gray-800/50">
+<p class="text-xs text-gray-400 mb-1">Email - format_preserve</p>
+<p class="mono text-xs"><span class="text-red-400 line-through">juan.perez@gmail.com</span> → <span class="text-green-400">ju****ez@a***l.com</span></p>
+</div>
+<div class="p-3 rounded-lg bg-gray-800/50">
+<p class="text-xs text-gray-400 mb-1">Tarjeta - partial_mask</p>
+<p class="mono text-xs"><span class="text-red-400 line-through">4532-1234-5678-9012</span> → <span class="text-green-400">45**********9012</span></p>
+</div>
+<div class="p-3 rounded-lg bg-gray-800/50">
+<p class="text-xs text-gray-400 mb-1">Teléfono - synthetic_replace</p>
+<p class="mono text-xs"><span class="text-red-400 line-through">+34 612 345 678</span> → <span class="text-green-400">+34 698 231 457</span></p>
+</div>
+</div>
+</div>
+<div class="glass rounded-2xl p-6 neon">
+<h3 class="text-white font-semibold mb-3 flex items-center gap-2">
+<i class="fas fa-lock text-yellow-400"></i>Cumplimiento Normativo
+</h3>
+<div class="space-y-3">
+<div class="p-3 rounded-lg bg-gray-800/50 flex items-center gap-3">
+<i class="fas fa-check-circle text-green-400"></i>
+<div>
+<p class="text-white text-sm font-semibold">GDPR</p>
+<p class="text-xs text-gray-400">Protección de datos UE</p>
+</div>
+</div>
+<div class="p-3 rounded-lg bg-gray-800/50 flex items-center gap-3">
+<i class="fas fa-check-circle text-green-400"></i>
+<div>
+<p class="text-white text-sm font-semibold">SOX</p>
+<p class="text-xs text-gray-400">Auditoría financiera</p>
+</div>
+</div>
+<div class="p-3 rounded-lg bg-gray-800/50 flex items-center gap-3">
+<i class="fas fa-check-circle text-green-400"></i>
+<div>
+<p class="text-white text-sm font-semibold">ISO 27001</p>
+<p class="text-xs text-gray-400">Seguridad información</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="danger-box">
+<div class="flex items-start gap-3">
+<i class="fas fa-exclamation-triangle text-red-400 mt-1"></i>
+<div>
+<p class="text-red-200 font-semibold mb-1">⚠️ Regla de Oro</p>
+<p class="text-sm text-gray-300"><strong>NUNCA uses datos reales de producción</strong> sin enmascarar. Siempre usa datos sintéticos generados con Faker o datos enmascarados.</p>
+</div>
+</div>
+</div>
+</section>
+<div class="section-divider"></div>
+<!-- JIRA -->
+<section id="jira" class="mb-12">
+<h2 class="text-3xl font-bold text-white mb-6 flex items-center gap-3">
+<i class="fab fa-jira text-blue-400"></i>
+Integración con Jira
+</h2>
+<div class="glass rounded-2xl p-6 neon mb-6">
+<h3 class="text-xl font-semibold text-white mb-4">Flujo de Sincronización</h3>
+<div class="grid grid-cols-1 md:grid-cols-5 gap-3">
+<div class="p-3 rounded-xl bg-blue-500/10 border border-blue-500/30 text-center">
+<i class="fas fa-user text-blue-400 text-2xl mb-2"></i>
+<p class="text-xs text-white">Dev crea Story</p>
+</div>
+<div class="p-3 rounded-xl bg-purple-500/10 border border-purple-500/30 text-center">
+<i class="fas fa-robot text-purple-400 text-2xl mb-2"></i>
+<p class="text-xs text-white">IA genera tests</p>
+</div>
+<div class="p-3 rounded-xl bg-indigo-500/10 border border-indigo-500/30 text-center">
+<i class="fas fa-link text-indigo-400 text-2xl mb-2"></i>
+<p class="text-xs text-white">Vincula a Story</p>
+</div>
+<div class="p-3 rounded-xl bg-green-500/10 border border-green-500/30 text-center">
+<i class="fas fa-play text-green-400 text-2xl mb-2"></i>
+<p class="text-xs text-white">Ejecuta tests</p>
+</div>
+<div class="p-3 rounded-xl bg-cyan-500/10 border border-cyan-500/30 text-center">
+<i class="fas fa-sync text-cyan-400 text-2xl mb-2"></i>
+<p class="text-xs text-white">Sync resultados</p>
+</div>
+</div>
+</div>
+<div class="glass rounded-2xl p-6 neon">
+<h3 class="text-white font-semibold mb-3">Automatizaciones Disponibles</h3>
+<ul class="text-sm text-gray-300 space-y-2">
+<li>✅ Sincronización automática de épicas/historias</li>
+<li>✅ Asociación test-executions ↔ user stories</li>
+<li>✅ Cierre automático de issues según resultados</li>
+<li>✅ Creación automática de bugs al detectar fallos</li>
+<li>✅ Notificaciones al equipo por Slack/Teams</li>
+</ul>
+</div>
+</section>
+<div class="section-divider"></div>
+<!-- PIPELINE -->
+<section id="pipeline" class="mb-12">
+<h2 class="text-3xl font-bold text-white mb-6 flex items-center gap-3">
+<i class="fas fa-code-branch text-blue-300"></i>
+Pipeline CI/CD DevSecOps
+</h2>
+<div class="glass rounded-2xl p-6 neon mb-6">
+<h3 class="text-xl font-semibold text-white mb-4">Flujo del Pipeline</h3>
+<div class="flex flex-wrap items-center gap-2 text-xs">
+<div class="px-3 py-2 rounded-lg bg-green-500/10 border border-green-500/30"><i class="fas fa-code-commit text-green-400 mr-1"></i>Commit</div>
+<i class="fas fa-arrow-right text-gray-600"></i>
+<div class="px-3 py-2 rounded-lg bg-green-500/10 border border-green-500/30"><i class="fas fa-search text-green-400 mr-1"></i>SAST</div>
+<i class="fas fa-arrow-right text-gray-600"></i>
+<div class="px-3 py-2 rounded-lg bg-green-500/10 border border-green-500/30"><i class="fas fa-shield-alt text-green-400 mr-1"></i>Security</div>
+<i class="fas fa-arrow-right text-gray-600"></i>
+<div class="px-3 py-2 rounded-lg bg-green-500/10 border border-green-500/30"><i class="fas fa-vial text-green-400 mr-1"></i>Unit Tests</div>
+<i class="fas fa-arrow-right text-gray-600"></i>
+<div class="px-3 py-2 rounded-lg bg-purple-500/10 border border-purple-500/30"><i class="fas fa-robot text-purple-400 mr-1"></i>AI Gen</div>
+<i class="fas fa-arrow-right text-gray-600"></i>
+<div class="px-3 py-2 rounded-lg bg-gray-500/10 border border-gray-500/30"><i class="fas fa-tasks text-gray-400 mr-1"></i>Integration</div>
+<i class="fas fa-arrow-right text-gray-600"></i>
+<div class="px-3 py-2 rounded-lg bg-gray-500/10 border border-gray-500/30"><i class="fas fa-desktop text-gray-400 mr-1"></i>E2E</div>
+<i class="fas fa-arrow-right text-gray-600"></i>
+<div class="px-3 py-2 rounded-lg bg-gray-500/10 border border-gray-500/30"><i class="fas fa-rocket text-gray-400 mr-1"></i>Deploy</div>
+</div>
+</div>
+<div class="glass rounded-2xl p-6 neon">
+<h3 class="text-white font-semibold mb-3">Herramientas de Seguridad Integradas</h3>
+<div class="grid grid-cols-2 md:grid-cols-4 gap-3">
+<div class="p-3 rounded-lg bg-gray-800/50 text-center">
+<p class="text-white font-semibold text-sm">bandit</p>
+<p class="text-xs text-gray-400">SAST Python</p>
+</div>
+<div class="p-3 rounded-lg bg-gray-800/50 text-center">
+<p class="text-white font-semibold text-sm">safety</p>
+<p class="text-xs text-gray-400">Vulnerabilidades</p>
+</div>
+<div class="p-3 rounded-lg bg-gray-800/50 text-center">
+<p class="text-white font-semibold text-sm">semgrep</p>
+<p class="text-xs text-gray-400">Análisis estático</p>
+</div>
+<div class="p-3 rounded-lg bg-gray-800/50 text-center">
+<p class="text-white font-semibold text-sm">OWASP ZAP</p>
+<p class="text-xs text-gray-400">DAST</p>
+</div>
+</div>
+</div>
+</section>
+<div class="section-divider"></div>
+<!-- FILE STRUCTURE -->
+<section id="file-structure" class="mb-12">
+<h2 class="text-3xl font-bold text-white mb-6 flex items-center gap-3">
+<i class="fas fa-folder-tree text-amber-400"></i>
+Estructura del Proyecto
+</h2>
+<div class="code-block">
+<div class="code-header">
+<span class="text-xs text-gray-400"><i class="fas fa-folder mr-2"></i>Estructura de Archivos</span>
+<button class="copy-btn" onclick="copyCode(this)"><i class="fas fa-copy mr-1"></i>Copiar</button>
+</div>
+<pre><code>qa-mobile-testing-ai/
+├── frontend/
+│   └── index.html              # Dashboard web completo
+├── backend/
+│   ├── src/
+│   │   ├── api/
+│   │   │   └── main.py         # API FastAPI
+│   │   ├── core/               # Motor principal
+│   │   ├── ai/
+│   │   │   ├── generators/     # Generadores IA
+│   │   │   ├── analyzers/      # Analizadores
+│   │   │   └── models/         # Modelos ML
+│   │   ├── runners/            # Ejecutores de tests
+│   │   ├── integrations/       # Jira, Slack, etc.
+│   │   ├── security/           # Clasificación, masking
+│   │   └── utils/              # Utilidades
+│   ├── tests/                  # Tests del backend
+│   ├── requirements.txt        # Dependencias Python
+│   └── .env                    # Variables de entorno
+├── sample-app/
+│   └── index.html              # App de ejemplo para testing
+├── config/
+│   ├── environments/           # Config por entorno
+│   ├── security/               # Reglas de seguridad
+│   └── automation/             # Automatizaciones
+├── templates/
+│   ├── functional/             # Templates funcionales
+│   ├── security/               # Templates seguridad
+│   └── api/                    # Templates API
+├── reports/                    # Reportes generados
+├── data/
+│   ├── synthetic/              # Datos sintéticos
+│   └── masked/                 # Datos enmascarados
+── docs/                       # Documentación</code></pre>
+</div>
+</section>
+<div class="section-divider"></div>
+<!-- TROUBLESHOOTING -->
+<section id="troubleshooting" class="mb-12">
+<h2 class="text-3xl font-bold text-white mb-6 flex items-center gap-3">
+<i class="fas fa-bug text-red-400"></i>
+Troubleshooting
+</h2>
+<div class="space-y-4">
+<details class="glass rounded-2xl p-6 neon cursor-pointer">
+<summary class="text-white font-semibold flex items-center gap-2">
+<i class="fas fa-exclamation-circle text-red-400"></i>
+Error: "Port 8000 already in use"
+</summary>
+<div class="mt-4 text-sm text-gray-300">
+<p class="mb-2">Otro proceso está usando el puerto 8000. Soluciones:</p>
+<div class="code-block">
+<pre><code># Opción 1: Cambiar puerto en .env
+APP_PORT=8001
+# Opción 2: Matar el proceso (macOS/Linux)
+lsof -ti:8000 | xargs kill -9
+# Opción 3: Windows PowerShell
+netstat -ano | findstr :8000
+taskkill /PID &lt;PID&gt; /F</code></pre>
+</div>
+</div>
+</details>
+<details class="glass rounded-2xl p-6 neon cursor-pointer">
+<summary class="text-white font-semibold flex items-center gap-2">
+<i class="fas fa-exclamation-circle text-red-400"></i>
+Error: "ModuleNotFoundError: No module named 'fastapi'"
+</summary>
+<div class="mt-4 text-sm text-gray-300">
+<p class="mb-2">No activaste el entorno virtual o no instalaste dependencias:</p>
+<div class="code-block">
+<pre><code>cd backend
+source venv/bin/activate  # macOS/Linux
+# o: venv\Scripts\activate  # Windows
+pip install -r requirements.txt</code></pre>
+</div>
+</div>
+</details>
+<details class="glass rounded-2xl p-6 neon cursor-pointer">
+<summary class="text-white font-semibold flex items-center gap-2">
+<i class="fas fa-exclamation-circle text-red-400"></i>
+Error: "CORS error" en el navegador
+</summary>
+<div class="mt-4 text-sm text-gray-300">
+<p class="mb-2">Verifica que el backend tenga CORS habilitado:</p>
+<div class="code-block">
+<pre><code>app.add_middleware(
+CORSMiddleware,
+allow_origins=["*"],
+allow_credentials=True,
+allow_methods=["*"],
+allow_headers=["*"],
+)</code></pre>
+</div>
+</div>
+</details>
+<details class="glass rounded-2xl p-6 neon cursor-pointer">
+<summary class="text-white font-semibold flex items-center gap-2">
+<i class="fas fa-exclamation-circle text-red-400"></i>
+Error: "Playwright browsers not found"
+</summary>
+<div class="mt-4 text-sm text-gray-300">
+<p class="mb-2">Instala los navegadores de Playwright:</p>
+<div class="code-block">
+<pre><code>playwright install chromium
+# o instala todos:
+playwright install</code></pre>
+</div>
+</div>
+</details>
+<details class="glass rounded-2xl p-6 neon cursor-pointer">
+<summary class="text-white font-semibold flex items-center gap-2">
+<i class="fas fa-exclamation-circle text-red-400"></i>
+Sample App no carga en localhost:3000
+</summary>
+<div class="mt-4 text-sm text-gray-300">
+<p class="mb-2">Verifica que el servidor HTTP esté corriendo:</p>
+<div class="code-block">
+<pre><code>cd sample-app
+python3 -m http.server 3000
+# Deberías ver:
+# Serving HTTP on :: port 3000</code></pre>
+</div>
+</div>
+</details>
+</div>
+</section>
+<div class="section-divider"></div>
+<!-- FAQ -->
+<section id="faq" class="mb-12">
+<h2 class="text-3xl font-bold text-white mb-6 flex items-center gap-3">
+<i class="fas fa-question-circle text-cyan-400"></i>
+Preguntas Frecuentes
+</h2>
+<div class="space-y-4">
+<div class="glass rounded-2xl p-6 neon">
+<h3 class="text-white font-semibold mb-2">¿Necesito una clave de OpenAI para usar el sistema?</h3>
+<p class="text-sm text-gray-400">No. El sistema funciona en <strong class="text-white">modo demo</strong> con plantillas predefinidas. Si configuras tu API key en Configuración, activarás la generación real con GPT-4.</p>
+</div>
+<div class="glass rounded-2xl p-6 neon">
+<h3 class="text-white font-semibold mb-2">¿Puedo usar datos reales de producción?</h3>
+<p class="text-sm text-gray-400"><strong class="text-red-400">NO.</strong> Nunca uses datos reales sin enmascarar. Usa datos sintéticos (Faker) o datos enmascarados con las estrategias del Data Manager.</p>
+</div>
+<div class="glass rounded-2xl p-6 neon">
+<h3 class="text-white font-semibold mb-2">¿Qué navegadores móviles soporta?</h3>
+<p class="text-sm text-gray-400">Soporta Android (Appium, Espresso), iOS (XCUITest), React Native (Detox), y Mobile Web (Playwright, Maestro).</p>
+</div>
+<div class="glass rounded-2xl p-6 neon">
+<h3 class="text-white font-semibold mb-2">¿Puedo integrar con otros sistemas además de Jira?</h3>
+<p class="text-sm text-gray-400">Sí. El sistema está diseñado para extenderse. Soporta Slack, Teams, Confluence, Bitbucket y SonarQube. Puedes agregar más integraciones en <code class="text-indigo-400">src/integrations/</code>.</p>
+</div>
+<div class="glass rounded-2xl p-6 neon">
+<h3 class="text-white font-semibold mb-2">¿Cómo escalo el sistema para equipos grandes?</h3>
+<p class="text-sm text-gray-400">Usa Docker Compose con múltiples réplicas de cada servicio. El sistema está diseñado con arquitectura de microservicios para escalar horizontalmente.</p>
+</div>
+</div>
+</section>
+<div class="section-divider"></div>
+<!-- ROADMAP -->
+<section id="roadmap" class="mb-12">
+<h2 class="text-3xl font-bold text-white mb-6 flex items-center gap-3">
+<i class="fas fa-map text-pink-400"></i>
+Roadmap
+</h2>
+<div class="space-y-4">
+<div class="glass rounded-2xl p-6 neon">
+<div class="flex items-center gap-3 mb-3">
+<span class="badge badge-green">✓ Completado</span>
+<h3 class="text-white font-semibold">Fase 1: Fundación</h3>
+</div>
+<ul class="text-sm text-gray-300 space-y-1">
+<li>✅ Configuración de infraestructura básica</li>
+<li>✅ Implementación de servicios core</li>
+<li>✅ Integración básica con Jira</li>
+<li>✅ Configuración de pipelines CI/CD</li>
+<li>✅ Dashboard web completo</li>
+</ul>
+</div>
+<div class="glass rounded-2xl p-6 neon">
+<div class="flex items-center gap-3 mb-3">
+<span class="badge badge-orange">En Progreso</span>
+<h3 class="text-white font-semibold">Fase 2: IA y Automatización</h3>
+</div>
+<ul class="text-sm text-gray-300 space-y-1">
+<li>🔄 Implementación de generadores de IA</li>
+<li>🔄 Configuración de modelos ML</li>
+<li>⏳ Automatización de flujos de trabajo</li>
+<li>⏳ Sistema de métricas avanzadas</li>
+</ul>
+</div>
+<div class="glass rounded-2xl p-6 neon">
+<div class="flex items-center gap-3 mb-3">
+<span class="badge badge-blue">Planificado</span>
+<h3 class="text-white font-semibold">Fase 3: Seguridad y Compliance</h3>
+</div>
+<ul class="text-sm text-gray-300 space-y-1">
+<li>⏳ Implementación de clasificación de datos</li>
+<li>⏳ Sistema de enmascaramiento avanzado</li>
+<li>⏳ Auditoría y trazabilidad completa</li>
+<li>⏳ Certificaciones de compliance</li>
+</ul>
+</div>
+<div class="glass rounded-2xl p-6 neon">
+<div class="flex items-center gap-3 mb-3">
+<span class="badge badge-purple">Futuro</span>
+<h3 class="text-white font-semibold">Fase 4: Optimización y Escala</h3>
+</div>
+<ul class="text-sm text-gray-300 space-y-1">
+<li>⏳ Optimización de rendimiento</li>
+<li>⏳ Escalabilidad horizontal</li>
+<li> Monitoreo predictivo avanzado</li>
+<li>⏳ Dashboards ejecutivos</li>
+</ul>
+</div>
+</div>
+</section>
+<!-- FOOTER -->
+<footer class="mt-16 pt-8 border-t border-gray-800">
+<div class="text-center">
+<div class="flex items-center justify-center gap-3 mb-4">
+<div class="w-12 h-12 rounded-xl bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center">
+<i class="fas fa-mobile-alt text-white text-xl"></i>
+</div>
+</div>
+<h3 class="text-xl font-bold gradient-text mb-2">QA Mobile Testing AI</h3>
+<p class="text-sm text-gray-400 mb-4">Suite de Automatización de Pruebas con Inteligencia Artificial</p>
+<div class="flex justify-center gap-4 text-xs text-gray-500">
+<span>Documentación v1.1</span>
+<span>•</span>
+<span>© 2024</span>
+<span>•</span>
+<span>Hecho con ❤️ para QA Engineers</span>
+</div>
+</div>
+</footer>
+</main>
+</div>
+<script>
+// Copy code
+function copyCode(btn) {
+const code = btn.closest('.code-block').querySelector('pre').textContent;
+navigator.clipboard.writeText(code);
+btn.innerHTML = '<i class="fas fa-check mr-1"></i>Copiado';
+btn.classList.add('copied');
+setTimeout(() => {
+btn.innerHTML = '<i class="fas fa-copy mr-1"></i>Copiar';
+btn.classList.remove('copied');
+}, 2000);
+}
+// Download docs
+function downloadDocs() {
+const content = document.documentElement.outerHTML;
+const blob = new Blob([content], { type: 'text/html' });
+const url = URL.createObjectURL(blob);
+const a = document.createElement('a');
+a.href = url;
+a.download = 'QA-Mobile-Testing-AI-Documentacion.html';
+a.click();
+URL.revokeObjectURL(url);
+}
+// Active sidebar on scroll
+const sections = document.querySelectorAll('section[id]');
+const sidebarLinks = document.querySelectorAll('.sidebar-item');
+window.addEventListener('scroll', () => {
+let current = '';
+sections.forEach(section => {
+const sectionTop = section.offsetTop;
+if (pageYOffset >= sectionTop - 100) {
+current = section.getAttribute('id');
+}
+});
+sidebarLinks.forEach(link => {
+link.classList.remove('active');
+if (link.getAttribute('href') === `#${current}`) {
+link.classList.add('active');
+}
+});
+});
+// Smooth scroll for sidebar links
+sidebarLinks.forEach(link => {
+link.addEventListener('click', (e) => {
+e.preventDefault();
+const target = document.querySelector(link.getAttribute('href'));
+if (target) {
+target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+});
+});
+</script>
+</body>
+</html>
