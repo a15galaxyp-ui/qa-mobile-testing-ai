@@ -1,0 +1,1049 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Arquitectura Final - QA Mobile Testing AI</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/fontsource/fonts/inter@latest/latin-400-normal.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/fontsource/fonts/inter@latest/latin-600-normal.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/fontsource/fonts/inter@latest/latin-700-normal.css">
+<style>
+*{font-family:'Inter',sans-serif;scroll-behavior:smooth}
+html,body{overflow-x:hidden}
+::-webkit-scrollbar{width:8px;height:8px}
+::-webkit-scrollbar-track{background:#0f0f1a}
+::-webkit-scrollbar-thumb{background:#6366f1;border-radius:4px}
+body{background:linear-gradient(135deg,#07070f 0%,#0e0e24 50%,#091420 100%);color:#e5e7eb;min-height:100vh}
+.glass{background:rgba(255,255,255,.02);backdrop-filter:blur(10px);border:1px solid rgba(255,255,255,.05)}
+.neon{border:1px solid rgba(99,102,241,.2)}
+.card-glow{box-shadow:0 0 20px rgba(99,102,241,.08);transition:all .3s}
+.sidebar-item{transition:all .2s;border-left:3px solid transparent;cursor:pointer;color:#d1d5db;display:block;text-decoration:none}
+.sidebar-item:hover,.sidebar-item.active{background:linear-gradient(90deg,rgba(99,102,241,.15),transparent);border-left:3px solid #6366f1;color:#fff}
+.fade-in{animation:fadeIn .4s ease-in}
+@keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+.gradient-text{background:linear-gradient(135deg,#6366f1,#8b5cf6,#ec4899);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.hero-gradient{background:linear-gradient(135deg,rgba(99,102,241,.15),rgba(139,92,246,.15),rgba(236,72,153,.15))}
+.section-divider{height:1px;background:linear-gradient(90deg,transparent,rgba(99,102,241,.3),transparent);margin:40px 0}
+.badge{display:inline-flex;align-items:center;gap:4px;padding:2px 8px;border-radius:6px;font-size:10px;font-weight:600}
+.badge-green{background:rgba(34,197,94,.2);color:#86efac;border:1px solid rgba(34,197,94,.3)}
+.badge-blue{background:rgba(59,130,246,.2);color:#93c5fd;border:1px solid rgba(59,130,246,.3)}
+.badge-orange{background:rgba(249,115,22,.2);color:#fdba74;border:1px solid rgba(249,115,22,.3)}
+.badge-red{background:rgba(239,68,68,.2);color:#fca5a5;border:1px solid rgba(239,68,68,.3)}
+.badge-purple{background:rgba(139,92,246,.2);color:#c4b5fd;border:1px solid rgba(139,92,246,.3)}
+.badge-cyan{background:rgba(6,182,212,.2);color:#67e8f9;border:1px solid rgba(6,182,212,.3)}
+.badge-yellow{background:rgba(234,179,8,.2);color:#fde047;border:1px solid rgba(234,179,8,.3)}
+.info-box{background:rgba(99,102,241,.1);border:1px solid rgba(99,102,241,.3);border-radius:12px;padding:16px;margin:16px 0}
+.success-box{background:rgba(34,197,94,.1);border:1px solid rgba(34,197,94,.3);border-radius:12px;padding:16px;margin:16px 0}
+.danger-box{background:rgba(239,68,68,.1);border:1px solid rgba(239,68,68,.3);border-radius:12px;padding:16px;margin:16px 0}
+.main-content{margin-left:18rem;width:calc(100% - 18rem);min-height:100vh;overflow-x:hidden}
+.diagram-svg{width:100%;height:auto;max-width:100%;display:block}
+@media print {
+@page { margin: 1.5cm; size: A4 landscape; }
+body{background:white!important;color:black!important}
+.no-print{display:none!important}
+.card-glow,.glass{background:white!important;border:1px solid #ddd!important;box-shadow:none!important;color:black!important}
+.gradient-text{-webkit-text-fill-color:#6366f1!important;color:#6366f1!important}
+h1,h2,h3,h4{color:#111!important;page-break-after:avoid}
+p,li,span{color:#333!important}
+.section-divider{background:#ddd!important}
+.main-content{margin-left:0!important;width:100%!important}
+aside{display:none!important}
+svg{max-width:100%!important;height:auto!important}
+}
+@media (max-width: 1024px) {
+.main-content{margin-left:0;width:100%}
+aside{display:none}
+}
+</style>
+</head>
+<body>
+<div class="flex min-h-screen">
+<!-- SIDEBAR -->
+<aside class="w-72 bg-gray-900/80 border-r border-gray-800 flex flex-col fixed h-full z-50 overflow-y-auto no-print">
+<div class="p-5 border-b border-gray-800 sticky top-0 bg-gray-900/95 backdrop-blur z-10">
+<div class="flex items-center gap-3 mb-4">
+<div class="w-10 h-10 rounded-xl bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center">
+<i class="fas fa-project-diagram text-white text-lg"></i>
+</div>
+<div>
+<h1 class="text-lg font-bold text-white">Arquitectura</h1>
+<p class="text-xs text-gray-400">Vista Final del Sistema</p>
+</div>
+</div>
+<div class="flex gap-2">
+<button onclick="window.print()" class="flex-1 px-3 py-2 rounded-lg bg-indigo-600 hover:bg-indigo-500 text-white text-xs transition">
+<i class="fas fa-file-pdf mr-1"></i>Guardar PDF
+</button>
+<button onclick="downloadHTML()" class="flex-1 px-3 py-2 rounded-lg bg-gray-800 hover:bg-gray-700 text-gray-300 text-xs transition">
+<i class="fas fa-download mr-1"></i>HTML
+</button>
+</div>
+</div>
+<nav class="py-3 px-3">
+<div class="px-2 mb-2"><span class="text-[10px] font-semibold text-gray-500 uppercase tracking-wider">Vista General</span></div>
+<a href="#overview" class="sidebar-item active flex items-center gap-3 px-3 py-2 text-sm rounded-lg"><i class="fas fa-home w-4 text-center text-indigo-400"></i><span>Introducción</span></a>
+<a href="#architecture-main" class="sidebar-item flex items-center gap-3 px-3 py-2 text-sm rounded-lg"><i class="fas fa-layer-group w-4 text-center text-purple-400"></i><span>Arquitectura Principal</span></a>
+<div class="px-2 mt-4 mb-2"><span class="text-[10px] font-semibold text-gray-500 uppercase tracking-wider">Diagramas</span></div>
+<a href="#data-flow" class="sidebar-item flex items-center gap-3 px-3 py-2 text-sm rounded-lg"><i class="fas fa-stream w-4 text-center text-cyan-400"></i><span>Flujo de Datos</span></a>
+<a href="#deployment" class="sidebar-item flex items-center gap-3 px-3 py-2 text-sm rounded-lg"><i class="fas fa-server w-4 text-center text-green-400"></i><span>Arquitectura de Despliegue</span></a>
+<a href="#security" class="sidebar-item flex items-center gap-3 px-3 py-2 text-sm rounded-lg"><i class="fas fa-shield-alt w-4 text-center text-red-400"></i><span>Arquitectura de Seguridad</span></a>
+<div class="px-2 mt-4 mb-2"><span class="text-[10px] font-semibold text-gray-500 uppercase tracking-wider">Detalles</span></div>
+<a href="#components" class="sidebar-item flex items-center gap-3 px-3 py-2 text-sm rounded-lg"><i class="fas fa-cubes w-4 text-center text-orange-400"></i><span>Componentes</span></a>
+<a href="#technologies" class="sidebar-item flex items-center gap-3 px-3 py-2 text-sm rounded-lg"><i class="fas fa-microchip w-4 text-center text-yellow-400"></i><span>Tecnologías</span></a>
+<a href="#current-status" class="sidebar-item flex items-center gap-3 px-3 py-2 text-sm rounded-lg"><i class="fas fa-tasks w-4 text-center text-indigo-400"></i><span>Estado Actual</span></a>
+<a href="#next-steps" class="sidebar-item flex items-center gap-3 px-3 py-2 text-sm rounded-lg"><i class="fas fa-rocket w-4 text-center text-pink-400"></i><span>Próximos Pasos</span></a>
+</nav>
+<div class="p-4 border-t border-gray-800 mt-auto">
+<div class="text-xs text-gray-500 text-center">
+<p>Arquitectura Final v1.1</p>
+<p class="mt-1">© 2024 QA Mobile Testing AI</p>
+</div>
+</div>
+</aside>
+<!-- MAIN CONTENT -->
+<main class="main-content p-8">
+<!-- HERO -->
+<section id="overview" class="mb-12 fade-in">
+<div class="hero-gradient rounded-3xl p-10 border border-indigo-500/20 mb-8">
+<div class="flex items-center gap-3 mb-4">
+<div class="w-16 h-16 rounded-2xl bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center flex-shrink-0">
+<i class="fas fa-project-diagram text-white text-3xl"></i>
+</div>
+<div>
+<h1 class="text-5xl font-bold gradient-text mb-2">Arquitectura Final</h1>
+<p class="text-lg text-gray-300">QA Mobile Testing AI - Sistema Completo</p>
+</div>
+</div>
+<p class="text-gray-400 text-base leading-relaxed">
+Diagrama completo de la arquitectura final del sistema <strong class="text-white">QA Mobile Testing AI</strong>,
+mostrando todos los componentes, sus interconexiones, flujos de datos y tecnologías utilizadas. 
+Esta es la visión completa hacia donde vamos.
+</p>
+<div class="flex flex-wrap gap-3 mt-6">
+<span class="badge badge-purple"><i class="fas fa-layer-group"></i>Microservicios</span>
+<span class="badge badge-blue"><i class="fas fa-database"></i>PostgreSQL</span>
+<span class="badge badge-red"><i class="fas fa-robot"></i>IA GPT-4</span>
+<span class="badge badge-cyan"><i class="fab fa-docker"></i>Docker</span>
+<span class="badge badge-green"><i class="fas fa-shield-alt"></i>Seguridad</span>
+<span class="badge badge-orange"><i class="fas fa-chart-line"></i>Monitoreo</span>
+</div>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+<div class="card-glow glass rounded-2xl p-5 neon">
+<div class="w-12 h-12 rounded-xl bg-indigo-500/20 flex items-center justify-center mb-3">
+<i class="fas fa-desktop text-indigo-400 text-xl"></i>
+</div>
+<h3 class="text-white font-semibold mb-1">Frontend</h3>
+<p class="text-xs text-gray-400">Dashboard web interactivo</p>
+</div>
+<div class="card-glow glass rounded-2xl p-5 neon">
+<div class="w-12 h-12 rounded-xl bg-purple-500/20 flex items-center justify-center mb-3">
+<i class="fas fa-server text-purple-400 text-xl"></i>
+</div>
+<h3 class="text-white font-semibold mb-1">Backend</h3>
+<p class="text-xs text-gray-400">API REST con FastAPI</p>
+</div>
+<div class="card-glow glass rounded-2xl p-5 neon">
+<div class="w-12 h-12 rounded-xl bg-cyan-500/20 flex items-center justify-center mb-3">
+<i class="fas fa-database text-cyan-400 text-xl"></i>
+</div>
+<h3 class="text-white font-semibold mb-1">Data Layer</h3>
+<p class="text-xs text-gray-400">PostgreSQL + Redis</p>
+</div>
+<div class="card-glow glass rounded-2xl p-5 neon">
+<div class="w-12 h-12 rounded-xl bg-green-500/20 flex items-center justify-center mb-3">
+<i class="fas fa-play-circle text-green-400 text-xl"></i>
+</div>
+<h3 class="text-white font-semibold mb-1">Test Runners</h3>
+<p class="text-xs text-gray-400">Playwright + Appium</p>
+</div>
+</div>
+</section>
+<div class="section-divider"></div>
+<!-- ARQUITECTURA PRINCIPAL -->
+<section id="architecture-main" class="mb-12">
+<h2 class="text-3xl font-bold text-white mb-6 flex items-center gap-3">
+<i class="fas fa-layer-group text-purple-400"></i>
+Arquitectura Principal del Sistema
+</h2>
+<div class="glass rounded-2xl p-6 neon overflow-x-auto">
+<svg viewBox="0 0 1200 900" class="diagram-svg">
+<defs>
+<linearGradient id="grad1" x1="0%" y1="0%" x2="100%" y2="0%">
+<stop offset="0%" style="stop-color:#6366f1;stop-opacity:1" />
+<stop offset="100%" style="stop-color:#8b5cf6;stop-opacity:1" />
+</linearGradient>
+<linearGradient id="grad2" x1="0%" y1="0%" x2="100%" y2="0%">
+<stop offset="0%" style="stop-color:#06b6d4;stop-opacity:1" />
+<stop offset="100%" style="stop-color:#0891b2;stop-opacity:1" />
+</linearGradient>
+<linearGradient id="grad3" x1="0%" y1="0%" x2="100%" y2="0%">
+<stop offset="0%" style="stop-color:#22c55e;stop-opacity:1" />
+<stop offset="100%" style="stop-color:#16a34a;stop-opacity:1" />
+</linearGradient>
+<linearGradient id="grad4" x1="0%" y1="0%" x2="100%" y2="0%">
+<stop offset="0%" style="stop-color:#f59e0b;stop-opacity:1" />
+<stop offset="100%" style="stop-color:#d97706;stop-opacity:1" />
+</linearGradient>
+<marker id="arrowhead" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+<polygon points="0 0, 10 3.5, 0 7" fill="#6366f1" />
+</marker>
+</defs>
+<!-- Capa 1: Frontend -->
+<rect x="50" y="30" width="1100" height="120" rx="10" fill="rgba(99,102,241,.1)" stroke="#6366f1" stroke-width="2"/>
+<text x="70" y="55" fill="#a5b4fc" font-size="14" font-weight="bold">CAPA DE PRESENTACIÓN (Frontend)</text>
+<rect x="100" y="70" width="200" height="60" rx="8" fill="url(#grad1)" opacity="0.8"/>
+<text x="200" y="95" fill="white" font-size="12" text-anchor="middle" font-weight="bold">🖥️ Web Dashboard</text>
+<text x="200" y="115" fill="white" font-size="10" text-anchor="middle">HTML + Tailwind + Chart.js</text>
+<rect x="350" y="70" width="200" height="60" rx="8" fill="url(#grad1)" opacity="0.8"/>
+<text x="450" y="95" fill="white" font-size="12" text-anchor="middle" font-weight="bold">📱 Mobile App (Futuro)</text>
+<text x="450" y="115" fill="white" font-size="10" text-anchor="middle">React Native / Flutter</text>
+<rect x="600" y="70" width="200" height="60" rx="8" fill="url(#grad1)" opacity="0.8"/>
+<text x="700" y="95" fill="white" font-size="12" text-anchor="middle" font-weight="bold">📊 Reportes Visuales</text>
+<text x="700" y="115" fill="white" font-size="10" text-anchor="middle">Allure + Custom Reports</text>
+<rect x="850" y="70" width="200" height="60" rx="8" fill="url(#grad1)" opacity="0.8"/>
+<text x="950" y="95" fill="white" font-size="12" text-anchor="middle" font-weight="bold">🔔 Notificaciones</text>
+<text x="950" y="115" fill="white" font-size="10" text-anchor="middle">Slack + Email + Teams</text>
+<line x1="200" y1="130" x2="600" y2="180" stroke="#6366f1" stroke-width="2" marker-end="url(#arrowhead)"/>
+<line x1="450" y1="130" x2="600" y2="180" stroke="#6366f1" stroke-width="2" marker-end="url(#arrowhead)"/>
+<line x1="700" y1="130" x2="600" y2="180" stroke="#6366f1" stroke-width="2" marker-end="url(#arrowhead)"/>
+<!-- Capa 2: API Gateway -->
+<rect x="50" y="170" width="1100" height="80" rx="10" fill="rgba(139,92,246,.1)" stroke="#8b5cf6" stroke-width="2"/>
+<text x="70" y="195" fill="#c4b5fd" font-size="14" font-weight="bold">API GATEWAY & LOAD BALANCER</text>
+<rect x="450" y="200" width="300" height="40" rx="8" fill="url(#grad1)" opacity="0.9"/>
+<text x="600" y="225" fill="white" font-size="12" text-anchor="middle" font-weight="bold">🚪 API Gateway (Nginx/Traefik)</text>
+<line x1="600" y1="240" x2="200" y2="290" stroke="#8b5cf6" stroke-width="2" marker-end="url(#arrowhead)"/>
+<line x1="600" y1="240" x2="450" y2="290" stroke="#8b5cf6" stroke-width="2" marker-end="url(#arrowhead)"/>
+<line x1="600" y1="240" x2="700" y2="290" stroke="#8b5cf6" stroke-width="2" marker-end="url(#arrowhead)"/>
+<line x1="600" y1="240" x2="950" y2="290" stroke="#8b5cf6" stroke-width="2" marker-end="url(#arrowhead)"/>
+<!-- Capa 3: Microservicios -->
+<rect x="50" y="270" width="1100" height="150" rx="10" fill="rgba(6,182,212,.1)" stroke="#06b6d4" stroke-width="2"/>
+<text x="70" y="295" fill="#67e8f9" font-size="14" font-weight="bold">MICROSERVICIOS (Backend)</text>
+<rect x="100" y="310" width="200" height="90" rx="8" fill="url(#grad2)" opacity="0.8"/>
+<text x="200" y="335" fill="white" font-size="11" text-anchor="middle" font-weight="bold">🤖 Test Generator</text>
+<text x="200" y="355" fill="white" font-size="9" text-anchor="middle">FastAPI + GPT-4</text>
+<text x="200" y="375" fill="white" font-size="9" text-anchor="middle">Generación IA de casos</text>
+<text x="200" y="390" fill="white" font-size="9" text-anchor="middle">Análisis de requisitos</text>
+<rect x="350" y="310" width="200" height="90" rx="8" fill="url(#grad2)" opacity="0.8"/>
+<text x="450" y="335" fill="white" font-size="11" text-anchor="middle" font-weight="bold">⚡ Test Executor</text>
+<text x="450" y="355" fill="white" font-size="9" text-anchor="middle">FastAPI + Playwright</text>
+<text x="450" y="375" fill="white" font-size="9" text-anchor="middle">Ejecución paralela</text>
+<text x="450" y="390" fill="white" font-size="9" text-anchor="middle">Self-healing tests</text>
+<rect x="600" y="310" width="200" height="90" rx="8" fill="url(#grad2)" opacity="0.8"/>
+<text x="700" y="335" fill="white" font-size="11" text-anchor="middle" font-weight="bold">💾 Data Manager</text>
+<text x="700" y="355" fill="white" font-size="9" text-anchor="middle">FastAPI + PostgreSQL</text>
+<text x="700" y="375" fill="white" font-size="9" text-anchor="middle">Clasificación PII</text>
+<text x="700" y="390" fill="white" font-size="9" text-anchor="middle">Enmascaramiento</text>
+<rect x="850" y="310" width="200" height="90" rx="8" fill="url(#grad2)" opacity="0.8"/>
+<text x="950" y="335" fill="white" font-size="11" text-anchor="middle" font-weight="bold">🔗 Integrations</text>
+<text x="950" y="355" fill="white" font-size="9" text-anchor="middle">FastAPI + Jira/Slack</text>
+<text x="950" y="375" fill="white" font-size="9" text-anchor="middle">Sincronización</text>
+<text x="950" y="390" fill="white" font-size="9" text-anchor="middle">Webhooks</text>
+<line x1="200" y1="400" x2="200" y2="450" stroke="#06b6d4" stroke-width="2" marker-end="url(#arrowhead)"/>
+<line x1="450" y1="400" x2="450" y2="450" stroke="#06b6d4" stroke-width="2" marker-end="url(#arrowhead)"/>
+<line x1="700" y1="400" x2="700" y2="450" stroke="#06b6d4" stroke-width="2" marker-end="url(#arrowhead)"/>
+<line x1="950" y1="400" x2="950" y2="450" stroke="#06b6d4" stroke-width="2" marker-end="url(#arrowhead)"/>
+<!-- Capa 4: Data Layer -->
+<rect x="50" y="440" width="1100" height="120" rx="10" fill="rgba(34,197,94,.1)" stroke="#22c55e" stroke-width="2"/>
+<text x="70" y="465" fill="#86efac" font-size="14" font-weight="bold">CAPA DE DATOS (Data Layer)</text>
+<rect x="100" y="480" width="180" height="60" rx="8" fill="url(#grad3)" opacity="0.8"/>
+<text x="190" y="505" fill="white" font-size="11" text-anchor="middle" font-weight="bold">🗄️ PostgreSQL</text>
+<text x="190" y="525" fill="white" font-size="9" text-anchor="middle">Base de datos principal</text>
+<rect x="320" y="480" width="180" height="60" rx="8" fill="url(#grad3)" opacity="0.8"/>
+<text x="410" y="505" fill="white" font-size="11" text-anchor="middle" font-weight="bold">⚡ Redis Cache</text>
+<text x="410" y="525" fill="white" font-size="9" text-anchor="middle">Cache y sesiones</text>
+<rect x="540" y="480" width="180" height="60" rx="8" fill="url(#grad3)" opacity="0.8"/>
+<text x="630" y="505" fill="white" font-size="11" text-anchor="middle" font-weight="bold">📨 RabbitMQ</text>
+<text x="630" y="525" fill="white" font-size="9" text-anchor="middle">Cola de mensajes</text>
+<rect x="760" y="480" width="180" height="60" rx="8" fill="url(#grad3)" opacity="0.8"/>
+<text x="850" y="505" fill="white" font-size="11" text-anchor="middle" font-weight="bold">📦 MinIO/S3</text>
+<text x="850" y="525" fill="white" font-size="9" text-anchor="middle">Screenshots/Reports</text>
+<line x1="200" y1="540" x2="200" y2="590" stroke="#22c55e" stroke-width="2" marker-end="url(#arrowhead)"/>
+<line x1="410" y1="540" x2="410" y2="590" stroke="#22c55e" stroke-width="2" marker-end="url(#arrowhead)"/>
+<line x1="630" y1="540" x2="630" y2="590" stroke="#22c55e" stroke-width="2" marker-end="url(#arrowhead)"/>
+<line x1="850" y1="540" x2="850" y2="590" stroke="#22c55e" stroke-width="2" marker-end="url(#arrowhead)"/>
+<!-- Capa 5: External Services -->
+<rect x="50" y="580" width="1100" height="120" rx="10" fill="rgba(249,115,22,.1)" stroke="#f59e0b" stroke-width="2"/>
+<text x="70" y="605" fill="#fdba74" font-size="14" font-weight="bold">SERVICIOS EXTERNOS (Third-party)</text>
+<rect x="100" y="620" width="180" height="60" rx="8" fill="url(#grad4)" opacity="0.8"/>
+<text x="190" y="645" fill="white" font-size="11" text-anchor="middle" font-weight="bold">🧠 OpenAI API</text>
+<text x="190" y="665" fill="white" font-size="9" text-anchor="middle">GPT-4 para IA</text>
+<rect x="320" y="620" width="180" height="60" rx="8" fill="url(#grad4)" opacity="0.8"/>
+<text x="410" y="645" fill="white" font-size="11" text-anchor="middle" font-weight="bold">🎫 Jira</text>
+<text x="410" y="665" fill="white" font-size="9" text-anchor="middle">Gestión de issues</text>
+<rect x="540" y="620" width="180" height="60" rx="8" fill="url(#grad4)" opacity="0.8"/>
+<text x="630" y="645" fill="white" font-size="11" text-anchor="middle" font-weight="bold">💬 Slack</text>
+<text x="630" y="665" fill="white" font-size="9" text-anchor="middle">Notificaciones</text>
+<rect x="760" y="620" width="180" height="60" rx="8" fill="url(#grad4)" opacity="0.8"/>
+<text x="850" y="645" fill="white" font-size="11" text-anchor="middle" font-weight="bold">🔍 SonarQube</text>
+<text x="850" y="665" fill="white" font-size="9" text-anchor="middle">Code quality</text>
+<line x1="200" y1="680" x2="200" y2="730" stroke="#f59e0b" stroke-width="2" marker-end="url(#arrowhead)"/>
+<line x1="410" y1="680" x2="410" y2="730" stroke="#f59e0b" stroke-width="2" marker-end="url(#arrowhead)"/>
+<line x1="630" y1="680" x2="630" y2="730" stroke="#f59e0b" stroke-width="2" marker-end="url(#arrowhead)"/>
+<line x1="850" y1="680" x2="850" y2="730" stroke="#f59e0b" stroke-width="2" marker-end="url(#arrowhead)"/>
+<!-- Capa 6: Monitoring -->
+<rect x="50" y="720" width="1100" height="120" rx="10" fill="rgba(236,72,153,.1)" stroke="#ec4899" stroke-width="2"/>
+<text x="70" y="745" fill="#f9a8d4" font-size="14" font-weight="bold">MONITOREO Y OBSERVABILIDAD</text>
+<rect x="100" y="760" width="180" height="60" rx="8" fill="#ec4899" opacity="0.8"/>
+<text x="190" y="785" fill="white" font-size="11" text-anchor="middle" font-weight="bold">📊 Prometheus</text>
+<text x="190" y="805" fill="white" font-size="9" text-anchor="middle">Métricas</text>
+<rect x="320" y="760" width="180" height="60" rx="8" fill="#ec4899" opacity="0.8"/>
+<text x="410" y="785" fill="white" font-size="11" text-anchor="middle" font-weight="bold">📈 Grafana</text>
+<text x="410" y="805" fill="white" font-size="9" text-anchor="middle">Dashboards</text>
+<rect x="540" y="760" width="180" height="60" rx="8" fill="#ec4899" opacity="0.8"/>
+<text x="630" y="785" fill="white" font-size="11" text-anchor="middle" font-weight="bold">📝 ELK Stack</text>
+<text x="630" y="805" fill="white" font-size="9" text-anchor="middle">Logs centralizados</text>
+<rect x="760" y="760" width="180" height="60" rx="8" fill="#ec4899" opacity="0.8"/>
+<text x="850" y="785" fill="white" font-size="11" text-anchor="middle" font-weight="bold">🔍 Jaeger</text>
+<text x="850" y="805" fill="white" font-size="9" text-anchor="middle">Distributed tracing</text>
+</svg>
+</div>
+<div class="info-box mt-6">
+<div class="flex items-start gap-3">
+<i class="fas fa-info-circle text-indigo-400 mt-1"></i>
+<div>
+<p class="text-indigo-200 font-semibold mb-2">💡 Leyenda del Diagrama</p>
+<ul class="text-sm text-gray-300 space-y-1">
+<li><strong class="text-indigo-400">Capa 1 (Azul):</strong> Frontend - Interfaces de usuario</li>
+<li><strong class="text-purple-400">Capa 2 (Púrpura):</strong> API Gateway - Punto único de entrada</li>
+<li><strong class="text-cyan-400">Capa 3 (Cyan):</strong> Microservicios - Lógica de negocio</li>
+<li><strong class="text-green-400">Capa 4 (Verde):</strong> Data Layer - Almacenamiento</li>
+<li><strong class="text-orange-400">Capa 5 (Naranja):</strong> Servicios Externos - APIs de terceros</li>
+<li><strong class="text-pink-400">Capa 6 (Rosa):</strong> Monitoreo - Observabilidad del sistema</li>
+</ul>
+</div>
+</div>
+</div>
+</section>
+<div class="section-divider"></div>
+<!-- FLUJO DE DATOS -->
+<section id="data-flow" class="mb-12">
+<h2 class="text-3xl font-bold text-white mb-6 flex items-center gap-3">
+<i class="fas fa-stream text-cyan-400"></i>
+Flujo de Datos Principal
+</h2>
+<div class="glass rounded-2xl p-6 neon overflow-x-auto">
+<svg viewBox="0 0 1200 600" class="diagram-svg">
+<defs>
+<marker id="arrow2" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+<polygon points="0 0, 10 3.5, 0 7" fill="#06b6d4" />
+</marker>
+</defs>
+<text x="600" y="30" fill="#67e8f9" font-size="16" text-anchor="middle" font-weight="bold">FLUJO: Generación y Ejecución de Pruebas con IA</text>
+<!-- Fila 1: Generación -->
+<circle cx="100" cy="100" r="40" fill="rgba(99,102,241,.2)" stroke="#6366f1" stroke-width="2"/>
+<text x="100" y="95" fill="#a5b4fc" font-size="12" text-anchor="middle" font-weight="bold">👤</text>
+<text x="100" y="115" fill="#a5b4fc" font-size="10" text-anchor="middle">Usuario</text>
+<rect x="200" y="70" width="150" height="60" rx="8" fill="rgba(99,102,241,.2)" stroke="#6366f1" stroke-width="2"/>
+<text x="275" y="95" fill="#a5b4fc" font-size="11" text-anchor="middle" font-weight="bold">🖥️ Dashboard</text>
+<text x="275" y="115" fill="#a5b4fc" font-size="9" text-anchor="middle">Ingresa User Story</text>
+<rect x="400" y="70" width="150" height="60" rx="8" fill="rgba(139,92,246,.2)" stroke="#8b5cf6" stroke-width="2"/>
+<text x="475" y="95" fill="#c4b5fd" font-size="11" text-anchor="middle" font-weight="bold">🚪 API Gateway</text>
+<text x="475" y="115" fill="#c4b5fd" font-size="9" text-anchor="middle">Ruta a servicio</text>
+<rect x="600" y="70" width="150" height="60" rx="8" fill="rgba(6,182,212,.2)" stroke="#06b6d4" stroke-width="2"/>
+<text x="675" y="95" fill="#67e8f9" font-size="11" text-anchor="middle" font-weight="bold">🤖 Test Generator</text>
+<text x="675" y="115" fill="#67e8f9" font-size="9" text-anchor="middle">Analiza requisitos</text>
+<rect x="800" y="70" width="150" height="60" rx="8" fill="rgba(249,115,22,.2)" stroke="#f59e0b" stroke-width="2"/>
+<text x="875" y="95" fill="#fdba74" font-size="11" text-anchor="middle" font-weight="bold">🧠 OpenAI GPT-4</text>
+<text x="875" y="115" fill="#fdba74" font-size="9" text-anchor="middle">Genera casos</text>
+<rect x="1000" y="70" width="150" height="60" rx="8" fill="rgba(34,197,94,.2)" stroke="#22c55e" stroke-width="2"/>
+<text x="1075" y="95" fill="#86efac" font-size="11" text-anchor="middle" font-weight="bold">🗄️ PostgreSQL</text>
+<text x="1075" y="115" fill="#86efac" font-size="9" text-anchor="middle">Guarda casos</text>
+<line x1="140" y1="100" x2="200" y2="100" stroke="#06b6d4" stroke-width="2" marker-end="url(#arrow2)"/>
+<line x1="350" y1="100" x2="400" y2="100" stroke="#06b6d4" stroke-width="2" marker-end="url(#arrow2)"/>
+<line x1="550" y1="100" x2="600" y2="100" stroke="#06b6d4" stroke-width="2" marker-end="url(#arrow2)"/>
+<line x1="750" y1="100" x2="800" y2="100" stroke="#06b6d4" stroke-width="2" marker-end="url(#arrow2)"/>
+<line x1="950" y1="100" x2="1000" y2="100" stroke="#06b6d4" stroke-width="2" marker-end="url(#arrow2)"/>
+<text x="170" y="85" fill="#67e8f9" font-size="9" text-anchor="middle">1. Request</text>
+<text x="375" y="85" fill="#67e8f9" font-size="9" text-anchor="middle">2. Route</text>
+<text x="575" y="85" fill="#67e8f9" font-size="9" text-anchor="middle">3. Analyze</text>
+<text x="775" y="85" fill="#67e8f9" font-size="9" text-anchor="middle">4. Generate</text>
+<text x="975" y="85" fill="#67e8f9" font-size="9" text-anchor="middle">5. Store</text>
+<!-- Fila 2: Ejecución -->
+<circle cx="100" cy="250" r="40" fill="rgba(99,102,241,.2)" stroke="#6366f1" stroke-width="2"/>
+<text x="100" y="245" fill="#a5b4fc" font-size="12" text-anchor="middle" font-weight="bold">👤</text>
+<text x="100" y="265" fill="#a5b4fc" font-size="10" text-anchor="middle">Usuario</text>
+<rect x="200" y="220" width="150" height="60" rx="8" fill="rgba(99,102,241,.2)" stroke="#6366f1" stroke-width="2"/>
+<text x="275" y="245" fill="#a5b4fc" font-size="11" text-anchor="middle" font-weight="bold">🖥️ Dashboard</text>
+<text x="275" y="265" fill="#a5b4fc" font-size="9" text-anchor="middle">Ejecuta tests</text>
+<rect x="400" y="220" width="150" height="60" rx="8" fill="rgba(139,92,246,.2)" stroke="#8b5cf6" stroke-width="2"/>
+<text x="475" y="245" fill="#c4b5fd" font-size="11" text-anchor="middle" font-weight="bold">🚪 API Gateway</text>
+<text x="475" y="265" fill="#c4b5fd" font-size="9" text-anchor="middle">Ruta a executor</text>
+<rect x="600" y="220" width="150" height="60" rx="8" fill="rgba(6,182,212,.2)" stroke="#06b6d4" stroke-width="2"/>
+<text x="675" y="245" fill="#67e8f9" font-size="11" text-anchor="middle" font-weight="bold">⚡ Test Executor</text>
+<text x="675" y="265" fill="#67e8f9" font-size="9" text-anchor="middle">Ejecuta pruebas</text>
+<rect x="800" y="220" width="150" height="60" rx="8" fill="rgba(34,197,94,.2)" stroke="#22c55e" stroke-width="2"/>
+<text x="875" y="245" fill="#86efac" font-size="11" text-anchor="middle" font-weight="bold">🎭 Playwright</text>
+<text x="875" y="265" fill="#86efac" font-size="9" text-anchor="middle">Automatiza browser</text>
+<rect x="1000" y="220" width="150" height="60" rx="8" fill="rgba(249,115,22,.2)" stroke="#f59e0b" stroke-width="2"/>
+<text x="1075" y="245" fill="#fdba74" font-size="11" text-anchor="middle" font-weight="bold">📱 Sample App</text>
+<text x="1075" y="265" fill="#fdba74" font-size="9" text-anchor="middle">App bajo test</text>
+<line x1="140" y1="250" x2="200" y2="250" stroke="#06b6d4" stroke-width="2" marker-end="url(#arrow2)"/>
+<line x1="350" y1="250" x2="400" y2="250" stroke="#06b6d4" stroke-width="2" marker-end="url(#arrow2)"/>
+<line x1="550" y1="250" x2="600" y2="250" stroke="#06b6d4" stroke-width="2" marker-end="url(#arrow2)"/>
+<line x1="750" y1="250" x2="800" y2="250" stroke="#06b6d4" stroke-width="2" marker-end="url(#arrow2)"/>
+<line x1="950" y1="250" x2="1000" y2="250" stroke="#06b6d4" stroke-width="2" marker-end="url(#arrow2)"/>
+<text x="170" y="235" fill="#67e8f9" font-size="9" text-anchor="middle">6. Execute</text>
+<text x="375" y="235" fill="#67e8f9" font-size="9" text-anchor="middle">7. Route</text>
+<text x="575" y="235" fill="#67e8f9" font-size="9" text-anchor="middle">8. Run tests</text>
+<text x="775" y="235" fill="#67e8f9" font-size="9" text-anchor="middle">9. Automate</text>
+<text x="975" y="235" fill="#67e8f9" font-size="9" text-anchor="middle">10. Test</text>
+<!-- Fila 3: Resultados -->
+<rect x="800" y="370" width="150" height="60" rx="8" fill="rgba(34,197,94,.2)" stroke="#22c55e" stroke-width="2"/>
+<text x="875" y="395" fill="#86efac" font-size="11" text-anchor="middle" font-weight="bold">🎭 Playwright</text>
+<text x="875" y="415" fill="#86efac" font-size="9" text-anchor="middle">Resultados + Screenshots</text>
+<rect x="600" y="370" width="150" height="60" rx="8" fill="rgba(6,182,212,.2)" stroke="#06b6d4" stroke-width="2"/>
+<text x="675" y="395" fill="#67e8f9" font-size="11" text-anchor="middle" font-weight="bold">⚡ Test Executor</text>
+<text x="675" y="415" fill="#67e8f9" font-size="9" text-anchor="middle">Procesa resultados</text>
+<rect x="400" y="370" width="150" height="60" rx="8" fill="rgba(34,197,94,.2)" stroke="#22c55e" stroke-width="2"/>
+<text x="475" y="395" fill="#86efac" font-size="11" text-anchor="middle" font-weight="bold">🗄️ PostgreSQL</text>
+<text x="475" y="415" fill="#86efac" font-size="9" text-anchor="middle">Guarda resultados</text>
+<rect x="200" y="370" width="150" height="60" rx="8" fill="rgba(249,115,22,.2)" stroke="#f59e0b" stroke-width="2"/>
+<text x="275" y="395" fill="#fdba74" font-size="11" text-anchor="middle" font-weight="bold">🎫 Jira</text>
+<text x="275" y="415" fill="#fdba74" font-size="9" text-anchor="middle">Crea bugs si falla</text>
+<rect x="100" y="470" width="150" height="60" rx="8" fill="rgba(99,102,241,.2)" stroke="#6366f1" stroke-width="2"/>
+<text x="175" y="495" fill="#a5b4fc" font-size="11" text-anchor="middle" font-weight="bold">🖥️ Dashboard</text>
+<text x="175" y="515" fill="#a5b4fc" font-size="9" text-anchor="middle">Muestra resultados</text>
+<line x1="875" y1="430" x2="675" y2="430" stroke="#06b6d4" stroke-width="2" marker-end="url(#arrow2)"/>
+<line x1="600" y1="400" x2="550" y2="400" stroke="#06b6d4" stroke-width="2" marker-end="url(#arrow2)"/>
+<line x1="400" y1="400" x2="350" y2="400" stroke="#06b6d4" stroke-width="2" marker-end="url(#arrow2)"/>
+<line x1="275" y1="430" x2="175" y2="470" stroke="#06b6d4" stroke-width="2" marker-end="url(#arrow2)"/>
+<text x="775" y="455" fill="#67e8f9" font-size="9" text-anchor="middle">11. Results</text>
+<text x="575" y="385" fill="#67e8f9" font-size="9" text-anchor="middle">12. Process</text>
+<text x="375" y="385" fill="#67e8f9" font-size="9" text-anchor="middle">13. Store</text>
+<text x="225" y="455" fill="#67e8f9" font-size="9" text-anchor="middle">14. Create bugs</text>
+<!-- Leyenda -->
+<rect x="50" y="550" width="1100" height="40" rx="8" fill="rgba(99,102,241,.1)" stroke="#6366f1" stroke-width="1"/>
+<text x="100" y="575" fill="#a5b4fc" font-size="11" font-weight="bold">Leyenda:</text>
+<circle cx="200" cy="570" r="8" fill="rgba(99,102,241,.2)" stroke="#6366f1" stroke-width="1"/>
+<text x="220" y="575" fill="#a5b4fc" font-size="10">Usuario</text>
+<rect x="300" y="562" width="16" height="16" rx="3" fill="rgba(6,182,212,.2)" stroke="#06b6d4" stroke-width="1"/>
+<text x="325" y="575" fill="#67e8f9" font-size="10">Servicio</text>
+<rect x="420" y="562" width="16" height="16" rx="3" fill="rgba(34,197,94,.2)" stroke="#22c55e" stroke-width="1"/>
+<text x="445" y="575" fill="#86efac" font-size="10">Base de datos</text>
+<rect x="560" y="562" width="16" height="16" rx="3" fill="rgba(249,115,22,.2)" stroke="#f59e0b" stroke-width="1"/>
+<text x="585" y="575" fill="#fdba74" font-size="10">Servicio externo</text>
+<line x1="720" y1="570" x2="760" y2="570" stroke="#06b6d4" stroke-width="2" marker-end="url(#arrow2)"/>
+<text x="770" y="575" fill="#67e8f9" font-size="10">Flujo de datos</text>
+</svg>
+</div>
+<div class="success-box mt-6">
+<div class="flex items-start gap-3">
+<i class="fas fa-check-circle text-green-400 mt-1"></i>
+<div>
+<p class="text-green-200 font-semibold mb-2">✅ Flujo Completo</p>
+<p class="text-sm text-gray-300">El diagrama muestra los 3 flujos principales:</p>
+<ol class="text-sm text-gray-300 space-y-1 mt-2 list-decimal list-inside">
+<li><strong class="text-cyan-400">Generación:</strong> Usuario → Dashboard → API → Test Generator → OpenAI → PostgreSQL</li>
+<li><strong class="text-cyan-400">Ejecución:</strong> Usuario → Dashboard → API → Test Executor → Playwright → Sample App</li>
+<li><strong class="text-cyan-400">Resultados:</strong> Playwright → Test Executor → PostgreSQL → Jira → Dashboard</li>
+</ol>
+</div>
+</div>
+</div>
+</section>
+<div class="section-divider"></div>
+<!-- DESPLIEGUE -->
+<section id="deployment" class="mb-12">
+<h2 class="text-3xl font-bold text-white mb-6 flex items-center gap-3">
+<i class="fas fa-server text-green-400"></i>
+Arquitectura de Despliegue (Docker)
+</h2>
+<div class="glass rounded-2xl p-6 neon overflow-x-auto">
+<svg viewBox="0 0 1200 700" class="diagram-svg">
+<defs>
+<marker id="arrow3" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+<polygon points="0 0, 10 3.5, 0 7" fill="#22c55e" />
+</marker>
+</defs>
+<text x="600" y="30" fill="#86efac" font-size="16" text-anchor="middle" font-weight="bold">DEPLOYMENT ARCHITECTURE - Docker Compose</text>
+<rect x="50" y="60" width="1100" height="600" rx="15" fill="rgba(34,197,94,.05)" stroke="#22c55e" stroke-width="2" stroke-dasharray="5,5"/>
+<text x="70" y="85" fill="#86efac" font-size="14" font-weight="bold">🐳 Docker Network: qa-testing-network</text>
+<!-- API Container -->
+<rect x="100" y="120" width="250" height="180" rx="10" fill="rgba(99,102,241,.1)" stroke="#6366f1" stroke-width="2"/>
+<text x="225" y="145" fill="#a5b4fc" font-size="13" text-anchor="middle" font-weight="bold">📦 API Container</text>
+<text x="225" y="165" fill="#a5b4fc" font-size="10" text-anchor="middle">FastAPI Backend</text>
+<rect x="120" y="180" width="210" height="30" rx="5" fill="rgba(99,102,241,.2)"/>
+<text x="225" y="200" fill="#a5b4fc" font-size="10" text-anchor="middle">Port: 8000:8000</text>
+<rect x="120" y="220" width="210" height="30" rx="5" fill="rgba(99,102,241,.2)"/>
+<text x="225" y="240" fill="#a5b4fc" font-size="10" text-anchor="middle">Depends: postgres, redis, rabbitmq</text>
+<rect x="120" y="260" width="210" height="30" rx="5" fill="rgba(99,102,241,.2)"/>
+<text x="225" y="280" fill="#a5b4fc" font-size="10" text-anchor="middle">Volumes: ./src:/app/src</text>
+<!-- PostgreSQL -->
+<rect x="400" y="120" width="250" height="180" rx="10" fill="rgba(34,197,94,.1)" stroke="#22c55e" stroke-width="2"/>
+<text x="525" y="145" fill="#86efac" font-size="13" text-anchor="middle" font-weight="bold">🗄️ PostgreSQL</text>
+<text x="525" y="165" fill="#86efac" font-size="10" text-anchor="middle">Base de datos principal</text>
+<rect x="420" y="180" width="210" height="30" rx="5" fill="rgba(34,197,94,.2)"/>
+<text x="525" y="200" fill="#86efac" font-size="10" text-anchor="middle">Port: 5432:5432</text>
+<rect x="420" y="220" width="210" height="30" rx="5" fill="rgba(34,197,94,.2)"/>
+<text x="525" y="240" fill="#86efac" font-size="10" text-anchor="middle">Image: postgres:15-alpine</text>
+<rect x="420" y="260" width="210" height="30" rx="5" fill="rgba(34,197,94,.2)"/>
+<text x="525" y="280" fill="#86efac" font-size="10" text-anchor="middle">Volume: postgres_data</text>
+<!-- Redis -->
+<rect x="700" y="120" width="250" height="180" rx="10" fill="rgba(239,68,68,.1)" stroke="#ef4444" stroke-width="2"/>
+<text x="825" y="145" fill="#fca5a5" font-size="13" text-anchor="middle" font-weight="bold">⚡ Redis</text>
+<text x="825" y="165" fill="#fca5a5" font-size="10" text-anchor="middle">Cache y sesiones</text>
+<rect x="720" y="180" width="210" height="30" rx="5" fill="rgba(239,68,68,.2)"/>
+<text x="825" y="200" fill="#fca5a5" font-size="10" text-anchor="middle">Port: 6379:6379</text>
+<rect x="720" y="220" width="210" height="30" rx="5" fill="rgba(239,68,68,.2)"/>
+<text x="825" y="240" fill="#fca5a5" font-size="10" text-anchor="middle">Image: redis:7-alpine</text>
+<rect x="720" y="260" width="210" height="30" rx="5" fill="rgba(239,68,68,.2)"/>
+<text x="825" y="280" fill="#fca5a5" font-size="10" text-anchor="middle">Volume: redis_data</text>
+<!-- RabbitMQ -->
+<rect x="100" y="350" width="250" height="180" rx="10" fill="rgba(249,115,22,.1)" stroke="#f59e0b" stroke-width="2"/>
+<text x="225" y="375" fill="#fdba74" font-size="13" text-anchor="middle" font-weight="bold">📨 RabbitMQ</text>
+<text x="225" y="395" fill="#fdba74" font-size="10" text-anchor="middle">Cola de mensajes</text>
+<rect x="120" y="410" width="210" height="30" rx="5" fill="rgba(249,115,22,.2)"/>
+<text x="225" y="430" fill="#fdba74" font-size="10" text-anchor="middle">Port: 5672, 15672</text>
+<rect x="120" y="450" width="210" height="30" rx="5" fill="rgba(249,115,22,.2)"/>
+<text x="225" y="470" fill="#fdba74" font-size="10" text-anchor="middle">Image: rabbitmq:3-management</text>
+<rect x="120" y="490" width="210" height="30" rx="5" fill="rgba(249,115,22,.2)"/>
+<text x="225" y="510" fill="#fdba74" font-size="10" text-anchor="middle">Volume: rabbitmq_data</text>
+<!-- Prometheus -->
+<rect x="400" y="350" width="250" height="180" rx="10" fill="rgba(236,72,153,.1)" stroke="#ec4899" stroke-width="2"/>
+<text x="525" y="375" fill="#f9a8d4" font-size="13" text-anchor="middle" font-weight="bold">📊 Prometheus</text>
+<text x="525" y="395" fill="#f9a8d4" font-size="10" text-anchor="middle">Métricas y alertas</text>
+<rect x="420" y="410" width="210" height="30" rx="5" fill="rgba(236,72,153,.2)"/>
+<text x="525" y="430" fill="#f9a8d4" font-size="10" text-anchor="middle">Port: 9090:9090</text>
+<rect x="420" y="450" width="210" height="30" rx="5" fill="rgba(236,72,153,.2)"/>
+<text x="525" y="470" fill="#f9a8d4" font-size="10" text-anchor="middle">Image: prom/prometheus</text>
+<rect x="420" y="490" width="210" height="30" rx="5" fill="rgba(236,72,153,.2)"/>
+<text x="525" y="510" fill="#f9a8d4" font-size="10" text-anchor="middle">Config: prometheus.yml</text>
+<!-- Grafana -->
+<rect x="700" y="350" width="250" height="180" rx="10" fill="rgba(236,72,153,.1)" stroke="#ec4899" stroke-width="2"/>
+<text x="825" y="375" fill="#f9a8d4" font-size="13" text-anchor="middle" font-weight="bold">📈 Grafana</text>
+<text x="825" y="395" fill="#f9a8d4" font-size="10" text-anchor="middle">Dashboards de monitoreo</text>
+<rect x="720" y="410" width="210" height="30" rx="5" fill="rgba(236,72,153,.2)"/>
+<text x="825" y="430" fill="#f9a8d4" font-size="10" text-anchor="middle">Port: 3000:3000</text>
+<rect x="720" y="450" width="210" height="30" rx="5" fill="rgba(236,72,153,.2)"/>
+<text x="825" y="470" fill="#f9a8d4" font-size="10" text-anchor="middle">Image: grafana/grafana</text>
+<rect x="720" y="490" width="210" height="30" rx="5" fill="rgba(236,72,153,.2)"/>
+<text x="825" y="510" fill="#f9a8d4" font-size="10" text-anchor="middle">Depends: prometheus</text>
+<!-- Allure -->
+<rect x="100" y="560" width="250" height="80" rx="10" fill="rgba(139,92,246,.1)" stroke="#8b5cf6" stroke-width="2"/>
+<text x="225" y="585" fill="#c4b5fd" font-size="13" text-anchor="middle" font-weight="bold">📋 Allure Container</text>
+<rect x="120" y="600" width="210" height="30" rx="5" fill="rgba(139,92,246,.2)"/>
+<text x="225" y="620" fill="#c4b5fd" font-size="10" text-anchor="middle">Port: 5050 | Reportes</text>
+<!-- Conexiones -->
+<line x1="350" y1="210" x2="400" y2="210" stroke="#22c55e" stroke-width="2" marker-end="url(#arrow3)"/>
+<line x1="350" y1="210" x2="700" y2="210" stroke="#22c55e" stroke-width="2" marker-end="url(#arrow3)"/>
+<line x1="350" y1="210" x2="225" y2="350" stroke="#22c55e" stroke-width="2" marker-end="url(#arrow3)"/>
+<line x1="525" y1="300" x2="525" y2="350" stroke="#ec4899" stroke-width="2" marker-end="url(#arrow3)"/>
+<line x1="650" y1="440" x2="700" y2="440" stroke="#ec4899" stroke-width="2" marker-end="url(#arrow3)"/>
+<text x="375" y="200" fill="#86efac" font-size="9" text-anchor="middle">DB</text>
+<text x="525" y="200" fill="#86efac" font-size="9" text-anchor="middle">Cache</text>
+<text x="280" y="280" fill="#86efac" font-size="9" text-anchor="middle">Queue</text>
+<text x="540" y="330" fill="#f9a8d4" font-size="9" text-anchor="middle">Metrics</text>
+<text x="675" y="430" fill="#f9a8d4" font-size="9" text-anchor="middle">Data</text>
+<rect x="400" y="560" width="550" height="80" rx="8" fill="rgba(34,197,94,.1)" stroke="#22c55e" stroke-width="1"/>
+<text x="420" y="585" fill="#86efac" font-size="11" font-weight="bold">Comandos de despliegue:</text>
+<text x="420" y="605" fill="#86efac" font-size="10">• Levantar: docker-compose up -d</text>
+<text x="420" y="625" fill="#86efac" font-size="10">• Detener: docker-compose down | Logs: docker-compose logs -f</text>
+</svg>
+</div>
+<div class="info-box mt-6">
+<div class="flex items-start gap-3">
+<i class="fas fa-info-circle text-indigo-400 mt-1"></i>
+<div>
+<p class="text-indigo-200 font-semibold mb-2">💡 Características del Despliegue</p>
+<ul class="text-sm text-gray-300 space-y-1">
+<li><strong class="text-green-400">7 contenedores</strong> trabajando juntos en una red Docker</li>
+<li><strong class="text-green-400">Volúmenes persistentes</strong> para datos (PostgreSQL, Redis, RabbitMQ)</li>
+<li><strong class="text-green-400">Health checks</strong> automáticos para cada servicio</li>
+<li><strong class="text-green-400">Restart policies</strong> para recuperación automática</li>
+<li><strong class="text-green-400">Variables de entorno</strong> para configuración flexible</li>
+</ul>
+</div>
+</div>
+</div>
+</section>
+<div class="section-divider"></div>
+<!-- SEGURIDAD -->
+<section id="security" class="mb-12">
+<h2 class="text-3xl font-bold text-white mb-6 flex items-center gap-3">
+<i class="fas fa-shield-alt text-red-400"></i>
+Arquitectura de Seguridad
+</h2>
+<div class="glass rounded-2xl p-6 neon overflow-x-auto">
+<svg viewBox="0 0 1200 500" class="diagram-svg">
+<defs>
+<marker id="arrow4" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+<polygon points="0 0, 10 3.5, 0 7" fill="#ef4444" />
+</marker>
+</defs>
+<text x="600" y="30" fill="#fca5a5" font-size="16" text-anchor="middle" font-weight="bold">SECURITY ARCHITECTURE - Defense in Depth</text>
+<!-- Capa 1 -->
+<rect x="50" y="60" width="1100" height="80" rx="10" fill="rgba(239,68,68,.1)" stroke="#ef4444" stroke-width="2"/>
+<text x="70" y="85" fill="#fca5a5" font-size="14" font-weight="bold">🛡️ CAPA 1: PERÍMETRO</text>
+<rect x="100" y="95" width="200" height="35" rx="5" fill="rgba(239,68,68,.2)"/>
+<text x="200" y="117" fill="#fca5a5" font-size="11" text-anchor="middle">🔥 Firewall</text>
+<rect x="350" y="95" width="200" height="35" rx="5" fill="rgba(239,68,68,.2)"/>
+<text x="450" y="117" fill="#fca5a5" font-size="11" text-anchor="middle">🔒 HTTPS/TLS</text>
+<rect x="600" y="95" width="200" height="35" rx="5" fill="rgba(239,68,68,.2)"/>
+<text x="700" y="117" fill="#fca5a5" font-size="11" text-anchor="middle">🚦 Rate Limiting</text>
+<rect x="850" y="95" width="200" height="35" rx="5" fill="rgba(239,68,68,.2)"/>
+<text x="950" y="117" fill="#fca5a5" font-size="11" text-anchor="middle">🛡️ WAF</text>
+<!-- Capa 2 -->
+<rect x="50" y="160" width="1100" height="80" rx="10" fill="rgba(249,115,22,.1)" stroke="#f59e0b" stroke-width="2"/>
+<text x="70" y="185" fill="#fdba74" font-size="14" font-weight="bold">🔐 CAPA 2: AUTENTICACIÓN</text>
+<rect x="100" y="195" width="200" height="35" rx="5" fill="rgba(249,115,22,.2)"/>
+<text x="200" y="217" fill="#fdba74" font-size="11" text-anchor="middle">🎫 JWT Tokens</text>
+<rect x="350" y="195" width="200" height="35" rx="5" fill="rgba(249,115,22,.2)"/>
+<text x="450" y="217" fill="#fdba74" font-size="11" text-anchor="middle">👤 OAuth 2.0</text>
+<rect x="600" y="195" width="200" height="35" rx="5" fill="rgba(249,115,22,.2)"/>
+<text x="700" y="217" fill="#fdba74" font-size="11" text-anchor="middle">🔑 API Keys</text>
+<rect x="850" y="195" width="200" height="35" rx="5" fill="rgba(249,115,22,.2)"/>
+<text x="950" y="217" fill="#fdba74" font-size="11" text-anchor="middle">👥 RBAC</text>
+<!-- Capa 3 -->
+<rect x="50" y="260" width="1100" height="80" rx="10" fill="rgba(234,179,8,.1)" stroke="#eab308" stroke-width="2"/>
+<text x="70" y="285" fill="#fde047" font-size="14" font-weight="bold">💾 CAPA 3: PROTECCIÓN DE DATOS</text>
+<rect x="100" y="295" width="200" height="35" rx="5" fill="rgba(234,179,8,.2)"/>
+<text x="200" y="317" fill="#fde047" font-size="11" text-anchor="middle">🔐 AES-256 Encryption</text>
+<rect x="350" y="295" width="200" height="35" rx="5" fill="rgba(234,179,8,.2)"/>
+<text x="450" y="317" fill="#fde047" font-size="11" text-anchor="middle">🎭 Data Masking</text>
+<rect x="600" y="295" width="200" height="35" rx="5" fill="rgba(234,179,8,.2)"/>
+<text x="700" y="317" fill="#fde047" font-size="11" text-anchor="middle">🏷️ PII Classification</text>
+<rect x="850" y="295" width="200" height="35" rx="5" fill="rgba(234,179,8,.2)"/>
+<text x="950" y="317" fill="#fde047" font-size="11" text-anchor="middle">🔑 Vault Secrets</text>
+<!-- Capa 4 -->
+<rect x="50" y="360" width="1100" height="80" rx="10" fill="rgba(34,197,94,.1)" stroke="#22c55e" stroke-width="2"/>
+<text x="70" y="385" fill="#86efac" font-size="14" font-weight="bold">⚙️ CAPA 4: SEGURIDAD EN APLICACIÓN</text>
+<rect x="100" y="395" width="200" height="35" rx="5" fill="rgba(34,197,94,.2)"/>
+<text x="200" y="417" fill="#86efac" font-size="11" text-anchor="middle">✅ Input Validation</text>
+<rect x="350" y="395" width="200" height="35" rx="5" fill="rgba(34,197,94,.2)"/>
+<text x="450" y="417" fill="#86efac" font-size="11" text-anchor="middle">🛡️ SQL Injection Protection</text>
+<rect x="600" y="395" width="200" height="35" rx="5" fill="rgba(34,197,94,.2)"/>
+<text x="700" y="417" fill="#86efac" font-size="11" text-anchor="middle">🔒 XSS Protection</text>
+<rect x="850" y="395" width="200" height="35" rx="5" fill="rgba(34,197,94,.2)"/>
+<text x="950" y="417" fill="#86efac" font-size="11" text-anchor="middle">📝 Audit Logging</text>
+<line x1="600" y1="140" x2="600" y2="160" stroke="#ef4444" stroke-width="2" marker-end="url(#arrow4)"/>
+<line x1="600" y1="240" x2="600" y2="260" stroke="#f59e0b" stroke-width="2" marker-end="url(#arrow4)"/>
+<line x1="600" y1="340" x2="600" y2="360" stroke="#eab308" stroke-width="2" marker-end="url(#arrow4)"/>
+</svg>
+</div>
+<div class="danger-box mt-6">
+<div class="flex items-start gap-3">
+<i class="fas fa-shield-alt text-red-400 mt-1"></i>
+<div>
+<p class="text-red-200 font-semibold mb-2">🛡️ Defense in Depth - 4 Capas de Seguridad</p>
+<ul class="text-sm text-gray-300 space-y-1">
+<li><strong class="text-red-400">Capa 1 (Perímetro):</strong> Firewall, HTTPS, Rate Limiting, WAF</li>
+<li><strong class="text-orange-400">Capa 2 (Autenticación):</strong> JWT, OAuth 2.0, API Keys, RBAC</li>
+<li><strong class="text-yellow-400">Capa 3 (Datos):</strong> Encriptación AES-256, Enmascaramiento, PII, Vault</li>
+<li><strong class="text-green-400">Capa 4 (Aplicación):</strong> Validación, Protección SQL/XSS, Auditoría</li>
+</ul>
+</div>
+</div>
+</div>
+</section>
+<div class="section-divider"></div>
+<!-- COMPONENTES -->
+<section id="components" class="mb-12">
+<h2 class="text-3xl font-bold text-white mb-6 flex items-center gap-3">
+<i class="fas fa-cubes text-orange-400"></i>
+Componentes Detallados
+</h2>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+<div class="card-glow glass rounded-2xl p-5 neon">
+<div class="flex items-center gap-3 mb-3">
+<div class="w-12 h-12 rounded-xl bg-indigo-500/20 flex items-center justify-center">
+<i class="fas fa-desktop text-indigo-400 text-xl"></i>
+</div>
+<div>
+<h3 class="text-white font-semibold">Frontend Dashboard</h3>
+<p class="text-xs text-gray-400">Interfaz de usuario principal</p>
+</div>
+</div>
+<ul class="text-sm text-gray-300 space-y-1">
+<li>• HTML5 + Tailwind CSS + Chart.js</li>
+<li>• Generador IA de casos de prueba</li>
+<li>• Ejecutor de pruebas en vivo</li>
+<li>• Gestión de casos y evidencias</li>
+<li>• Reportes y métricas visuales</li>
+</ul>
+</div>
+<div class="card-glow glass rounded-2xl p-5 neon">
+<div class="flex items-center gap-3 mb-3">
+<div class="w-12 h-12 rounded-xl bg-purple-500/20 flex items-center justify-center">
+<i class="fas fa-server text-purple-400 text-xl"></i>
+</div>
+<div>
+<h3 class="text-white font-semibold">Backend API (FastAPI)</h3>
+<p class="text-xs text-gray-400">Lógica de negocio y APIs</p>
+</div>
+</div>
+<ul class="text-sm text-gray-300 space-y-1">
+<li>• Python 3.11+ con FastAPI</li>
+<li>• Arquitectura de microservicios</li>
+<li>• Endpoints RESTful</li>
+<li>• Documentación automática (Swagger)</li>
+<li>• Validación con Pydantic</li>
+</ul>
+</div>
+<div class="card-glow glass rounded-2xl p-5 neon">
+<div class="flex items-center gap-3 mb-3">
+<div class="w-12 h-12 rounded-xl bg-cyan-500/20 flex items-center justify-center">
+<i class="fas fa-robot text-cyan-400 text-xl"></i>
+</div>
+<div>
+<h3 class="text-white font-semibold">AI Test Generator</h3>
+<p class="text-xs text-gray-400">Generación inteligente de tests</p>
+</div>
+</div>
+<ul class="text-sm text-gray-300 space-y-1">
+<li>• Integración con OpenAI GPT-4</li>
+<li>• Análisis de requisitos con NLP</li>
+<li>• Evaluación de riesgos automática</li>
+<li>• Generación de casos exhaustivos</li>
+<li>• Optimización y validación</li>
+</ul>
+</div>
+<div class="card-glow glass rounded-2xl p-5 neon">
+<div class="flex items-center gap-3 mb-3">
+<div class="w-12 h-12 rounded-xl bg-green-500/20 flex items-center justify-center">
+<i class="fas fa-play-circle text-green-400 text-xl"></i>
+</div>
+<div>
+<h3 class="text-white font-semibold">Test Executor</h3>
+<p class="text-xs text-gray-400">Ejecución automatizada</p>
+</div>
+</div>
+<ul class="text-sm text-gray-300 space-y-1">
+<li>• Playwright para web/mobile</li>
+<li>• Appium para apps nativas</li>
+<li>• Ejecución paralela</li>
+<li>• Captura de screenshots</li>
+<li>• Generación de reportes Allure</li>
+</ul>
+</div>
+<div class="card-glow glass rounded-2xl p-5 neon">
+<div class="flex items-center gap-3 mb-3">
+<div class="w-12 h-12 rounded-xl bg-blue-500/20 flex items-center justify-center">
+<i class="fas fa-database text-blue-400 text-xl"></i>
+</div>
+<div>
+<h3 class="text-white font-semibold">Data Layer</h3>
+<p class="text-xs text-gray-400">Almacenamiento y cache</p>
+</div>
+</div>
+<ul class="text-sm text-gray-300 space-y-1">
+<li>• PostgreSQL para datos persistentes</li>
+<li>• Redis para cache y sesiones</li>
+<li>• RabbitMQ para colas de mensajes</li>
+<li>• MinIO/S3 para archivos</li>
+<li>• SQLAlchemy ORM</li>
+</ul>
+</div>
+<div class="card-glow glass rounded-2xl p-5 neon">
+<div class="flex items-center gap-3 mb-3">
+<div class="w-12 h-12 rounded-xl bg-red-500/20 flex items-center justify-center">
+<i class="fas fa-shield-alt text-red-400 text-xl"></i>
+</div>
+<div>
+<h3 class="text-white font-semibold">Security Services</h3>
+<p class="text-xs text-gray-400">Protección de datos</p>
+</div>
+</div>
+<ul class="text-sm text-gray-300 space-y-1">
+<li>• Clasificación automática de PII</li>
+<li>• Enmascaramiento de datos sensibles</li>
+<li>• Cifrado AES-256-GCM</li>
+<li>• HashiCorp Vault para secretos</li>
+<li>• Cumplimiento GDPR/SOX</li>
+</ul>
+</div>
+<div class="card-glow glass rounded-2xl p-5 neon">
+<div class="flex items-center gap-3 mb-3">
+<div class="w-12 h-12 rounded-xl bg-orange-500/20 flex items-center justify-center">
+<i class="fab fa-jira text-orange-400 text-xl"></i>
+</div>
+<div>
+<h3 class="text-white font-semibold">Integrations</h3>
+<p class="text-xs text-gray-400">Conexiones externas</p>
+</div>
+</div>
+<ul class="text-sm text-gray-300 space-y-1">
+<li>• Jira para gestión de issues</li>
+<li>• Slack para notificaciones</li>
+<li>• SonarQube para code quality</li>
+<li>• Webhooks para eventos</li>
+<li>• Sincronización bidireccional</li>
+</ul>
+</div>
+<div class="card-glow glass rounded-2xl p-5 neon">
+<div class="flex items-center gap-3 mb-3">
+<div class="w-12 h-12 rounded-xl bg-pink-500/20 flex items-center justify-center">
+<i class="fas fa-chart-line text-pink-400 text-xl"></i>
+</div>
+<div>
+<h3 class="text-white font-semibold">Monitoring</h3>
+<p class="text-xs text-gray-400">Observabilidad del sistema</p>
+</div>
+</div>
+<ul class="text-sm text-gray-300 space-y-1">
+<li>• Prometheus para métricas</li>
+<li>• Grafana para dashboards</li>
+<li>• ELK Stack para logs</li>
+<li>• Jaeger para tracing</li>
+<li>• Alertas automáticas</li>
+</ul>
+</div>
+</div>
+</section>
+<div class="section-divider"></div>
+<!-- TECNOLOGÍAS -->
+<section id="technologies" class="mb-12">
+<h2 class="text-3xl font-bold text-white mb-6 flex items-center gap-3">
+<i class="fas fa-microchip text-yellow-400"></i>
+Stack Tecnológico Completo
+</h2>
+<div class="glass rounded-2xl p-6 neon">
+<div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+<div>
+<h3 class="text-white font-semibold mb-3 flex items-center gap-2">
+<i class="fas fa-code text-indigo-400"></i>Backend
+</h3>
+<ul class="text-sm text-gray-300 space-y-2">
+<li class="flex items-center gap-2"><i class="fab fa-python text-yellow-400"></i>Python 3.11+</li>
+<li class="flex items-center gap-2"><i class="fas fa-bolt text-green-400"></i>FastAPI</li>
+<li class="flex items-center gap-2"><i class="fas fa-database text-blue-400"></i>PostgreSQL 15</li>
+<li class="flex items-center gap-2"><i class="fas fa-memory text-red-400"></i>Redis 7</li>
+<li class="flex items-center gap-2"><i class="fas fa-envelope text-orange-400"></i>RabbitMQ 3</li>
+<li class="flex items-center gap-2"><i class="fas fa-code text-purple-400"></i>SQLAlchemy</li>
+</ul>
+</div>
+<div>
+<h3 class="text-white font-semibold mb-3 flex items-center gap-2">
+<i class="fas fa-desktop text-cyan-400"></i>Frontend
+</h3>
+<ul class="text-sm text-gray-300 space-y-2">
+<li class="flex items-center gap-2"><i class="fab fa-html5 text-orange-400"></i>HTML5</li>
+<li class="flex items-center gap-2"><i class="fab fa-css3-alt text-blue-400"></i>Tailwind CSS</li>
+<li class="flex items-center gap-2"><i class="fas fa-chart-bar text-green-400"></i>Chart.js</li>
+<li class="flex items-center gap-2"><i class="fab fa-js text-yellow-400"></i>JavaScript</li>
+<li class="flex items-center gap-2"><i class="fas fa-icons text-purple-400"></i>FontAwesome</li>
+</ul>
+</div>
+<div>
+<h3 class="text-white font-semibold mb-3 flex items-center gap-2">
+<i class="fas fa-robot text-pink-400"></i>IA & Testing
+</h3>
+<ul class="text-sm text-gray-300 space-y-2">
+<li class="flex items-center gap-2"><i class="fas fa-brain text-purple-400"></i>OpenAI GPT-4</li>
+<li class="flex items-center gap-2"><i class="fas fa-theater-masks text-cyan-400"></i>Playwright</li>
+<li class="flex items-center gap-2"><i class="fas fa-mobile-alt text-green-400"></i>Appium</li>
+<li class="flex items-center gap-2"><i class="fas fa-chart-line text-orange-400"></i>Allure</li>
+<li class="flex items-center gap-2"><i class="fas fa-vial text-blue-400"></i>Pytest</li>
+</ul>
+</div>
+<div>
+<h3 class="text-white font-semibold mb-3 flex items-center gap-2">
+<i class="fab fa-docker text-blue-400"></i>Infraestructura
+</h3>
+<ul class="text-sm text-gray-300 space-y-2">
+<li class="flex items-center gap-2"><i class="fab fa-docker text-blue-400"></i>Docker</li>
+<li class="flex items-center gap-2"><i class="fas fa-dharmachakra text-cyan-400"></i>Docker Compose</li>
+<li class="flex items-center gap-2"><i class="fab fa-github text-gray-400"></i>GitHub Actions</li>
+<li class="flex items-center gap-2"><i class="fas fa-server text-green-400"></i>Nginx</li>
+</ul>
+</div>
+<div>
+<h3 class="text-white font-semibold mb-3 flex items-center gap-2">
+<i class="fas fa-shield-alt text-red-400"></i>Seguridad
+</h3>
+<ul class="text-sm text-gray-300 space-y-2">
+<li class="flex items-center gap-2"><i class="fas fa-key text-yellow-400"></i>HashiCorp Vault</li>
+<li class="flex items-center gap-2"><i class="fas fa-lock text-green-400"></i>JWT</li>
+<li class="flex items-center gap-2"><i class="fas fa-user-shield text-blue-400"></i>OAuth 2.0</li>
+<li class="flex items-center gap-2"><i class="fas fa-mask text-purple-400"></i>PII Masking</li>
+</ul>
+</div>
+<div>
+<h3 class="text-white font-semibold mb-3 flex items-center gap-2">
+<i class="fas fa-chart-line text-pink-400"></i>Monitoreo
+</h3>
+<ul class="text-sm text-gray-300 space-y-2">
+<li class="flex items-center gap-2"><i class="fas fa-fire text-orange-400"></i>Prometheus</li>
+<li class="flex items-center gap-2"><i class="fas fa-chart-area text-green-400"></i>Grafana</li>
+<li class="flex items-center gap-2"><i class="fas fa-file-alt text-blue-400"></i>ELK Stack</li>
+<li class="flex items-center gap-2"><i class="fas fa-search text-purple-400"></i>Jaeger</li>
+</ul>
+</div>
+</div>
+</div>
+</section>
+<div class="section-divider"></div>
+<!-- ESTADO ACTUAL DEL PROYECTO -->
+<section id="current-status" class="mb-12 fade-in">
+    <h2 class="text-3xl font-bold text-white mb-6 flex items-center gap-3">
+        <i class="fas fa-tasks text-indigo-400"></i>
+        Estado Actual del Proyecto
+    </h2>
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <!-- Done -->
+        <div class="card-glow glass rounded-2xl p-5 neon border-l-4 border-l-green-500">
+            <h3 class="text-white font-semibold mb-3 flex items-center gap-2"><i class="fas fa-check-circle text-green-400"></i> Completado (100%)</h3>
+            <ul class="text-sm text-gray-300 space-y-2">
+                <li class="flex items-center gap-2"><span class="badge badge-green">Frontend</span> Dashboard completo (11 secciones)</li>
+                <li class="flex items-center gap-2"><span class="badge badge-green">IA Local</span> Generación inteligente por contexto</li>
+                <li class="flex items-center gap-2"><span class="badge badge-green">Backend</span> FastAPI + PostgreSQL conectados</li>
+                <li class="flex items-center gap-2"><span class="badge badge-green">Docker</span> 4 contenedores corriendo</li>
+            </ul>
+        </div>
+        <!-- In Progress -->
+        <div class="card-glow glass rounded-2xl p-5 neon border-l-4 border-l-yellow-500">
+            <h3 class="text-white font-semibold mb-3 flex items-center gap-2"><i class="fas fa-spinner text-yellow-400"></i> En Progreso (40%)</h3>
+            <ul class="text-sm text-gray-300 space-y-2">
+                <li class="flex items-center gap-2"><span class="badge badge-yellow">Ejecutor</span> Consola en vivo (simulada)</li>
+                <li class="flex items-center gap-2"><span class="badge badge-yellow">Reportes</span> Gráficos dinámicos básicos</li>
+                <li class="flex items-center gap-2"><span class="badge badge-yellow">Limpieza</span> Modal selectivo funcional</li>
+            </ul>
+        </div>
+        <!-- Pending High -->
+        <div class="card-glow glass rounded-2xl p-5 neon border-l-4 border-l-red-500">
+            <h3 class="text-white font-semibold mb-3 flex items-center gap-2"><i class="fas fa-exclamation-triangle text-red-400"></i> Pendiente Alta Prioridad</h3>
+            <ul class="text-sm text-gray-300 space-y-2">
+                <li class="flex items-center gap-2"><span class="badge badge-red">OpenAI</span> Integración GPT-4 real</li>
+                <li class="flex items-center gap-2"><span class="badge badge-red">Appium</span> Ejecución real en dispositivos</li>
+                <li class="flex items-center gap-2"><span class="badge badge-red">CSV</span> Exportación funcional de casos</li>
+            </ul>
+        </div>
+        <!-- Pending Low -->
+        <div class="card-glow glass rounded-2xl p-5 neon border-l-4 border-l-gray-500">
+            <h3 class="text-white font-semibold mb-3 flex items-center gap-2"><i class="fas fa-clock text-gray-400"></i> Pendiente Baja Prioridad</h3>
+            <ul class="text-sm text-gray-300 space-y-2">
+                <li class="flex items-center gap-2"><span class="badge" style="background:rgba(107,114,128,.2);color:#d1d5db;border:1px solid rgba(107,114,128,.3)">Jira</span> Integración API real</li>
+                <li class="flex items-center gap-2"><span class="badge" style="background:rgba(107,114,128,.2);color:#d1d5db;border:1px solid rgba(107,114,128,.3)">Auth</span> Login y multi-usuario</li>
+                <li class="flex items-center gap-2"><span class="badge" style="background:rgba(107,114,128,.2);color:#d1d5db;border:1px solid rgba(107,114,128,.3)">CI/CD</span> Pipeline automatizado</li>
+            </ul>
+        </div>
+    </div>
+</section>
+<div class="section-divider"></div>
+<!-- PRÓXIMOS PASOS -->
+<section id="next-steps" class="mb-12">
+<h2 class="text-3xl font-bold text-white mb-6 flex items-center gap-3">
+<i class="fas fa-rocket text-pink-400"></i>
+Próximos Pasos (Roadmap Actualizado)
+</h2>
+<div class="glass rounded-2xl p-6 neon">
+<h3 class="text-xl font-semibold text-white mb-4">🎯 Objetivo: Llevar el sistema a producción</h3>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+<div class="p-4 rounded-xl bg-gray-800/50 border border-gray-700">
+<h4 class="text-white font-semibold mb-2 flex items-center gap-2">
+<i class="fas fa-check-circle text-green-400"></i>Fase 1: Infraestructura Base (✅ Completada)
+</h4>
+<p class="text-sm text-gray-400">Desplegar Backend, Conectar PostgreSQL, Dashboard UI, Generación Inteligente Local.</p>
+</div>
+<div class="p-4 rounded-xl bg-gray-800/50 border border-gray-700">
+<h4 class="text-white font-semibold mb-2 flex items-center gap-2">
+<i class="fas fa-arrow-right text-red-400"></i>Fase 2: IA Real y Ejecución Dinámica (🔄 Alta Prioridad)
+</h4>
+<p class="text-sm text-gray-400">Integrar OpenAI GPT-4 real, Ejecutor que lea casos reales de BD, Exportación CSV funcional.</p>
+</div>
+<div class="p-4 rounded-xl bg-gray-800/50 border border-gray-700">
+<h4 class="text-white font-semibold mb-2 flex items-center gap-2">
+<i class="fas fa-arrow-right text-orange-400"></i>Fase 3: Ejecución Real en Dispositivos (⏳ Media Prioridad)
+</h4>
+<p class="text-sm text-gray-400">Appium/Maestro para ejecución real, Captura de screenshots, Autenticación JWT.</p>
+</div>
+<div class="p-4 rounded-xl bg-gray-800/50 border border-gray-700">
+<h4 class="text-white font-semibold mb-2 flex items-center gap-2">
+<i class="fas fa-arrow-right text-gray-400"></i>Fase 4: Integraciones y Escalamiento (🔮 Futuro)
+</h4>
+<p class="text-sm text-gray-400">Integración Jira real, Pipeline CI/CD, Multi-usuario, Reportes PDF automáticos.</p>
+</div>
+</div>
+<div class="success-box">
+<div class="flex items-start gap-3">
+<i class="fas fa-trophy text-green-400 mt-1 text-2xl"></i>
+<div>
+<p class="text-green-200 font-semibold mb-2 text-lg">✅ Resultado Esperado al Finalizar Fase 2</p>
+<p class="text-sm text-gray-300">Al finalizar la Fase 2, tendrás:</p>
+<ul class="text-sm text-gray-300 space-y-1 mt-2">
+<li>• Generación de casos verdaderamente inteligente con GPT-4</li>
+<li>• Ejecutor dinámico que lee y ejecuta casos reales de la base de datos</li>
+<li>• Capacidad de exportar casos a CSV para uso externo</li>
+<li>• Un sistema listo para conectar con dispositivos reales (Fase 3)</li>
+</ul>
+</div>
+</div>
+</div>
+</div>
+<div class="info-box mt-6">
+<div class="flex items-start gap-3">
+<i class="fas fa-lightbulb text-indigo-400 mt-1"></i>
+<div>
+<p class="text-indigo-200 font-semibold mb-2">💡 ¿Listo para la Fase 2?</p>
+<p class="text-sm text-gray-300">Si estás de acuerdo con esta arquitectura y los próximos pasos, podemos empezar inmediatamente con la <strong class="text-white">Fase 2: Integración OpenAI y Ejecutor Dinámico</strong>.</p>
+<p class="text-sm text-gray-300 mt-2">Te guiaré paso a paso, sin apuros, verificando cada cosa antes de avanzar.</p>
+</div>
+</div>
+</div>
+</section>
+<!-- FOOTER -->
+<footer class="mt-16 pt-8 border-t border-gray-800">
+<div class="text-center">
+<div class="flex items-center justify-center gap-3 mb-4">
+<div class="w-12 h-12 rounded-xl bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center">
+<i class="fas fa-project-diagram text-white text-xl"></i>
+</div>
+</div>
+<h3 class="text-xl font-bold gradient-text mb-2">Arquitectura Final - QA Mobile Testing AI</h3>
+<p class="text-sm text-gray-400 mb-4">Sistema completo de automatización de pruebas con IA</p>
+<div class="flex justify-center gap-4 text-xs text-gray-500">
+<span>Arquitectura v1.1</span>
+<span>•</span>
+<span>© 2024</span>
+<span>•</span>
+<span>QA Mobile Testing AI</span>
+</div>
+<div class="mt-6 p-4 rounded-xl bg-indigo-500/10 border border-indigo-500/30 inline-block">
+<p class="text-sm text-indigo-300">💡 <strong>Siguiente paso:</strong> Empezar con la Fase 2 - Integración OpenAI y Ejecutor Dinámico</p>
+</div>
+</div>
+</footer>
+</main>
+</div>
+<script>
+function downloadHTML() {
+const content = document.documentElement.outerHTML;
+const blob = new Blob([content], { type: 'text/html' });
+const url = URL.createObjectURL(blob);
+const a = document.createElement('a');
+a.href = url;
+a.download = 'Arquitectura-Final-QA-Mobile-Testing-AI.html';
+a.click();
+URL.revokeObjectURL(url);
+}
+const sections = document.querySelectorAll('section[id]');
+const sidebarLinks = document.querySelectorAll('.sidebar-item');
+window.addEventListener('scroll', () => {
+let current = '';
+sections.forEach(section => {
+const sectionTop = section.offsetTop;
+if (pageYOffset >= sectionTop - 100) {
+current = section.getAttribute('id');
+}
+});
+sidebarLinks.forEach(link => {
+link.classList.remove('active');
+if (link.getAttribute('href') === `#${current}`) {
+link.classList.add('active');
+}
+});
+});
+sidebarLinks.forEach(link => {
+link.addEventListener('click', (e) => {
+e.preventDefault();
+const target = document.querySelector(link.getAttribute('href'));
+if (target) {
+target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+});
+});
+</script>
+</body>
+</html>
