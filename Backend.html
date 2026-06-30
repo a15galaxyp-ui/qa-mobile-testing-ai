@@ -1,0 +1,1633 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Backend QA Mobile Testing AI - Arquitectura Completa</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/fontsource/fonts/inter@latest/latin-400-normal.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/fontsource/fonts/inter@latest/latin-600-normal.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/fontsource/fonts/inter@latest/latin-700-normal.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/fontsource/fonts/jetbrains-mono@latest/latin-400-normal.css">
+<style>
+*{font-family:'Inter',sans-serif;scroll-behavior:smooth}
+code,pre,.mono{font-family:'JetBrains Mono',monospace}
+::-webkit-scrollbar{width:8px;height:8px}
+::-webkit-scrollbar-track{background:#0f0f1a}
+::-webkit-scrollbar-thumb{background:#6366f1;border-radius:4px}
+body{background:linear-gradient(135deg,#07070f 0%,#0e0e24 50%,#091420 100%);color:#e5e7eb;min-height:100vh}
+.glass{background:rgba(255,255,255,.02);backdrop-filter:blur(10px);border:1px solid rgba(255,255,255,.05)}
+.neon{border:1px solid rgba(99,102,241,.2)}
+.card-glow{box-shadow:0 0 20px rgba(99,102,241,.08);transition:all .3s}
+.sidebar-item{transition:all .2s;border-left:3px solid transparent;cursor:pointer;color:#d1d5db;display:block;text-decoration:none}
+.sidebar-item:hover,.sidebar-item.active{background:linear-gradient(90deg,rgba(99,102,241,.15),transparent);border-left:3px solid #6366f1;color:#fff}
+.fade-in{animation:fadeIn .4s ease-in}
+@keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+.code-block{position:relative;background:#0a0a14;border:1px solid rgba(99,102,241,.2);border-radius:12px;overflow:hidden;margin:12px 0}
+.code-header{background:rgba(99,102,241,.1);padding:8px 16px;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid rgba(99,102,241,.2)}
+.copy-btn{background:rgba(99,102,241,.2);border:none;color:#a5b4fc;padding:4px 12px;border-radius:6px;cursor:pointer;font-size:11px;transition:all .2s}
+.copy-btn:hover{background:rgba(99,102,241,.4)}
+.copy-btn.copied{background:rgba(34,197,94,.3);color:#86efac}
+pre{padding:16px;overflow-x:auto;font-size:12px;line-height:1.6;color:#e5e7eb;margin:0}
+.info-box{background:rgba(99,102,241,.1);border:1px solid rgba(99,102,241,.3);border-radius:12px;padding:16px;margin:16px 0}
+.warning-box{background:rgba(234,179,8,.1);border:1px solid rgba(234,179,8,.3);border-radius:12px;padding:16px;margin:16px 0}
+.success-box{background:rgba(34,197,94,.1);border:1px solid rgba(34,197,94,.3);border-radius:12px;padding:16px;margin:16px 0}
+.danger-box{background:rgba(239,68,68,.1);border:1px solid rgba(239,68,68,.3);border-radius:12px;padding:16px;margin:16px 0}
+.gradient-text{background:linear-gradient(135deg,#6366f1,#8b5cf6,#ec4899);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.hero-gradient{background:linear-gradient(135deg,rgba(99,102,241,.15),rgba(139,92,246,.15),rgba(236,72,153,.15))}
+.section-divider{height:1px;background:linear-gradient(90deg,transparent,rgba(99,102,241,.3),transparent);margin:40px 0}
+.badge{display:inline-flex;align-items:center;gap:4px;padding:2px 8px;border-radius:6px;font-size:10px;font-weight:600;font-family:'JetBrains Mono',monospace}
+.badge-green{background:rgba(34,197,94,.2);color:#86efac;border:1px solid rgba(34,197,94,.3)}
+.badge-blue{background:rgba(59,130,246,.2);color:#93c5fd;border:1px solid rgba(59,130,246,.3)}
+.badge-orange{background:rgba(249,115,22,.2);color:#fdba74;border:1px solid rgba(249,115,22,.3)}
+.badge-red{background:rgba(239,68,68,.2);color:#fca5a5;border:1px solid rgba(239,68,68,.3)}
+.badge-purple{background:rgba(139,92,246,.2);color:#c4b5fd;border:1px solid rgba(139,92,246,.3)}
+.badge-cyan{background:rgba(6,182,212,.2);color:#67e8f9;border:1px solid rgba(6,182,212,.3)}
+.badge-yellow{background:rgba(234,179,8,.2);color:#fde047;border:1px solid rgba(234,179,8,.3)}
+@media print {
+@page { margin: 1.5cm; size: A4; }
+body{background:white!important;color:black!important;font-size:10pt}
+.no-print{display:none!important}
+.card-glow,.glass{background:white!important;border:1px solid #ddd!important;box-shadow:none!important;color:black!important}
+.gradient-text{-webkit-text-fill-color:#6366f1!important;color:#6366f1!important}
+pre{background:#f5f5f5!important;color:#333!important;border:1px solid #ddd!important;font-size:8pt}
+code{color:#6366f1!important}
+.sidebar-item{color:#333!important}
+h1,h2,h3,h4{color:#111!important;page-break-after:avoid}
+p,li,span{color:#333!important}
+.section-divider{background:#ddd!important}
+.info-box,.warning-box,.success-box,.danger-box{page-break-inside:avoid}
+.code-block{page-break-inside:avoid}
+a{color:#6366f1!important;text-decoration:underline}
+.hero-gradient{background:#f0f0ff!important}
+main{margin-left:0!important;padding:0!important;max-width:100%!important}
+aside{display:none!important}
+}
+</style>
+</head>
+<body>
+<div class="flex min-h-screen">
+<!-- SIDEBAR -->
+<aside class="w-72 bg-gray-900/80 border-r border-gray-800 flex flex-col fixed h-full z-50 overflow-y-auto no-print">
+<div class="p-5 border-b border-gray-800 sticky top-0 bg-gray-900/95 backdrop-blur z-10">
+<div class="flex items-center gap-3 mb-4">
+<div class="w-10 h-10 rounded-xl bg-gradient-to-br from-green-500 to-emerald-600 flex items-center justify-center">
+<i class="fas fa-server text-white text-lg"></i>
+</div>
+<div>
+<h1 class="text-lg font-bold text-white">Backend</h1>
+<p class="text-xs text-gray-400">Arquitectura Completa v1.1</p>
+</div>
+</div>
+<div class="flex gap-2">
+<button onclick="window.print()" class="flex-1 px-3 py-2 rounded-lg bg-indigo-600 hover:bg-indigo-500 text-white text-xs transition">
+<i class="fas fa-file-pdf mr-1"></i>Guardar PDF
+</button>
+<button onclick="downloadHTML()" class="flex-1 px-3 py-2 rounded-lg bg-gray-800 hover:bg-gray-700 text-gray-300 text-xs transition">
+<i class="fas fa-download mr-1"></i>HTML
+</button>
+</div>
+</div>
+<nav class="py-3 px-3">
+<div class="px-2 mb-2"><span class="text-[10px] font-semibold text-gray-500 uppercase tracking-wider">Introducción</span></div>
+<a href="#overview" class="sidebar-item active flex items-center gap-3 px-3 py-2 text-sm rounded-lg"><i class="fas fa-home w-4 text-center text-indigo-400"></i><span>Vista General</span></a>
+<a href="#current-status" class="sidebar-item flex items-center gap-3 px-3 py-2 text-sm rounded-lg"><i class="fas fa-tasks w-4 text-center text-yellow-400"></i><span>Estado Actual</span></a>
+<a href="#structure" class="sidebar-item flex items-center gap-3 px-3 py-2 text-sm rounded-lg"><i class="fas fa-folder-tree w-4 text-center text-amber-400"></i><span>Estructura del Proyecto</span></a>
+<div class="px-2 mt-4 mb-2"><span class="text-[10px] font-semibold text-gray-500 uppercase tracking-wider">Configuración</span></div>
+<a href="#config" class="sidebar-item flex items-center gap-3 px-3 py-2 text-sm rounded-lg"><i class="fas fa-cog w-4 text-center text-gray-400"></i><span>Configuración Inicial</span></a>
+<div class="px-2 mt-4 mb-2"><span class="text-[10px] font-semibold text-gray-500 uppercase tracking-wider">Servicios Core</span></div>
+<a href="#core-services" class="sidebar-item flex items-center gap-3 px-3 py-2 text-sm rounded-lg"><i class="fas fa-microchip w-4 text-center text-cyan-400"></i><span>Core Services</span></a>
+<a href="#ai-services" class="sidebar-item flex items-center gap-3 px-3 py-2 text-sm rounded-lg"><i class="fas fa-robot w-4 text-center text-purple-400"></i><span>AI Services</span></a>
+<a href="#jira" class="sidebar-item flex items-center gap-3 px-3 py-2 text-sm rounded-lg"><i class="fab fa-jira w-4 text-center text-blue-400"></i><span>Jira Integration</span></a>
+<a href="#security" class="sidebar-item flex items-center gap-3 px-3 py-2 text-sm rounded-lg"><i class="fas fa-shield-alt w-4 text-center text-red-400"></i><span>Security Services</span></a>
+<a href="#runners" class="sidebar-item flex items-center gap-3 px-3 py-2 text-sm rounded-lg"><i class="fas fa-running w-4 text-center text-green-400"></i><span>Test Runners</span></a>
+<div class="px-2 mt-4 mb-2"><span class="text-[10px] font-semibold text-gray-500 uppercase tracking-wider">Infraestructura</span></div>
+<a href="#database" class="sidebar-item flex items-center gap-3 px-3 py-2 text-sm rounded-lg"><i class="fas fa-database w-4 text-center text-yellow-400"></i><span>Database Models</span></a>
+<a href="#docker" class="sidebar-item flex items-center gap-3 px-3 py-2 text-sm rounded-lg"><i class="fab fa-docker w-4 text-center text-blue-400"></i><span>Docker Configuration</span></a>
+<div class="px-2 mt-4 mb-2"><span class="text-[10px] font-semibold text-gray-500 uppercase tracking-wider">Despliegue</span></div>
+<a href="#installation" class="sidebar-item flex items-center gap-3 px-3 py-2 text-sm rounded-lg"><i class="fas fa-download w-4 text-center text-emerald-400"></i><span>Instalación y Uso</span></a>
+<a href="#api-endpoints" class="sidebar-item flex items-center gap-3 px-3 py-2 text-sm rounded-lg"><i class="fas fa-code w-4 text-center text-orange-400"></i><span>API Endpoints</span></a>
+</nav>
+<div class="p-4 border-t border-gray-800 mt-auto">
+<div class="text-xs text-gray-500 text-center">
+<p>Backend Architecture v1.1</p>
+<p class="mt-1">© 2024 QA Mobile Testing AI</p>
+</div>
+</div>
+</aside>
+
+<!-- MAIN CONTENT -->
+<main class="flex-1 ml-72 p-8 max-w-6xl">
+<!-- HERO -->
+<section id="overview" class="mb-12 fade-in">
+<div class="hero-gradient rounded-3xl p-10 border border-green-500/20 mb-8">
+<div class="flex items-center gap-3 mb-4">
+<div class="w-16 h-16 rounded-2xl bg-gradient-to-br from-green-500 to-emerald-600 flex items-center justify-center">
+<i class="fas fa-server text-white text-3xl"></i>
+</div>
+<div>
+<h1 class="text-5xl font-bold gradient-text mb-2">Backend QA Mobile Testing AI</h1>
+<p class="text-lg text-gray-300">Arquitectura Completa con Python, FastAPI y Microservicios</p>
+</div>
+</div>
+<p class="text-gray-400 text-base leading-relaxed max-w-4xl">
+Backend completo para automatización de pruebas de aplicaciones móviles con <strong class="text-white">Python 3.11+</strong>,
+<strong class="text-white">FastAPI</strong>, <strong class="text-white">microservicios</strong>, <strong class="text-white">IA (GPT-4)</strong>,
+<strong class="text-white">Docker</strong>, <strong class="text-white">PostgreSQL</strong>, <strong class="text-white">Redis</strong>,
+<strong class="text-white">RabbitMQ</strong> y todas las integraciones necesarias.
+</p>
+<div class="flex flex-wrap gap-3 mt-6">
+<span class="badge badge-green"><i class="fab fa-python"></i>Python 3.11+</span>
+<span class="badge badge-blue"><i class="fas fa-bolt"></i>FastAPI</span>
+<span class="badge badge-purple"><i class="fas fa-robot"></i>GPT-4 IA</span>
+<span class="badge badge-cyan"><i class="fab fa-docker"></i>Docker</span>
+<span class="badge badge-orange"><i class="fas fa-database"></i>PostgreSQL</span>
+<span class="badge badge-red"><i class="fas fa-shield-alt"></i>Seguridad</span>
+</div>
+</div>
+
+<div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+<div class="card-glow glass rounded-2xl p-5 neon">
+<div class="w-12 h-12 rounded-xl bg-purple-500/20 flex items-center justify-center mb-3">
+<i class="fas fa-robot text-purple-400 text-xl"></i>
+</div>
+<h3 class="text-white font-semibold mb-1">AI Generator</h3>
+<p class="text-xs text-gray-400">GPT-4 para generación automática de casos</p>
+</div>
+<div class="card-glow glass rounded-2xl p-5 neon">
+<div class="w-12 h-12 rounded-xl bg-green-500/20 flex items-center justify-center mb-3">
+<i class="fas fa-play-circle text-green-400 text-xl"></i>
+</div>
+<h3 class="text-white font-semibold mb-1">Test Executor</h3>
+<p class="text-xs text-gray-400">Playwright, API, Performance, Security</p>
+</div>
+<div class="card-glow glass rounded-2xl p-5 neon">
+<div class="w-12 h-12 rounded-xl bg-blue-500/20 flex items-center justify-center mb-3">
+<i class="fab fa-jira text-blue-400 text-xl"></i>
+</div>
+<h3 class="text-white font-semibold mb-1">Jira Integration</h3>
+<p class="text-xs text-gray-400">Sincronización bidireccional</p>
+</div>
+<div class="card-glow glass rounded-2xl p-5 neon">
+<div class="w-12 h-12 rounded-xl bg-red-500/20 flex items-center justify-center mb-3">
+<i class="fas fa-shield-alt text-red-400 text-xl"></i>
+</div>
+<h3 class="text-white font-semibold mb-1">Data Security</h3>
+<p class="text-xs text-gray-400">Clasificación PII, enmascaramiento</p>
+</div>
+</div>
+</section>
+
+<!-- ESTADO ACTUAL -->
+<section id="current-status" class="mb-12">
+<h2 class="text-3xl font-bold text-white mb-6 flex items-center gap-3">
+<i class="fas fa-tasks text-yellow-400"></i>
+Estado Actual del Backend
+</h2>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+<div class="card-glow glass rounded-2xl p-5 neon border-l-4 border-l-green-500">
+<h3 class="text-white font-semibold mb-3 flex items-center gap-2"><i class="fas fa-check-circle text-green-400"></i> Completado (100%)</h3>
+<ul class="text-sm text-gray-300 space-y-2">
+<li class="flex items-center gap-2"><span class="badge badge-green">API</span> FastAPI con todos los endpoints</li>
+<li class="flex items-center gap-2"><span class="badge badge-green">DB</span> PostgreSQL con modelos SQLAlchemy</li>
+<li class="flex items-center gap-2"><span class="badge badge-green">Docker</span> 4 contenedores configurados</li>
+<li class="flex items-center gap-2"><span class="badge badge-green">IA</span> Generación inteligente de casos</li>
+<li class="flex items-center gap-2"><span class="badge badge-green">Auth</span> CORS y middleware configurados</li>
+</ul>
+</div>
+<div class="card-glow glass rounded-2xl p-5 neon border-l-4 border-l-yellow-500">
+<h3 class="text-white font-semibold mb-3 flex items-center gap-2"><i class="fas fa-spinner text-yellow-400"></i> En Progreso (40%)</h3>
+<ul class="text-sm text-gray-300 space-y-2">
+<li class="flex items-center gap-2"><span class="badge badge-yellow">Redis</span> Cache configurado</li>
+<li class="flex items-center gap-2"><span class="badge badge-yellow">RabbitMQ</span> Cola de mensajes</li>
+<li class="flex items-center gap-2"><span class="badge badge-yellow">Tests</span> Unit tests básicos</li>
+</ul>
+</div>
+<div class="card-glow glass rounded-2xl p-5 neon border-l-4 border-l-red-500">
+<h3 class="text-white font-semibold mb-3 flex items-center gap-2"><i class="fas fa-exclamation-triangle text-red-400"></i> Pendiente Alta Prioridad</h3>
+<ul class="text-sm text-gray-300 space-y-2">
+<li class="flex items-center gap-2"><span class="badge badge-red">OpenAI</span> Integración GPT-4 real</li>
+<li class="flex items-center gap-2"><span class="badge badge-red">Appium</span> Ejecución real en dispositivos</li>
+<li class="flex items-center gap-2"><span class="badge badge-red">CSV</span> Exportación funcional</li>
+</ul>
+</div>
+<div class="card-glow glass rounded-2xl p-5 neon border-l-4 border-l-gray-500">
+<h3 class="text-white font-semibold mb-3 flex items-center gap-2"><i class="fas fa-clock text-gray-400"></i> Pendiente Baja Prioridad</h3>
+<ul class="text-sm text-gray-300 space-y-2">
+<li class="flex items-center gap-2"><span class="badge" style="background:rgba(107,114,128,.2);color:#d1d5db;border:1px solid rgba(107,114,128,.3)">Jira</span> Integración API real</li>
+<li class="flex items-center gap-2"><span class="badge" style="background:rgba(107,114,128,.2);color:#d1d5db;border:1px solid rgba(107,114,128,.3)">Auth</span> JWT y multi-usuario</li>
+<li class="flex items-center gap-2"><span class="badge" style="background:rgba(107,114,128,.2);color:#d1d5db;border:1px solid rgba(107,114,128,.3)">CI/CD</span> Pipeline automatizado</li>
+</ul>
+</div>
+</div>
+</section>
+
+<div class="section-divider"></div>
+
+<!-- STRUCTURE -->
+<section id="structure" class="mb-12">
+<h2 class="text-3xl font-bold text-white mb-6 flex items-center gap-3">
+<i class="fas fa-folder-tree text-amber-400"></i>
+Estructura del Proyecto
+</h2>
+<div class="glass rounded-2xl p-6 neon">
+<h3 class="text-xl font-semibold text-white mb-4">📁 Árbol de Directorios</h3>
+<div class="file-tree">
+<span class="folder">qa-mobile-testing-ai/</span><br>
+├── <span class="folder">backend/</span><br>
+│   ├── <span class="folder">src/</span><br>
+│   │   ├── <span class="folder">api/</span><br>
+│   │   │   ├── <span class="file">main.py</span> <span class="comment"># FastAPI app ✅</span><br>
+│   │   │   └── <span class="folder">routes/</span><br>
+│   │   │       ├── <span class="file">tests.py</span> <span class="comment"># Endpoints de tests ✅</span><br>
+│   │   │       ├── <span class="file">ai.py</span> <span class="comment"># Endpoints de IA ✅</span><br>
+│   │   │       ├── <span class="file">jira.py</span> <span class="comment"># Endpoints de Jira</span><br>
+│   │   │       ├── <span class="file">reports.py</span> <span class="comment"># Endpoints de reportes</span><br>
+│   │   │       └── <span class="file">monitoring.py</span> <span class="comment"># Endpoints de monitoreo</span><br>
+│   │   ├── <span class="folder">core/</span><br>
+│   │   │   ├── <span class="file">engine.py</span> <span class="comment"># Motor principal ✅</span><br>
+│   │   │   ├── <span class="file">scheduler.py</span> <span class="comment"># Planificador</span><br>
+│   │   │   └── <span class="file">orchestrator.py</span> <span class="comment"># Orquestador</span><br>
+│   │   ├── <span class="folder">ai/</span><br>
+│   │   │   ├── <span class="folder">generators/</span><br>
+│   │   │   │   └── <span class="file">test_case_generator.py</span> <span class="comment"># Generador IA ✅</span><br>
+│   │   │   ├── <span class="folder">analyzers/</span><br>
+│   │   │   │   ├── <span class="file">requirement_analyzer.py</span> <span class="comment"># Analizador ✅</span><br>
+│   │   │   │   └── <span class="file">risk_analyzer.py</span> <span class="comment"># Evaluador de riesgos</span><br>
+│   │   │   └── <span class="folder">models/</span><br>
+│   │   │       └── <span class="file">gpt_integration.py</span> <span class="comment"># Integración GPT</span><br>
+│   │   ├── <span class="folder">integrations/</span><br>
+│   │   │   ├── <span class="folder">jira/</span><br>
+│   │   │   │   ├── <span class="file">client.py</span> <span class="comment"># Cliente Jira</span><br>
+│   │   │   │   └── <span class="file">sync_service.py</span> <span class="comment"># Sincronización</span><br>
+│   │   │   └── <span class="folder">slack/</span><br>
+│   │   │       └── <span class="file">notifier.py</span> <span class="comment"># Notificaciones</span><br>
+│   │   ├── <span class="folder">security/</span><br>
+│   │   │   ├── <span class="file">data_classifier.py</span> <span class="comment"># Clasificador PII ✅</span><br>
+│   │   │   ├── <span class="file">encryption_service.py</span> <span class="comment"># Cifrado</span><br>
+│   │   │   └── <span class="file">masking_service.py</span> <span class="comment"># Enmascaramiento ✅</span><br>
+│   │   ├── <span class="folder">runners/</span><br>
+│   │   │   ├── <span class="file">playwright_runner.py</span> <span class="comment"># Playwright ✅</span><br>
+│   │   │   ├── <span class="file">api_runner.py</span> <span class="comment"># API Runner</span><br>
+│   │   │   └── <span class="file">performance_runner.py</span> <span class="comment"># Performance</span><br>
+│   │   ├── <span class="folder">utils/</span><br>
+│   │   │   ├── <span class="file">config_manager.py</span> <span class="comment"># Configuración ✅</span><br>
+│   │   │   ├── <span class="file">logger.py</span> <span class="comment"># Logging ✅</span><br>
+│   │   │   └── <span class="file">metrics_collector.py</span> <span class="comment"># Métricas</span><br>
+│   │   └── <span class="folder">database/</span><br>
+│   │       ├── <span class="file">models.py</span> <span class="comment"># Modelos SQLAlchemy ✅</span><br>
+│   │       ├── <span class="file">schemas.py</span> <span class="comment"># Pydantic schemas ✅</span><br>
+│   │       └── <span class="file">connection.py</span> <span class="comment"># Conexión DB ✅</span><br>
+│   ├── <span class="folder">tests/</span><br>
+│   │   ├── <span class="folder">unit/</span><br>
+│   │   ├── <span class="folder">integration/</span><br>
+│   │   └── <span class="folder">e2e/</span><br>
+│   ├── <span class="file">Dockerfile</span> <span class="comment"># ✅</span><br>
+│   ├── <span class="file">docker-compose.yml</span> <span class="comment"># ✅</span><br>
+│   ├── <span class="file">requirements.txt</span> <span class="comment"># ✅</span><br>
+│   └── <span class="file">.env.example</span> <span class="comment"># ✅</span><br>
+├── <span class="folder">frontend/</span><br>
+│   └── <span class="file">indexxxx.html</span> <span class="comment"># Dashboard completo ✅</span><br>
+└── <span class="folder">sample-app/</span><br>
+    └── <span class="file">index.html</span> <span class="comment"># App de ejemplo ✅</span><br>
+</div>
+</div>
+</section>
+
+<div class="section-divider"></div>
+
+<!-- CONFIGURATION -->
+<section id="config" class="mb-12">
+<h2 class="text-3xl font-bold text-white mb-6 flex items-center gap-3">
+<i class="fas fa-cog text-gray-400"></i>
+Configuración Inicial
+</h2>
+<div class="glass rounded-2xl p-6 neon mb-6">
+<h3 class="text-xl font-semibold text-white mb-4">📦 requirements.txt</h3>
+<div class="code-block">
+<div class="code-header">
+<span class="text-xs text-gray-400"><i class="fas fa-file-code mr-2"></i>requirements.txt</span>
+<button class="copy-btn" onclick="copyCode(this)"><i class="fas fa-copy mr-1"></i>Copiar</button>
+</div>
+<pre><code><span class="text-gray-500"># Core</span>
+fastapi==0.104.1
+uvicorn[standard]==0.24.0
+pydantic==2.5.0
+pydantic-settings==2.1.0
+
+<span class="text-gray-500"># Database</span>
+sqlalchemy==2.0.23
+asyncpg==0.29.0
+alembic==1.13.0
+redis==5.0.1
+
+<span class="text-gray-500"># Message Queue</span>
+pika==1.3.2
+celery==5.3.6
+
+<span class="text-gray-500"># AI & ML</span>
+openai==1.6.1
+tiktoken==0.5.2
+scikit-learn==1.3.2
+numpy==1.26.2
+
+<span class="text-gray-500"># Jira Integration</span>
+jira==3.6.0
+atlassian-python-api==3.41.4
+
+<span class="text-gray-500"># Testing</span>
+playwright==1.40.0
+pytest==7.4.3
+pytest-asyncio==0.23.2
+pytest-cov==4.1.0
+allure-pytest==2.13.2
+
+<span class="text-gray-500"># Security</span>
+cryptography==41.0.7
+python-jose[cryptography]==3.3.0
+passlib[bcrypt]==1.7.4
+python-multipart==0.0.6
+
+<span class="text-gray-500"># Monitoring</span>
+prometheus-client==0.19.0
+sentry-sdk==1.38.0
+
+<span class="text-gray-500"># Utilities</span>
+python-dotenv==1.0.0
+pyyaml==6.0.1
+httpx==0.25.2
+faker==20.1.0</code></pre>
+</div>
+</div>
+
+<div class="glass rounded-2xl p-6 neon">
+<h3 class="text-xl font-semibold text-white mb-4">🔐 .env.example</h3>
+<div class="code-block">
+<div class="code-header">
+<span class="text-xs text-gray-400"><i class="fas fa-file-code mr-2"></i>.env.example</span>
+<button class="copy-btn" onclick="copyCode(this)"><i class="fas fa-copy mr-1"></i>Copiar</button>
+</div>
+<pre><code><span class="text-gray-500"># Application</span>
+APP_NAME=QA Mobile Testing AI
+APP_VERSION=1.0.0
+DEBUG=true
+SECRET_KEY=your-secret-key-here
+ALGORITHM=HS256
+ACCESS_TOKEN_EXPIRE_MINUTES=30
+
+<span class="text-gray-500"># Database</span>
+DATABASE_URL=postgresql+asyncpg://user:password@localhost:5432/testautomation
+DATABASE_URL_SYNC=postgresql://user:password@localhost:5432/testautomation
+REDIS_URL=redis://localhost:6379/0
+
+<span class="text-gray-500"># Message Queue</span>
+RABBITMQ_URL=amqp://guest:guest@localhost:5672/
+RABBITMQ_USER=guest
+RABBITMQ_PASSWORD=guest
+
+<span class="text-gray-500"># OpenAI</span>
+OPENAI_API_KEY=sk-xxxxxxxxxxxxxxxxxxxx
+OPENAI_MODEL=gpt-4
+OPENAI_MAX_TOKENS=2048
+OPENAI_TEMPERATURE=0.3
+
+<span class="text-gray-500"># Jira</span>
+JIRA_SERVER=https://tuempresa.atlassian.net
+JIRA_EMAIL=qa@tuempresa.com
+JIRA_TOKEN=your-jira-token
+JIRA_PROJECT_KEY=PROJ
+
+<span class="text-gray-500"># Slack</span>
+SLACK_WEBHOOK_URL=https://hooks.slack.com/services/xxx/yyy/zzz
+SLACK_CHANNEL=#qa-testing
+
+<span class="text-gray-500"># Security</span>
+VAULT_URL=http://localhost:8200
+VAULT_TOKEN=your-vault-token
+ENCRYPTION_KEY=your-encryption-key
+
+<span class="text-gray-500"># Monitoring</span>
+PROMETHEUS_PORT=9090
+GRAFANA_PORT=3000
+
+<span class="text-gray-500"># Testing</span>
+PLAYWRIGHT_BROWSERS_PATH=/ms-playwright
+HEADLESS=true
+PARALLEL_WORKERS=4</code></pre>
+</div>
+</div>
+</section>
+
+<div class="section-divider"></div>
+
+<!-- CORE SERVICES -->
+<section id="core-services" class="mb-12">
+<h2 class="text-3xl font-bold text-white mb-6 flex items-center gap-3">
+<i class="fas fa-microchip text-cyan-400"></i>
+Core Services
+</h2>
+<div class="glass rounded-2xl p-6 neon mb-6">
+<h3 class="text-xl font-semibold text-white mb-4">🚀 src/api/main.py - FastAPI Application</h3>
+<div class="code-block">
+<div class="code-header">
+<span class="text-xs text-gray-400"><i class="fab fa-python mr-2 text-yellow-400"></i>src/api/main.py</span>
+<button class="copy-btn" onclick="copyCode(this)"><i class="fas fa-copy mr-1"></i>Copiar</button>
+</div>
+<pre><code><span class="text-blue-400">from</span> fastapi <span class="text-blue-400">import</span> FastAPI, Request, HTTPException
+<span class="text-blue-400">from</span> fastapi.middleware.cors <span class="text-blue-400">import</span> CORSMiddleware
+<span class="text-blue-400">from</span> fastapi.responses <span class="text-blue-400">import</span> JSONResponse
+<span class="text-blue-400">from</span> contextlib <span class="text-blue-400">import</span> asynccontextmanager
+<span class="text-blue-400">import</span> sentry_sdk
+
+<span class="text-blue-400">from</span> src.api.routes <span class="text-blue-400">import</span> tests, ai, jira, reports, monitoring
+<span class="text-blue-400">from</span> src.database.connection <span class="text-blue-400">import</span> init_db, close_db
+<span class="text-blue-400">from</span> src.utils.logger <span class="text-blue-400">import</span> setup_logger
+<span class="text-blue-400">from</span> src.utils.metrics_collector <span class="text-blue-400">import</span> MetricsCollector
+
+logger = setup_logger(__name__)
+
+<span class="text-purple-400">@asynccontextmanager</span>
+<span class="text-blue-400">async def</span> <span class="text-green-400">lifespan</span>(app: FastAPI):
+    <span class="text-gray-500">"""Startup and shutdown events"""</span>
+    logger.info(<span class="text-orange-400">"Starting QA Mobile Testing AI Backend..."</span>)
+    <span class="text-blue-400">await</span> init_db()
+    MetricsCollector.initialize()
+    <span class="text-blue-400">yield</span>
+    <span class="text-blue-400">await</span> close_db()
+    logger.info(<span class="text-orange-400">"Shutting down..."</span>)
+
+app = FastAPI(
+    title=<span class="text-orange-400">"QA Mobile Testing AI"</span>,
+    description=<span class="text-orange-400">"Backend para automatización de pruebas con IA"</span>,
+    version=<span class="text-orange-400">"1.0.0"</span>,
+    lifespan=lifespan
+)
+
+<span class="text-gray-500"># CORS</span>
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=[<span class="text-orange-400">"*"</span>],
+    allow_credentials=<span class="text-cyan-400">True</span>,
+    allow_methods=[<span class="text-orange-400">"*"</span>],
+    allow_headers=[<span class="text-orange-400">"*"</span>],
+)
+
+<span class="text-gray-500"># Routes</span>
+app.include_router(tests.router, prefix=<span class="text-orange-400">"/api/v1/tests"</span>, tags=[<span class="text-orange-400">"Tests"</span>])
+app.include_router(ai.router, prefix=<span class="text-orange-400">"/api/v1/ai"</span>, tags=[<span class="text-orange-400">"AI Generator"</span>])
+app.include_router(jira.router, prefix=<span class="text-orange-400">"/api/v1/jira"</span>, tags=[<span class="text-orange-400">"Jira Integration"</span>])
+app.include_router(reports.router, prefix=<span class="text-orange-400">"/api/v1/reports"</span>, tags=[<span class="text-orange-400">"Reports"</span>])
+app.include_router(monitoring.router, prefix=<span class="text-orange-400">"/api/v1/monitoring"</span>, tags=[<span class="text-orange-400">"Monitoring"</span>])
+
+<span class="text-purple-400">@app.get</span>(<span class="text-orange-400">"/health"</span>)
+<span class="text-blue-400">async def</span> <span class="text-green-400">health_check</span>():
+    <span class="text-blue-400">return</span> {<span class="text-orange-400">"status"</span>: <span class="text-orange-400">"healthy"</span>, <span class="text-orange-400">"version"</span>: <span class="text-orange-400">"1.0.0"</span>}
+
+<span class="text-purple-400">@app.get</span>(<span class="text-orange-400">"/"</span>)
+<span class="text-blue-400">async def</span> <span class="text-green-400">root</span>():
+    <span class="text-blue-400">return</span> {
+        <span class="text-orange-400">"message"</span>: <span class="text-orange-400">"QA Mobile Testing AI API"</span>,
+        <span class="text-orange-400">"docs"</span>: <span class="text-orange-400">"/docs"</span>,
+        <span class="text-orange-400">"version"</span>: <span class="text-orange-400">"1.0.0"</span>
+    }
+
+<span class="text-purple-400">@app.exception_handler</span>(Exception)
+<span class="text-blue-400">async def</span> <span class="text-green-400">global_exception_handler</span>(request: Request, exc: Exception):
+    logger.error(<span class="text-orange-400">f"Global error: {exc}"</span>)
+    <span class="text-blue-400">return</span> JSONResponse(
+        status_code=<span class="text-cyan-400">500</span>,
+        content={<span class="text-orange-400">"detail"</span>: <span class="text-orange-400">"Internal server error"</span>}
+    )</code></pre>
+</div>
+</div>
+
+<div class="glass rounded-2xl p-6 neon">
+<h3 class="text-xl font-semibold text-white mb-4">⚙️ src/core/engine.py - Test Engine</h3>
+<div class="code-block">
+<div class="code-header">
+<span class="text-xs text-gray-400"><i class="fab fa-python mr-2 text-yellow-400"></i>src/core/engine.py</span>
+<button class="copy-btn" onclick="copyCode(this)"><i class="fas fa-copy mr-1"></i>Copiar</button>
+</div>
+<pre><code><span class="text-blue-400">import</span> asyncio
+<span class="text-blue-400">from</span> typing <span class="text-blue-400">import</span> List, Dict, Any
+<span class="text-blue-400">from</span> datetime <span class="text-blue-400">import</span> datetime
+<span class="text-blue-400">from</span> src.database.models <span class="text-blue-400">import</span> TestCase, TestExecution, TestResult
+<span class="text-blue-400">from</span> src.utils.logger <span class="text-blue-400">import</span> setup_logger
+
+logger = setup_logger(__name__)
+
+<span class="text-purple-400">class</span> <span class="text-yellow-400">TestEngine</span>:
+    <span class="text-gray-500">"""Motor principal de ejecución de pruebas"""</span>
+    <span class="text-blue-400">def</span> <span class="text-green-400">__init__</span>(self):
+        self.executions = []
+        self.metrics = {}
+    
+    <span class="text-blue-400">async def</span> <span class="text-green-400">execute_test_suite</span>(self, suite_id: str, config: Dict[str, Any]) -> Dict:
+        <span class="text-gray-500">"""Ejecuta una suite de pruebas completa"""</span>
+        logger.info(<span class="text-orange-400">f"Starting test suite execution: {suite_id}"</span>)
+        
+        execution = TestExecution(
+            suite_id=suite_id,
+            started_at=datetime.utcnow(),
+            status=<span class="text-orange-400">"running"</span>,
+            config=config
+        )
+        
+        <span class="text-blue-400">try</span>:
+            <span class="text-gray-500"># 1. Preparar entorno</span>
+            <span class="text-blue-400">await</span> self._prepare_environment(config)
+            
+            <span class="text-gray-500"># 2. Cargar casos de prueba</span>
+            test_cases = <span class="text-blue-400">await</span> self._load_test_cases(suite_id)
+            
+            <span class="text-gray-500"># 3. Ejecutar en paralelo</span>
+            results = <span class="text-blue-400">await</span> self._execute_parallel(test_cases, config)
+            
+            <span class="text-gray-500"># 4. Analizar resultados</span>
+            analysis = <span class="text-blue-400">await</span> self._analyze_results(results)
+            
+            <span class="text-gray-500"># 5. Generar reportes</span>
+            report = <span class="text-blue-400">await</span> self._generate_report(execution, results, analysis)
+            
+            execution.status = <span class="text-orange-400">"completed"</span>
+            execution.completed_at = datetime.utcnow()
+            
+            logger.info(<span class="text-orange-400">f"Test suite completed: {suite_id}"</span>)
+            <span class="text-blue-400">return</span> report
+            
+        <span class="text-blue-400">except</span> Exception <span class="text-blue-400">as</span> e:
+            logger.error(<span class="text-orange-400">f"Test suite failed: {e}"</span>)
+            execution.status = <span class="text-orange-400">"failed"</span>
+            execution.error = str(e)
+            <span class="text-blue-400">raise</span>
+    
+    <span class="text-blue-400">async def</span> <span class="text-green-400">_execute_parallel</span>(self, test_cases: List[TestCase], config: Dict) -> List[TestResult]:
+        <span class="text-gray-500">"""Ejecuta pruebas en paralelo"""</span>
+        workers = config.get(<span class="text-orange-400">"parallel_workers"</span>, <span class="text-cyan-400">4</span>)
+        semaphore = asyncio.Semaphore(workers)
+        
+        <span class="text-blue-400">async def</span> <span class="text-green-400">execute_with_semaphore</span>(test_case):
+            <span class="text-blue-400">async with</span> semaphore:
+                <span class="text-blue-400">return await</span> self._execute_single_test(test_case)
+        
+        tasks = [execute_with_semaphore(tc) <span class="text-blue-400">for</span> tc <span class="text-blue-400">in</span> test_cases]
+        results = <span class="text-blue-400">await</span> asyncio.gather(*tasks, return_exceptions=<span class="text-cyan-400">True</span>)
+        
+        <span class="text-blue-400">return</span> [r <span class="text-blue-400">for</span> r <span class="text-blue-400">in</span> results <span class="text-blue-400">if not</span> isinstance(r, Exception)]
+    
+    <span class="text-blue-400">async def</span> <span class="text-green-400">_analyze_results</span>(self, results: List[TestResult]) -> Dict:
+        <span class="text-gray-500">"""Analiza resultados de pruebas"""</span>
+        total = len(results)
+        passed = sum(<span class="text-cyan-400">1</span> <span class="text-blue-400">for</span> r <span class="text-blue-400">in</span> results <span class="text-blue-400">if</span> r.status == <span class="text-orange-400">"passed"</span>)
+        failed = total - passed
+        
+        <span class="text-blue-400">return</span> {
+            <span class="text-orange-400">"total"</span>: total,
+            <span class="text-orange-400">"passed"</span>: passed,
+            <span class="text-orange-400">"failed"</span>: failed,
+            <span class="text-orange-400">"pass_rate"</span>: (passed / total * <span class="text-cyan-400">100</span>) <span class="text-blue-400">if</span> total > <span class="text-cyan-400">0</span> <span class="text-blue-400">else</span> <span class="text-cyan-400">0</span>
+        }</code></pre>
+</div>
+</div>
+</section>
+
+<div class="section-divider"></div>
+
+<!-- AI SERVICES -->
+<section id="ai-services" class="mb-12">
+<h2 class="text-3xl font-bold text-white mb-6 flex items-center gap-3">
+<i class="fas fa-robot text-purple-400"></i>
+AI Services
+</h2>
+<div class="glass rounded-2xl p-6 neon mb-6">
+<h3 class="text-xl font-semibold text-white mb-4">🤖 src/ai/generators/test_case_generator.py</h3>
+<div class="code-block">
+<div class="code-header">
+<span class="text-xs text-gray-400"><i class="fab fa-python mr-2 text-yellow-400"></i>src/ai/generators/test_case_generator.py</span>
+<button class="copy-btn" onclick="copyCode(this)"><i class="fas fa-copy mr-1"></i>Copiar</button>
+</div>
+<pre><code><span class="text-blue-400">import</span> asyncio
+<span class="text-blue-400">from</span> typing <span class="text-blue-400">import</span> List, Dict, Any
+<span class="text-blue-400">from</span> openai <span class="text-blue-400">import</span> AsyncOpenAI
+<span class="text-blue-400">from</span> src.utils.logger <span class="text-blue-400">import</span> setup_logger
+<span class="text-blue-400">from</span> src.ai.analyzers.requirement_analyzer <span class="text-blue-400">import</span> RequirementAnalyzer
+<span class="text-blue-400">from</span> src.ai.analyzers.risk_analyzer <span class="text-blue-400">import</span> RiskAnalyzer
+
+logger = setup_logger(__name__)
+
+<span class="text-purple-400">class</span> <span class="text-yellow-400">AITestGenerator</span>:
+    <span class="text-gray-500">"""Generador de casos de prueba con IA"""</span>
+    <span class="text-blue-400">def</span> <span class="text-green-400">__init__</span>(self, openai_api_key: str, model: str = <span class="text-orange-400">"gpt-4"</span>):
+        self.client = AsyncOpenAI(api_key=openai_api_key)
+        self.model = model
+        self.requirement_analyzer = RequirementAnalyzer()
+        self.risk_analyzer = RiskAnalyzer()
+    
+    <span class="text-blue-400">async def</span> <span class="text-green-400">generate_from_user_story</span>(
+        self,
+        user_story: str,
+        epic_context: str = <span class="text-cyan-400">None</span>,
+        platform: str = <span class="text-orange-400">"mobile"</span>,
+        test_type: str = <span class="text-orange-400">"functional"</span>
+    ) -> List[Dict[str, Any]]:
+        <span class="text-gray-500">"""Genera casos de prueba desde una User Story"""</span>
+        logger.info(<span class="text-orange-400">f"Generating test cases from user story..."</span>)
+        
+        <span class="text-gray-500"># 1. Analizar requisitos</span>
+        requirements = <span class="text-blue-400">await</span> self.requirement_analyzer.analyze(user_story)
+        
+        <span class="text-gray-500"># 2. Evaluar riesgos</span>
+        risks = <span class="text-blue-400">await</span> self.risk_analyzer.assess_risks(requirements)
+        
+        <span class="text-gray-500"># 3. Generar casos con GPT-4</span>
+        test_cases = <span class="text-blue-400">await</span> self._generate_with_gpt(
+            requirements, risks, epic_context, platform, test_type
+        )
+        
+        <span class="text-gray-500"># 4. Validar y optimizar</span>
+        optimized_cases = <span class="text-blue-400">await</span> self._validate_and_optimize(test_cases)
+        
+        logger.info(<span class="text-orange-400">f"Generated {len(optimized_cases)} test cases"</span>)
+        <span class="text-blue-400">return</span> optimized_cases
+    
+    <span class="text-blue-400">async def</span> <span class="text-green-400">_generate_with_gpt</span>(self, requirements: Dict, risks: Dict, 
+                                  epic_context: str, platform: str, test_type: str) -> List[Dict]:
+        <span class="text-gray-500">"""Genera casos usando GPT-4"""</span>
+        prompt = self._build_prompt(requirements, risks, epic_context, platform, test_type)
+        
+        response = <span class="text-blue-400">await</span> self.client.chat.completions.create(
+            model=self.model,
+            messages=[
+                {<span class="text-orange-400">"role"</span>: <span class="text-orange-400">"system"</span>, <span class="text-orange-400">"content"</span>: self._get_system_prompt()},
+                {<span class="text-orange-400">"role"</span>: <span class="text-orange-400">"user"</span>, <span class="text-orange-400">"content"</span>: prompt}
+            ],
+            temperature=<span class="text-cyan-400">0.3</span>,
+            max_tokens=<span class="text-cyan-400">2048</span>
+        )
+        
+        <span class="text-blue-400">return</span> self._parse_response(response.choices[<span class="text-cyan-400">0</span>].message.content)
+    
+    <span class="text-blue-400">def</span> <span class="text-green-400">_get_system_prompt</span>(self) -> str:
+        <span class="text-blue-400">return</span> <span class="text-orange-400">"""Eres un experto en QA y testing de aplicaciones móviles. 
+        Tu tarea es generar casos de prueba exhaustivos, incluyendo:
+        - Casos felices (happy path)
+        - Casos negativos y de error
+        - Casos de borde (edge cases)
+        - Pruebas de seguridad
+        - Pruebas de rendimiento
+        
+        Genera casos claros, ejecutables y con pasos detallados."""</span>
+    
+    <span class="text-blue-400">def</span> <span class="text-green-400">_parse_response</span>(self, response: str) -> List[Dict]:
+        <span class="text-gray-500">"""Parsea la respuesta de GPT"""</span>
+        <span class="text-blue-400">import</span> json
+        <span class="text-blue-400">import</span> re
+        
+        <span class="text-gray-500"># Extraer JSON de la respuesta</span>
+        json_match = re.search(<span class="text-orange-400">r'\[.*\]'</span>, response, re.DOTALL)
+        <span class="text-blue-400">if</span> json_match:
+            <span class="text-blue-400">try</span>:
+                <span class="text-blue-400">return</span> json.loads(json_match.group())
+            <span class="text-blue-400">except</span> json.JSONDecodeError:
+                logger.error(<span class="text-orange-400">"Failed to parse GPT response as JSON"</span>)
+                <span class="text-blue-400">return</span> []
+        <span class="text-blue-400">return</span> []</code></pre>
+</div>
+</div>
+
+<div class="glass rounded-2xl p-6 neon">
+<h3 class="text-xl font-semibold text-white mb-4">🔍 src/ai/analyzers/requirement_analyzer.py</h3>
+<div class="code-block">
+<div class="code-header">
+<span class="text-xs text-gray-400"><i class="fab fa-python mr-2 text-yellow-400"></i>src/ai/analyzers/requirement_analyzer.py</span>
+<button class="copy-btn" onclick="copyCode(this)"><i class="fas fa-copy mr-1"></i>Copiar</button>
+</div>
+<pre><code><span class="text-blue-400">import</span> re
+<span class="text-blue-400">from</span> typing <span class="text-blue-400">import</span> Dict, List
+<span class="text-blue-400">from</span> src.utils.logger <span class="text-blue-400">import</span> setup_logger
+
+logger = setup_logger(__name__)
+
+<span class="text-purple-400">class</span> <span class="text-yellow-400">RequirementAnalyzer</span>:
+    <span class="text-gray-500">"""Analizador de requisitos con NLP"""</span>
+    
+    <span class="text-blue-400">async def</span> <span class="text-green-400">analyze</span>(self, user_story: str) -> Dict:
+        <span class="text-gray-500">"""Analiza una User Story y extrae requisitos"""</span>
+        logger.info(<span class="text-orange-400">"Analyzing requirements..."</span>)
+        
+        <span class="text-blue-400">return</span> {
+            <span class="text-orange-400">"description"</span>: user_story,
+            <span class="text-orange-400">"acceptance_criteria"</span>: self._extract_acceptance_criteria(user_story),
+            <span class="text-orange-400">"functional_requirements"</span>: self._extract_functional_reqs(user_story),
+            <span class="text-orange-400">"non_functional_requirements"</span>: self._extract_non_functional_reqs(user_story),
+            <span class="text-orange-400">"entities"</span>: self._extract_entities(user_story),
+            <span class="text-orange-400">"actions"</span>: self._extract_actions(user_story)
+        }
+    
+    <span class="text-blue-400">def</span> <span class="text-green-400">_extract_acceptance_criteria</span>(self, text: str) -> List[str]:
+        <span class="text-gray-500">"""Extrae criterios de aceptación"""</span>
+        patterns = [
+            <span class="text-orange-400">r"Criterios?\s*de\s*aceptaci[oó]n[:\s]*(.*?)(?:\n\n|$)"</span>,
+            <span class="text-orange-400">r"Acceptance\s*Criteria[:\s]*(.*?)(?:\n\n|$)"</span>,
+            <span class="text-orange-400">r"-\s*(.*?aceptaci[oó]n.*?)(?:\n|$)"</span>
+        ]
+        
+        criteria = []
+        <span class="text-blue-400">for</span> pattern <span class="text-blue-400">in</span> patterns:
+            matches = re.findall(pattern, text, re.IGNORECASE | re.DOTALL)
+            criteria.extend(matches)
+        
+        <span class="text-blue-400">return</span> criteria <span class="text-blue-400">if</span> criteria <span class="text-blue-400">else</span> [<span class="text-orange-400">"No especificados"</span>]
+    
+    <span class="text-blue-400">def</span> <span class="text-green-400">_extract_functional_reqs</span>(self, text: str) -> List[str]:
+        <span class="text-gray-500">"""Extrae requisitos funcionales"""</span>
+        keywords = [<span class="text-orange-400">"debe"</span>, <span class="text-orange-400">"puede"</span>, <span class="text-orange-400">"permite"</span>, <span class="text-orange-400">"requiere"</span>, <span class="text-orange-400">"necesita"</span>]
+        sentences = text.split(<span class="text-orange-400">"."</span>)
+        
+        <span class="text-blue-400">return</span> [
+            s.strip() <span class="text-blue-400">for</span> s <span class="text-blue-400">in</span> sentences
+            <span class="text-blue-400">if</span> any(kw <span class="text-blue-400">in</span> s.lower() <span class="text-blue-400">for</span> kw <span class="text-blue-400">in</span> keywords)
+        ]</code></pre>
+</div>
+</div>
+</section>
+
+<div class="section-divider"></div>
+
+<!-- JIRA INTEGRATION -->
+<section id="jira" class="mb-12">
+<h2 class="text-3xl font-bold text-white mb-6 flex items-center gap-3">
+<i class="fab fa-jira text-blue-400"></i>
+Jira Integration
+</h2>
+<div class="glass rounded-2xl p-6 neon">
+<h3 class="text-xl font-semibold text-white mb-4">🔗 src/integrations/jira/client.py</h3>
+<div class="code-block">
+<div class="code-header">
+<span class="text-xs text-gray-400"><i class="fab fa-python mr-2 text-yellow-400"></i>src/integrations/jira/client.py</span>
+<button class="copy-btn" onclick="copyCode(this)"><i class="fas fa-copy mr-1"></i>Copiar</button>
+</div>
+<pre><code><span class="text-blue-400">from</span> jira <span class="text-blue-400">import</span> JIRA
+<span class="text-blue-400">from</span> typing <span class="text-blue-400">import</span> List, Dict, Optional
+<span class="text-blue-400">from</span> src.utils.logger <span class="text-blue-400">import</span> setup_logger
+<span class="text-blue-400">from</span> src.utils.config_manager <span class="text-blue-400">import</span> ConfigManager
+
+logger = setup_logger(__name__)
+
+<span class="text-purple-400">class</span> <span class="text-yellow-400">JiraClient</span>:
+    <span class="text-gray-500">"""Cliente de integración con Jira"""</span>
+    
+    <span class="text-blue-400">def</span> <span class="text-green-400">__init__</span>(self):
+        config = ConfigManager.get_config()
+        self.server = config[<span class="text-orange-400">"jira"</span>][<span class="text-orange-400">"server"</span>]
+        self.email = config[<span class="text-orange-400">"jira"</span>][<span class="text-orange-400">"email"</span>]
+        self.token = config[<span class="text-orange-400">"jira"</span>][<span class="text-orange-400">"token"</span>]
+        self.project_key = config[<span class="text-orange-400">"jira"</span>][<span class="text-orange-400">"project_key"</span>]
+        
+        self.client = JIRA(
+            server=self.server,
+            basic_auth=(self.email, self.token)
+        )
+    
+    <span class="text-blue-400">async def</span> <span class="text-green-400">get_issue</span>(self, issue_key: str) -> Dict:
+        <span class="text-gray-500">"""Obtiene un issue de Jira"""</span>
+        issue = self.client.issue(issue_key)
+        <span class="text-blue-400">return</span> {
+            <span class="text-orange-400">"key"</span>: issue.key,
+            <span class="text-orange-400">"summary"</span>: issue.fields.summary,
+            <span class="text-orange-400">"description"</span>: issue.fields.description,
+            <span class="text-orange-400">"status"</span>: issue.fields.status.name,
+            <span class="text-orange-400">"priority"</span>: issue.fields.priority.name,
+            <span class="text-orange-400">"assignee"</span>: issue.fields.assignee.displayName <span class="text-blue-400">if</span> issue.fields.assignee <span class="text-blue-400">else</span> <span class="text-cyan-400">None</span>,
+            <span class="text-orange-400">"labels"</span>: issue.fields.labels,
+            <span class="text-orange-400">"story_points"</span>: issue.fields.get(<span class="text-orange-400">"story_points"</span>, <span class="text-cyan-400">0</span>)
+        }
+    
+    <span class="text-blue-400">async def</span> <span class="text-green-400">create_test_case</span>(
+        self,
+        summary: str,
+        description: str,
+        test_steps: List[Dict],
+        linked_story: str,
+        labels: List[str] = []
+    ) -> Dict:
+        <span class="text-gray-500">"""Crea un Test Case en Jira"""</span>
+        issue_dict = {
+            <span class="text-orange-400">"project"</span>: {<span class="text-orange-400">"key"</span>: self.project_key},
+            <span class="text-orange-400">"summary"</span>: summary,
+            <span class="text-orange-400">"description"</span>: description,
+            <span class="text-orange-400">"issuetype"</span>: {<span class="text-orange-400">"name"</span>: <span class="text-orange-400">"Test Case"</span>},
+            <span class="text-orange-400">"labels"</span>: labels
+        }
+        
+        new_issue = self.client.create_issue(fields=issue_dict)
+        
+        <span class="text-gray-500"># Vincular con la Story</span>
+        self.client.create_issue_link(
+            <span class="text-orange-400">"Tests"</span>,
+            new_issue.key,
+            linked_story
+        )
+        
+        logger.info(<span class="text-orange-400">f"Created test case: {new_issue.key}"</span>)
+        <span class="text-blue-400">return</span> {<span class="text-orange-400">"key"</span>: new_issue.key, <span class="text-orange-400">"summary"</span>: summary}
+    
+    <span class="text-blue-400">async def</span> <span class="text-green-400">create_test_execution</span>(
+        self,
+        name: str,
+        test_cases: List[str],
+        assignee: str
+    ) -> Dict:
+        <span class="text-gray-500">"""Crea una Test Execution"""</span>
+        issue_dict = {
+            <span class="text-orange-400">"project"</span>: {<span class="text-orange-400">"key"</span>: self.project_key},
+            <span class="text-orange-400">"summary"</span>: name,
+            <span class="text-orange-400">"issuetype"</span>: {<span class="text-orange-400">"name"</span>: <span class="text-orange-400">"Test Execution"</span>},
+            <span class="text-orange-400">"assignee"</span>: {<span class="text-orange-400">"name"</span>: assignee}
+        }
+        
+        new_issue = self.client.create_issue(fields=issue_dict)
+        
+        <span class="text-gray-500"># Vincular test cases</span>
+        <span class="text-blue-400">for</span> tc_key <span class="text-blue-400">in</span> test_cases:
+            self.client.create_issue_link(
+                <span class="text-orange-400">"Executes"</span>,
+                new_issue.key,
+                tc_key
+            )
+        
+        <span class="text-blue-400">return</span> {<span class="text-orange-400">"key"</span>: new_issue.key, <span class="text-orange-400">"name"</span>: name}</code></pre>
+</div>
+</div>
+</section>
+
+<div class="section-divider"></div>
+
+<!-- SECURITY SERVICES -->
+<section id="security" class="mb-12">
+<h2 class="text-3xl font-bold text-white mb-6 flex items-center gap-3">
+<i class="fas fa-shield-alt text-red-400"></i>
+Security Services
+</h2>
+<div class="glass rounded-2xl p-6 neon mb-6">
+<h3 class="text-xl font-semibold text-white mb-4">🔒 src/security/data_classifier.py</h3>
+<div class="code-block">
+<div class="code-header">
+<span class="text-xs text-gray-400"><i class="fab fa-python mr-2 text-yellow-400"></i>src/security/data_classifier.py</span>
+<button class="copy-btn" onclick="copyCode(this)"><i class="fas fa-copy mr-1"></i>Copiar</button>
+</div>
+<pre><code><span class="text-blue-400">import</span> re
+<span class="text-blue-400">from</span> typing <span class="text-blue-400">import</span> Dict, List
+<span class="text-blue-400">from</span> src.utils.logger <span class="text-blue-400">import</span> setup_logger
+
+logger = setup_logger(__name__)
+
+<span class="text-purple-400">class</span> <span class="text-yellow-400">DataClassifier</span>:
+    <span class="text-gray-500">"""Clasificador automático de datos sensibles"""</span>
+    
+    <span class="text-blue-400">def</span> <span class="text-green-400">__init__</span>(self):
+        self.pii_patterns = self._load_pii_patterns()
+    
+    <span class="text-blue-400">async def</span> <span class="text-green-400">classify_data</span>(self, data_sample: str) -> Dict:
+        <span class="text-gray-500">"""Clasifica datos y detecta PII"""</span>
+        classification = {
+            <span class="text-orange-400">"sensitivity_level"</span>: <span class="text-orange-400">"public"</span>,
+            <span class="text-orange-400">"pii_detected"</span>: <span class="text-cyan-400">False</span>,
+            <span class="text-orange-400">"pii_types"</span>: [],
+            <span class="text-orange-400">"compliance_requirements"</span>: [],
+            <span class="text-orange-400">"recommended_actions"</span>: []
+        }
+        
+        <span class="text-gray-500"># 1. Detección de PII</span>
+        pii_matches = self.detect_pii_patterns(data_sample)
+        <span class="text-blue-400">if</span> pii_matches:
+            classification[<span class="text-orange-400">"pii_detected"</span>] = <span class="text-cyan-400">True</span>
+            classification[<span class="text-orange-400">"pii_types"</span>] = list(pii_matches.keys())
+            classification[<span class="text-orange-400">"sensitivity_level"</span>] = <span class="text-orange-400">"sensitive"</span>
+            
+            <span class="text-gray-500"># 2. Clasificación de nivel</span>
+            <span class="text-blue-400">if</span> any(t <span class="text-blue-400">in</span> pii_matches <span class="text-blue-400">for</span> t <span class="text-blue-400">in</span> [<span class="text-orange-400">"credit_card"</span>, <span class="text-orange-400">"ssn"</span>]):
+                classification[<span class="text-orange-400">"sensitivity_level"</span>] = <span class="text-orange-400">"critical"</span>
+            
+            <span class="text-gray-500"># 3. Requisitos de compliance</span>
+            <span class="text-blue-400">if</span> classification[<span class="text-orange-400">"pii_detected"</span>]:
+                classification[<span class="text-orange-400">"compliance_requirements"</span>] = [<span class="text-orange-400">"GDPR"</span>, <span class="text-orange-400">"CCPA"</span>]
+                classification[<span class="text-orange-400">"recommended_actions"</span>] = [
+                    <span class="text-orange-400">"Enmascarar datos antes de usar en tests"</span>,
+                    <span class="text-orange-400">"Usar datos sintéticos en lugar de reales"</span>,
+                    <span class="text-orange-400">"Cifrar datos en reposo"</span>
+                ]
+        
+        <span class="text-blue-400">return</span> classification
+    
+    <span class="text-blue-400">def</span> <span class="text-green-400">detect_pii_patterns</span>(self, data: str) -> Dict:
+        <span class="text-gray-500">"""Detecta patrones de PII"""</span>
+        patterns = {
+            <span class="text-orange-400">"email"</span>: <span class="text-orange-400">r'\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,}\b'</span>,
+            <span class="text-orange-400">"phone"</span>: <span class="text-orange-400">r'\+?1?\d{9,15}'</span>,
+            <span class="text-orange-400">"ssn"</span>: <span class="text-orange-400">r'\d{3}-?\d{2}-?\d{4}'</span>,
+            <span class="text-orange-400">"credit_card"</span>: <span class="text-orange-400">r'\d{4}[-\s]?\d{4}[-\s]?\d{4}[-\s]?\d{4}'</span>,
+            <span class="text-orange-400">"passport"</span>: <span class="text-orange-400">r'[A-Z]{1,2}\d{6,9}'</span>
+        }
+        
+        detected = {}
+        <span class="text-blue-400">for</span> pattern_type, pattern <span class="text-blue-400">in</span> patterns.items():
+            matches = re.findall(pattern, str(data))
+            <span class="text-blue-400">if</span> matches:
+                detected[pattern_type] = matches
+        
+        <span class="text-blue-400">return</span> detected</code></pre>
+</div>
+</div>
+
+<div class="glass rounded-2xl p-6 neon">
+<h3 class="text-xl font-semibold text-white mb-4">🎭 src/security/masking_service.py</h3>
+<div class="code-block">
+<div class="code-header">
+<span class="text-xs text-gray-400"><i class="fab fa-python mr-2 text-yellow-400"></i>src/security/masking_service.py</span>
+<button class="copy-btn" onclick="copyCode(this)"><i class="fas fa-copy mr-1"></i>Copiar</button>
+</div>
+<pre><code><span class="text-blue-400">from</span> typing <span class="text-blue-400">import</span> Dict, Any
+<span class="text-blue-400">from</span> src.utils.logger <span class="text-blue-400">import</span> setup_logger
+
+logger = setup_logger(__name__)
+
+<span class="text-purple-400">class</span> <span class="text-yellow-400">DataMaskingEngine</span>:
+    <span class="text-gray-500">"""Motor de enmascaramiento de datos"""</span>
+    
+    <span class="text-blue-400">async def</span> <span class="text-green-400">mask_sensitive_data</span>(self, data: Dict, masking_rules: Dict) -> Dict:
+        <span class="text-gray-500">"""Aplica enmascaramiento según reglas"""</span>
+        masked_data = data.copy()
+        
+        <span class="text-blue-400">for</span> field_path, masking_config <span class="text-blue-400">in</span> masking_rules.items():
+            field_value = self._get_nested_field(data, field_path)
+            <span class="text-blue-400">if</span> field_value <span class="text-blue-400">is not</span> <span class="text-cyan-400">None</span>:
+                masked_value = <span class="text-blue-400">await</span> self._apply_masking_strategy(
+                    field_value, masking_config
+                )
+                self._set_nested_field(masked_data, field_path, masked_value)
+        
+        <span class="text-blue-400">return</span> masked_data
+    
+    <span class="text-blue-400">async def</span> <span class="text-green-400">_apply_masking_strategy</span>(self, value: Any, config: Dict) -> Any:
+        <span class="text-gray-500">"""Aplica estrategia de enmascaramiento"""</span>
+        strategy = config[<span class="text-orange-400">"strategy"</span>]
+        
+        strategies = {
+            <span class="text-orange-400">"full_mask"</span>: <span class="text-blue-400">lambda</span> v: <span class="text-orange-400">"*"</span> * len(str(v)),
+            <span class="text-orange-400">"partial_mask"</span>: self._partial_mask,
+            <span class="text-orange-400">"hash"</span>: self._hash_value,
+            <span class="text-orange-400">"encrypt"</span>: self._encrypt_value,
+            <span class="text-orange-400">"synthetic_replace"</span>: self._synthetic_replace,
+            <span class="text-orange-400">"format_preserve"</span>: self._format_preserve_mask
+        }
+        
+        <span class="text-blue-400">if</span> strategy <span class="text-blue-400">in</span> strategies:
+            <span class="text-blue-400">return</span> strategies[strategy](value, config.get(<span class="text-orange-400">"options"</span>, {}))
+        <span class="text-blue-400">else</span>:
+            <span class="text-blue-400">raise</span> ValueError(<span class="text-orange-400">f"Unknown masking strategy: {strategy}"</span>)
+    
+    <span class="text-blue-400">def</span> <span class="text-green-400">_partial_mask</span>(self, value: Any, options: Dict) -> str:
+        <span class="text-gray-500">"""Enmascara parcialmente manteniendo algunos caracteres"""</span>
+        mask_char = options.get(<span class="text-orange-400">"mask_char"</span>, <span class="text-orange-400">"*"</span>)
+        preserve_start = options.get(<span class="text-orange-400">"preserve_start"</span>, <span class="text-cyan-400">2</span>)
+        preserve_end = options.get(<span class="text-orange-400">"preserve_end"</span>, <span class="text-cyan-400">2</span>)
+        
+        str_value = str(value)
+        <span class="text-blue-400">if</span> len(str_value) <= preserve_start + preserve_end:
+            <span class="text-blue-400">return</span> mask_char * len(str_value)
+        
+        start = str_value[:preserve_start]
+        end = str_value[-preserve_end:] <span class="text-blue-400">if</span> preserve_end > <span class="text-cyan-400">0</span> <span class="text-blue-400">else</span> <span class="text-orange-400">""</span>
+        middle = mask_char * (len(str_value) - preserve_start - preserve_end)
+        
+        <span class="text-blue-400">return</span> start + middle + end
+    
+    <span class="text-blue-400">def</span> <span class="text-green-400">_synthetic_replace</span>(self, value: Any, options: Dict) -> str:
+        <span class="text-gray-500">"""Reemplaza con dato sintético"""</span>
+        <span class="text-blue-400">from</span> faker <span class="text-blue-400">import</span> Faker
+        faker = Faker()
+        
+        field_type = options.get(<span class="text-orange-400">"field_type"</span>, <span class="text-orange-400">"text"</span>)
+        replacements = {
+            <span class="text-orange-400">"email"</span>: faker.email,
+            <span class="text-orange-400">"phone"</span>: faker.phone_number,
+            <span class="text-orange-400">"name"</span>: faker.name,
+            <span class="text-orange-400">"address"</span>: faker.address,
+            <span class="text-orange-400">"text"</span>: <span class="text-blue-400">lambda</span>: faker.text(max_nb_chars=<span class="text-cyan-400">50</span>)
+        }
+        
+        <span class="text-blue-400">return</span> replacements.get(field_type, <span class="text-blue-400">lambda</span>: faker.text())()</code></pre>
+</div>
+</div>
+</section>
+
+<div class="section-divider"></div>
+
+<!-- TEST RUNNERS -->
+<section id="runners" class="mb-12">
+<h2 class="text-3xl font-bold text-white mb-6 flex items-center gap-3">
+<i class="fas fa-running text-green-400"></i>
+Test Runners
+</h2>
+<div class="glass rounded-2xl p-6 neon">
+<h3 class="text-xl font-semibold text-white mb-4">🎭 src/runners/playwright_runner.py</h3>
+<div class="code-block">
+<div class="code-header">
+<span class="text-xs text-gray-400"><i class="fab fa-python mr-2 text-yellow-400"></i>src/runners/playwright_runner.py</span>
+<button class="copy-btn" onclick="copyCode(this)"><i class="fas fa-copy mr-1"></i>Copiar</button>
+</div>
+<pre><code><span class="text-blue-400">import</span> asyncio
+<span class="text-blue-400">from</span> playwright.async_api <span class="text-blue-400">import</span> async_playwright
+<span class="text-blue-400">from</span> typing <span class="text-blue-400">import</span> Dict, Any
+<span class="text-blue-400">from</span> src.utils.logger <span class="text-blue-400">import</span> setup_logger
+
+logger = setup_logger(__name__)
+
+<span class="text-purple-400">class</span> <span class="text-yellow-400">PlaywrightRunner</span>:
+    <span class="text-gray-500">"""Runner de pruebas con Playwright"""</span>
+    
+    <span class="text-blue-400">def</span> <span class="text-green-400">__init__</span>(self, headless: bool = <span class="text-cyan-400">True</span>):
+        self.headless = headless
+        self.browser = <span class="text-cyan-400">None</span>
+        self.context = <span class="text-cyan-400">None</span>
+        self.page = <span class="text-cyan-400">None</span>
+    
+    <span class="text-blue-400">async def</span> <span class="text-green-400">execute</span>(self, test_case: Dict, result: Dict) -> Dict:
+        <span class="text-gray-500">"""Ejecuta un caso de prueba"""</span>
+        <span class="text-blue-400">async with</span> async_playwright() <span class="text-blue-400">as</span> p:
+            <span class="text-blue-400">try</span>:
+                <span class="text-gray-500"># Lanzar navegador</span>
+                self.browser = <span class="text-blue-400">await</span> p.chromium.launch(headless=self.headless)
+                self.context = <span class="text-blue-400">await</span> self.browser.new_context(
+                    viewport={<span class="text-orange-400">"width"</span>: <span class="text-cyan-400">375</span>, <span class="text-orange-400">"height"</span>: <span class="text-cyan-400">667</span>},  <span class="text-gray-500"># Mobile</span>
+                    user_agent=<span class="text-orange-400">"Mozilla/5.0 (iPhone; CPU iPhone OS 14_0 like Mac OS X)"</span>
+                )
+                self.page = <span class="text-blue-400">await</span> self.context.new_page()
+                
+                <span class="text-gray-500"># Ejecutar pasos</span>
+                <span class="text-blue-400">for</span> step <span class="text-blue-400">in</span> test_case.get(<span class="text-orange-400">"steps"</span>, []):
+                    <span class="text-blue-400">await</span> self._execute_step(step)
+                
+                result[<span class="text-orange-400">"status"</span>] = <span class="text-orange-400">"passed"</span>
+                
+            <span class="text-blue-400">except</span> Exception <span class="text-blue-400">as</span> e:
+                result[<span class="text-orange-400">"status"</span>] = <span class="text-orange-400">"failed"</span>
+                result[<span class="text-orange-400">"error"</span>] = str(e)
+                
+                <span class="text-gray-500"># Capturar screenshot en caso de fallo</span>
+                <span class="text-blue-400">if</span> self.page:
+                    <span class="text-blue-400">await</span> self.page.screenshot(path=<span class="text-orange-400">f"failure_{test_case['id']}.png"</span>)
+            
+            <span class="text-blue-400">finally</span>:
+                <span class="text-blue-400">if</span> self.browser:
+                    <span class="text-blue-400">await</span> self.browser.close()
+        
+        <span class="text-blue-400">return</span> result
+    
+    <span class="text-blue-400">async def</span> <span class="text-green-400">_execute_step</span>(self, step: Dict):
+        <span class="text-gray-500">"""Ejecuta un paso del test"""</span>
+        action = step.get(<span class="text-orange-400">"action"</span>, <span class="text-orange-400">""</span>)
+        target = step.get(<span class="text-orange-400">"target"</span>, <span class="text-orange-400">""</span>)
+        value = step.get(<span class="text-orange-400">"value"</span>, <span class="text-orange-400">""</span>)
+        
+        <span class="text-blue-400">if</span> action == <span class="text-orange-400">"navigate"</span>:
+            <span class="text-blue-400">await</span> self.page.goto(target)
+        <span class="text-blue-400">elif</span> action == <span class="text-orange-400">"click"</span>:
+            <span class="text-blue-400">await</span> self.page.click(target)
+        <span class="text-blue-400">elif</span> action == <span class="text-orange-400">"fill"</span>:
+            <span class="text-blue-400">await</span> self.page.fill(target, value)
+        <span class="text-blue-400">elif</span> action == <span class="text-orange-400">"type"</span>:
+            <span class="text-blue-400">await</span> self.page.type(target, value)
+        <span class="text-blue-400">elif</span> action == <span class="text-orange-400">"select"</span>:
+            <span class="text-blue-400">await</span> self.page.select_option(target, value)
+        <span class="text-blue-400">elif</span> action == <span class="text-orange-400">"check"</span>:
+            <span class="text-blue-400">await</span> self.page.check(target)
+        <span class="text-blue-400">elif</span> action == <span class="text-orange-400">"wait"</span>:
+            <span class="text-blue-400">await</span> self.page.wait_for_timeout(int(value))
+        <span class="text-blue-400">elif</span> action == <span class="text-orange-400">"assert_visible"</span>:
+            <span class="text-blue-400">await</span> self.page.wait_for_selector(target, state=<span class="text-orange-400">"visible"</span>)
+        <span class="text-blue-400">elif</span> action == <span class="text-orange-400">"assert_text"</span>:
+            <span class="text-blue-400">await</span> self.page.wait_for_selector(<span class="text-orange-400">f"text={value}"</span>)
+        <span class="text-blue-400">else</span>:
+            logger.warning(<span class="text-orange-400">f"Unknown action: {action}"</span>)</code></pre>
+</div>
+</div>
+</section>
+
+<div class="section-divider"></div>
+
+<!-- DATABASE MODELS -->
+<section id="database" class="mb-12">
+<h2 class="text-3xl font-bold text-white mb-6 flex items-center gap-3">
+<i class="fas fa-database text-yellow-400"></i>
+Database Models
+</h2>
+<div class="glass rounded-2xl p-6 neon">
+<h3 class="text-xl font-semibold text-white mb-4">🗄️ src/database/models.py</h3>
+<div class="code-block">
+<div class="code-header">
+<span class="text-xs text-gray-400"><i class="fab fa-python mr-2 text-yellow-400"></i>src/database/models.py</span>
+<button class="copy-btn" onclick="copyCode(this)"><i class="fas fa-copy mr-1"></i>Copiar</button>
+</div>
+<pre><code><span class="text-blue-400">from</span> sqlalchemy <span class="text-blue-400">import</span> Column, Integer, String, DateTime, Text, JSON, Boolean, ForeignKey
+<span class="text-blue-400">from</span> sqlalchemy.ext.declarative <span class="text-blue-400">import</span> declarative_base
+<span class="text-blue-400">from</span> sqlalchemy.orm <span class="text-blue-400">import</span> relationship
+<span class="text-blue-400">from</span> datetime <span class="text-blue-400">import</span> datetime
+
+Base = declarative_base()
+
+<span class="text-purple-400">class</span> <span class="text-yellow-400">TestCase</span>(Base):
+    __tablename__ = <span class="text-orange-400">"test_cases"</span>
+    
+    id = Column(Integer, primary_key=<span class="text-cyan-400">True</span>, index=<span class="text-cyan-400">True</span>)
+    external_id = Column(String, unique=<span class="text-cyan-400">True</span>, index=<span class="text-cyan-400">True</span>)
+    title = Column(String, nullable=<span class="text-cyan-400">False</span>)
+    description = Column(Text)
+    type = Column(String, nullable=<span class="text-cyan-400">False</span>)  <span class="text-gray-500"># functional, api, performance, security</span>
+    priority = Column(String, nullable=<span class="text-cyan-400">False</span>)  <span class="text-gray-500"># critical, high, medium, low</span>
+    status = Column(String, default=<span class="text-orange-400">"pending"</span>)  <span class="text-gray-500"># pending, passed, failed, blocked</span>
+    platform = Column(String, nullable=<span class="text-cyan-400">False</span>)  <span class="text-gray-500"># android, ios, mobile</span>
+    module = Column(String)
+    steps = Column(JSON)
+    test_data = Column(JSON)
+    preconditions = Column(Text)
+    postconditions = Column(Text)
+    ai_generated = Column(Boolean, default=<span class="text-cyan-400">False</span>)
+    created_at = Column(DateTime, default=datetime.utcnow)
+    updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+    
+    <span class="text-gray-500"># Relationships</span>
+    executions = relationship(<span class="text-orange-400">"TestExecution"</span>, back_populates=<span class="text-orange-400">"test_case"</span>)
+
+<span class="text-purple-400">class</span> <span class="text-yellow-400">TestExecution</span>(Base):
+    __tablename__ = <span class="text-orange-400">"test_executions"</span>
+    
+    id = Column(Integer, primary_key=<span class="text-cyan-400">True</span>, index=<span class="text-cyan-400">True</span>)
+    suite_id = Column(String, nullable=<span class="text-cyan-400">False</span>)
+    test_case_id = Column(Integer, ForeignKey(<span class="text-orange-400">"test_cases.id"</span>))
+    status = Column(String, nullable=<span class="text-cyan-400">False</span>)  <span class="text-gray-500"># running, passed, failed, error</span>
+    started_at = Column(DateTime, default=datetime.utcnow)
+    completed_at = Column(DateTime)
+    duration_seconds = Column(Integer)
+    error_message = Column(Text)
+    screenshot_path = Column(String)
+    logs = Column(Text)
+    config = Column(JSON)
+    
+    <span class="text-gray-500"># Relationships</span>
+    test_case = relationship(<span class="text-orange-400">"TestCase"</span>, back_populates=<span class="text-orange-400">"executions"</span>)
+    results = relationship(<span class="text-orange-400">"TestResult"</span>, back_populates=<span class="text-orange-400">"execution"</span>)
+
+<span class="text-purple-400">class</span> <span class="text-yellow-400">TestResult</span>(Base):
+    __tablename__ = <span class="text-orange-400">"test_results"</span>
+    
+    id = Column(Integer, primary_key=<span class="text-cyan-400">True</span>, index=<span class="text-cyan-400">True</span>)
+    execution_id = Column(Integer, ForeignKey(<span class="text-orange-400">"test_executions.id"</span>))
+    step_number = Column(Integer)
+    action = Column(String)
+    expected = Column(Text)
+    actual = Column(Text)
+    status = Column(String, nullable=<span class="text-cyan-400">False</span>)
+    timestamp = Column(DateTime, default=datetime.utcnow)
+    
+    <span class="text-gray-500"># Relationships</span>
+    execution = relationship(<span class="text-orange-400">"TestExecution"</span>, back_populates=<span class="text-orange-400">"results"</span>)
+
+<span class="text-purple-400">class</span> <span class="text-yellow-400">JiraSync</span>(Base):
+    __tablename__ = <span class="text-orange-400">"jira_sync"</span>
+    
+    id = Column(Integer, primary_key=<span class="text-cyan-400">True</span>, index=<span class="text-cyan-400">True</span>)
+    jira_issue_key = Column(String, unique=<span class="text-cyan-400">True</span>, index=<span class="text-cyan-400">True</span>)
+    test_case_id = Column(Integer, ForeignKey(<span class="text-orange-400">"test_cases.id"</span>))
+    sync_status = Column(String, default=<span class="text-orange-400">"pending"</span>)
+    last_synced_at = Column(DateTime)
+    sync_data = Column(JSON)</code></pre>
+</div>
+</div>
+</section>
+
+<div class="section-divider"></div>
+
+<!-- DOCKER CONFIGURATION -->
+<section id="docker" class="mb-12">
+<h2 class="text-3xl font-bold text-white mb-6 flex items-center gap-3">
+<i class="fab fa-docker text-blue-400"></i>
+Docker Configuration
+</h2>
+<div class="glass rounded-2xl p-6 neon mb-6">
+<h3 class="text-xl font-semibold text-white mb-4">🐳 Dockerfile</h3>
+<div class="code-block">
+<div class="code-header">
+<span class="text-xs text-gray-400"><i class="fab fa-docker mr-2 text-blue-400"></i>Dockerfile</span>
+<button class="copy-btn" onclick="copyCode(this)"><i class="fas fa-copy mr-1"></i>Copiar</button>
+</div>
+<pre><code><span class="text-blue-400">FROM</span> python:3.11-slim
+
+<span class="text-gray-500"># Instalar dependencias del sistema</span>
+<span class="text-blue-400">RUN</span> apt-get update && apt-get install -y \
+    gcc \
+    libpq-dev \
+    && rm -rf /var/lib/apt/lists/*
+
+<span class="text-gray-500"># Directorio de trabajo</span>
+<span class="text-blue-400">WORKDIR</span> /app
+
+<span class="text-gray-500"># Copiar requirements</span>
+<span class="text-blue-400">COPY</span> requirements.txt .
+
+<span class="text-gray-500"># Instalar dependencias Python</span>
+<span class="text-blue-400">RUN</span> pip install --no-cache-dir -r requirements.txt
+
+<span class="text-gray-500"># Instalar Playwright</span>
+<span class="text-blue-400">RUN</span> playwright install chromium
+<span class="text-blue-400">RUN</span> playwright install-deps chromium
+
+<span class="text-gray-500"># Copiar código</span>
+<span class="text-blue-400">COPY</span> . .
+
+<span class="text-gray-500"># Variables de entorno</span>
+<span class="text-blue-400">ENV</span> PYTHONPATH=/app
+<span class="text-blue-400">ENV</span> PYTHONDONTWRITEBYTECODE=1
+<span class="text-blue-400">ENV</span> PYTHONUNBUFFERED=1
+
+<span class="text-gray-500"># Exponer puerto</span>
+<span class="text-blue-400">EXPOSE</span> 8000
+
+<span class="text-gray-500"># Comando de inicio</span>
+<span class="text-blue-400">CMD</span> [<span class="text-orange-400">"uvicorn"</span>, <span class="text-orange-400">"src.api.main:app"</span>, <span class="text-orange-400">"--host"</span>, <span class="text-orange-400">"0.0.0.0"</span>, <span class="text-orange-400">"--port"</span>, <span class="text-orange-400">"8000"</span>, <span class="text-orange-400">"--reload"</span>]</code></pre>
+</div>
+</div>
+
+<div class="glass rounded-2xl p-6 neon">
+<h3 class="text-xl font-semibold text-white mb-4">🐙 docker-compose.yml</h3>
+<div class="code-block">
+<div class="code-header">
+<span class="text-xs text-gray-400"><i class="fab fa-docker mr-2 text-blue-400"></i>docker-compose.yml</span>
+<button class="copy-btn" onclick="copyCode(this)"><i class="fas fa-copy mr-1"></i>Copiar</button>
+</div>
+<pre><code><span class="text-blue-400">version</span>: <span class="text-orange-400">'3.8'</span>
+
+<span class="text-blue-400">services</span>:
+  <span class="text-gray-500"># API Principal</span>
+  <span class="text-cyan-400">api</span>:
+    <span class="text-blue-400">build</span>: .
+    <span class="text-blue-400">ports</span>:
+      - <span class="text-orange-400">"8000:8000"</span>
+    <span class="text-blue-400">environment</span>:
+      - DATABASE_URL=postgresql+asyncpg://user:password@postgres:5432/testautomation
+      - REDIS_URL=redis://redis:6379/0
+      - RABBITMQ_URL=amqp://guest:guest@rabbitmq:5672/
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
+      - JIRA_TOKEN=${JIRA_TOKEN}
+    <span class="text-blue-400">depends_on</span>:
+      - postgres
+      - redis
+      - rabbitmq
+    <span class="text-blue-400">volumes</span>:
+      - ./src:/app/src
+      - ./reports:/app/reports
+    <span class="text-blue-400">restart</span>: unless-stopped
+
+  <span class="text-gray-500"># Base de Datos</span>
+  <span class="text-cyan-400">postgres</span>:
+    <span class="text-blue-400">image</span>: postgres:15-alpine
+    <span class="text-blue-400">environment</span>:
+      POSTGRES_DB: testautomation
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: password
+    <span class="text-blue-400">ports</span>:
+      - <span class="text-orange-400">"5432:5432"</span>
+    <span class="text-blue-400">volumes</span>:
+      - postgres_data:/var/lib/postgresql/data
+      - ./database/init.sql:/docker-entrypoint-initdb.d/init.sql
+    <span class="text-blue-400">restart</span>: unless-stopped
+
+  <span class="text-gray-500"># Cache</span>
+  <span class="text-cyan-400">redis</span>:
+    <span class="text-blue-400">image</span>: redis:7-alpine
+    <span class="text-blue-400">command</span>: redis-server --appendonly yes
+    <span class="text-blue-400">ports</span>:
+      - <span class="text-orange-400">"6379:6379"</span>
+    <span class="text-blue-400">volumes</span>:
+      - redis_data:/data
+    <span class="text-blue-400">restart</span>: unless-stopped
+
+  <span class="text-gray-500"># Cola de Mensajes</span>
+  <span class="text-cyan-400">rabbitmq</span>:
+    <span class="text-blue-400">image</span>: rabbitmq:3-management-alpine
+    <span class="text-blue-400">environment</span>:
+      RABBITMQ_DEFAULT_USER: guest
+      RABBITMQ_DEFAULT_PASS: guest
+    <span class="text-blue-400">ports</span>:
+      - <span class="text-orange-400">"5672:5672"</span>
+      - <span class="text-orange-400">"15672:15672"</span>
+    <span class="text-blue-400">volumes</span>:
+      - rabbitmq_data:/var/lib/rabbitmq
+    <span class="text-blue-400">restart</span>: unless-stopped
+
+  <span class="text-gray-500"># Monitoreo - Prometheus</span>
+  <span class="text-cyan-400">prometheus</span>:
+    <span class="text-blue-400">image</span>: prom/prometheus:latest
+    <span class="text-blue-400">ports</span>:
+      - <span class="text-orange-400">"9090:9090"</span>
+    <span class="text-blue-400">volumes</span>:
+      - ./monitoring/prometheus.yml:/etc/prometheus/prometheus.yml
+    <span class="text-blue-400">restart</span>: unless-stopped
+
+  <span class="text-gray-500"># Visualización - Grafana</span>
+  <span class="text-cyan-400">grafana</span>:
+    <span class="text-blue-400">image</span>: grafana/grafana:latest
+    <span class="text-blue-400">environment</span>:
+      GF_SECURITY_ADMIN_PASSWORD: admin
+    <span class="text-blue-400">ports</span>:
+      - <span class="text-orange-400">"3000:3000"</span>
+    <span class="text-blue-400">volumes</span>:
+      - grafana_data:/var/lib/grafana
+    <span class="text-blue-400">depends_on</span>:
+      - prometheus
+    <span class="text-blue-400">restart</span>: unless-stopped
+
+  <span class="text-gray-500"># Reportes Allure</span>
+  <span class="text-cyan-400">allure</span>:
+    <span class="text-blue-400">image</span>: frankescobar/allure-docker-service
+    <span class="text-blue-400">environment</span>:
+      CHECK_RESULTS_EVERY_SECONDS: 3
+      KEEP_HISTORY: 20
+    <span class="text-blue-400">ports</span>:
+      - <span class="text-orange-400">"5050:5050"</span>
+    <span class="text-blue-400">volumes</span>:
+      - ./reports/allure-results:/app/allure-results
+      - ./reports/allure-reports:/app/default-reports
+    <span class="text-blue-400">restart</span>: unless-stopped
+
+<span class="text-blue-400">volumes</span>:
+  postgres_data:
+  redis_data:
+  rabbitmq_data:
+  grafana_data:
+
+<span class="text-blue-400">networks</span>:
+  <span class="text-cyan-400">default</span>:
+    <span class="text-blue-400">name</span>: qa-testing-network</code></pre>
+</div>
+</div>
+</section>
+
+<div class="section-divider"></div>
+
+<!-- INSTALLATION -->
+<section id="installation" class="mb-12">
+<h2 class="text-3xl font-bold text-white mb-6 flex items-center gap-3">
+<i class="fas fa-download text-emerald-400"></i>
+Instalación y Uso
+</h2>
+<div class="glass rounded-2xl p-6 neon mb-6">
+<h3 class="text-xl font-semibold text-white mb-4">🛠️ Makefile</h3>
+<div class="code-block">
+<div class="code-header">
+<span class="text-xs text-gray-400"><i class="fas fa-file-code mr-2"></i>Makefile</span>
+<button class="copy-btn" onclick="copyCode(this)"><i class="fas fa-copy mr-1"></i>Copiar</button>
+</div>
+<pre><code>.PHONY: install run test clean docker-up docker-down
+
+install:
+	python -m venv venv
+	source venv/bin/activate
+	pip install -r requirements.txt
+	playwright install
+
+run:
+	uvicorn src.api.main:app --reload --host 0.0.0.0 --port 8000
+
+test:
+	pytest tests/ -v --cov=src --cov-report=html
+
+test-unit:
+	pytest tests/unit/ -v
+
+test-integration:
+	pytest tests/integration/ -v
+
+test-e2e:
+	pytest tests/e2e/ -v --browser chromium
+
+docker-up:
+	docker-compose up -d
+
+docker-down:
+	docker-compose down
+
+docker-build:
+	docker-compose build
+
+logs:
+	docker-compose logs -f
+
+clean:
+	find . -type d -name __pycache__ -exec rm -rf {} +
+	find . -type f -name "*.pyc" -delete
+	rm -rf .pytest_cache
+	rm -rf htmlcov
+	rm -rf reports/*</code></pre>
+</div>
+</div>
+
+<div class="glass rounded-2xl p-6 neon">
+<h3 class="text-xl font-semibold text-white mb-4">📖 README.md</h3>
+<div class="code-block">
+<div class="code-header">
+<span class="text-xs text-gray-400"><i class="fas fa-file-alt mr-2"></i>README.md</span>
+<button class="copy-btn" onclick="copyCode(this)"><i class="fas fa-copy mr-1"></i>Copiar</button>
+</div>
+<pre><code><span class="text-gray-500"># QA Mobile Testing AI - Backend</span>
+
+Backend completo para automatización de pruebas de aplicaciones móviles con IA.
+
+<span class="text-gray-500">## 🚀 Quick Start</span>
+
+<span class="text-gray-500">### 1. Clonar repositorio</span>
+git clone https://github.com/tu-usuario/qa-mobile-testing-ai.git
+cd qa-mobile-testing-ai/backend
+
+<span class="text-gray-500">### 2. Configurar entorno</span>
+cp .env.example .env
+<span class="text-gray-500"># Editar .env con tus credenciales</span>
+
+<span class="text-gray-500">### 3. Levantar con Docker</span>
+docker-compose up -d
+
+<span class="text-gray-500">### 4. Verificar</span>
+curl http://localhost:8000/health
+
+<span class="text-gray-500">## 📚 Documentación</span>
+- API Docs: http://localhost:8000/docs
+- Frontend: http://localhost:5000
+
+<span class="text-gray-500">## 🧪 Testing</span>
+make test
+
+<span class="text-gray-500">## 📊 Monitoreo</span>
+- Prometheus: http://localhost:9090
+- Grafana: http://localhost:3000
+- Allure: http://localhost:5050</code></pre>
+</div>
+</div>
+</section>
+
+<div class="section-divider"></div>
+
+<!-- API ENDPOINTS -->
+<section id="api-endpoints" class="mb-12">
+<h2 class="text-3xl font-bold text-white mb-6 flex items-center gap-3">
+<i class="fas fa-code text-orange-400"></i>
+API Endpoints Principales
+</h2>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+<div class="glass rounded-2xl p-5 neon">
+<h3 class="text-white font-semibold mb-3 flex items-center gap-2">
+<span class="px-2 py-1 rounded bg-green-500/20 text-green-400 text-xs font-mono">GET</span>
+/health
+</h3>
+<p class="text-sm text-gray-400 mb-2">Verifica el estado del backend</p>
+<div class="code-block">
+<pre><code>{
+  "status": "healthy",
+  "version": "1.0.0"
+}</code></pre>
+</div>
+</div>
+
+<div class="glass rounded-2xl p-5 neon">
+<h3 class="text-white font-semibold mb-3 flex items-center gap-2">
+<span class="px-2 py-1 rounded bg-blue-500/20 text-blue-400 text-xs font-mono">GET</span>
+/api/v1/stats
+</h3>
+<p class="text-sm text-gray-400 mb-2">Obtiene estadísticas del sistema</p>
+<div class="code-block">
+<pre><code>{
+  "total_test_cases": 247,
+  "total_executions": 156,
+  "passed": 147,
+  "failed": 9,
+  "pass_rate": 94.3
+}</code></pre>
+</div>
+</div>
+
+<div class="glass rounded-2xl p-5 neon">
+<h3 class="text-white font-semibold mb-3 flex items-center gap-2">
+<span class="px-2 py-1 rounded bg-blue-500/20 text-blue-400 text-xs font-mono">GET</span>
+/api/v1/tests
+</h3>
+<p class="text-sm text-gray-400 mb-2">Lista todos los casos de prueba</p>
+</div>
+
+<div class="glass rounded-2xl p-5 neon">
+<h3 class="text-white font-semibold mb-3 flex items-center gap-2">
+<span class="px-2 py-1 rounded bg-blue-500/20 text-blue-400 text-xs font-mono">POST</span>
+/api/v1/tests/create
+</h3>
+<p class="text-sm text-gray-400 mb-2">Crea un nuevo caso de prueba</p>
+</div>
+
+<div class="glass rounded-2xl p-5 neon">
+<h3 class="text-white font-semibold mb-3 flex items-center gap-2">
+<span class="px-2 py-1 rounded bg-blue-500/20 text-blue-400 text-xs font-mono">POST</span>
+/api/v1/tests/execute
+</h3>
+<p class="text-sm text-gray-400 mb-2">Ejecuta una suite de pruebas</p>
+</div>
+
+<div class="glass rounded-2xl p-5 neon">
+<h3 class="text-white font-semibold mb-3 flex items-center gap-2">
+<span class="px-2 py-1 rounded bg-blue-500/20 text-blue-400 text-xs font-mono">GET</span>
+/api/v1/executions
+</h3>
+<p class="text-sm text-gray-400 mb-2">Lista todas las ejecuciones</p>
+</div>
+</div>
+</section>
+
+<!-- FOOTER -->
+<footer class="mt-16 pt-8 border-t border-gray-800">
+<div class="text-center">
+<div class="flex items-center justify-center gap-3 mb-4">
+<div class="w-12 h-12 rounded-xl bg-gradient-to-br from-green-500 to-emerald-600 flex items-center justify-center">
+<i class="fas fa-server text-white text-xl"></i>
+</div>
+</div>
+<h3 class="text-xl font-bold gradient-text mb-2">Backend QA Mobile Testing AI</h3>
+<p class="text-sm text-gray-400 mb-4">Arquitectura completa con Python, FastAPI y Microservicios</p>
+<div class="flex justify-center gap-4 text-xs text-gray-500">
+<span>Backend Architecture v1.1</span>
+<span>•</span>
+<span>© 2024</span>
+<span>•</span>
+<span>QA Mobile Testing AI</span>
+</div>
+</div>
+</footer>
+</main>
+</div>
+
+<script>
+// Copy code
+function copyCode(btn) {
+const code = btn.closest('.code-block').querySelector('pre').textContent;
+navigator.clipboard.writeText(code);
+btn.innerHTML = '<i class="fas fa-check mr-1"></i>Copiado';
+btn.classList.add('copied');
+setTimeout(() => {
+btn.innerHTML = '<i class="fas fa-copy mr-1"></i>Copiar';
+btn.classList.remove('copied');
+}, 2000);
+}
+
+// Download HTML
+function downloadHTML() {
+const content = document.documentElement.outerHTML;
+const blob = new Blob([content], { type: 'text/html' });
+const url = URL.createObjectURL(blob);
+const a = document.createElement('a');
+a.href = url;
+a.download = 'Backend-QA-Mobile-Testing-AI-Arquitectura.html';
+a.click();
+URL.revokeObjectURL(url);
+}
+
+// Active sidebar on scroll
+const sections = document.querySelectorAll('section[id]');
+const sidebarLinks = document.querySelectorAll('.sidebar-item');
+
+window.addEventListener('scroll', () => {
+let current = '';
+sections.forEach(section => {
+const sectionTop = section.offsetTop;
+if (pageYOffset >= sectionTop - 100) {
+current = section.getAttribute('id');
+}
+});
+
+sidebarLinks.forEach(link => {
+link.classList.remove('active');
+if (link.getAttribute('href') === `#${current}`) {
+link.classList.add('active');
+}
+});
+});
+
+// Smooth scroll
+sidebarLinks.forEach(link => {
+link.addEventListener('click', (e) => {
+e.preventDefault();
+const target = document.querySelector(link.getAttribute('href'));
+if (target) {
+target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+});
+});
+</script>
+</body>
+</html>
